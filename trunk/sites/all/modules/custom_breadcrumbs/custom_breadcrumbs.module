@@ -1,0 +1,232 @@
+<?php
+// $Id: custom_breadcrumbs.module,v 1.5.2.2 2007/02/21 01:43:53 eaton Exp $
+
+/**
+ * Implementation of hook_menu().
+ */
+function custom_breadcrumbs_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $access = user_access('administer custom breadcrumbs');
+    $items[] = array(
+      'path' => 'admin/build/custom_breadcrumbs',
+      'title' => t('Custom breadcrumbs'),
+      'description' => t('Add custom breadcrumb trails for content types.'),
+      'callback' => 'custom_breadcrumbs_page',
+      'access' => $access
+    );
+
+    $items[] = array(
+      'path' => 'admin/build/custom_breadcrumbs/add',
+      'title' => t('Add custom breadcrumb'),
+      'type' => MENU_CALLBACK,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('custom_breadcrumbs_form'),
+      'access' => $access
+    );
+
+    $items[] = array(
+      'path' => 'admin/build/custom_breadcrumbs/edit',
+      'title' => t('Edit custom breadcrumb'),
+      'type' => MENU_CALLBACK,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('custom_breadcrumbs_form'),
+      'access' => $access
+    );
+  }
+
+  return $items;
+}
+
+function custom_breadcrumbs_perm() {
+  return array('administer custom breadcrumbs');
+}
+
+function custom_breadcrumbs_nodeapi($node, $op, $teaser, $page) {
+  if ($op == 'view' && !$teaser && $page) {
+    if ($breadcrumb = _custom_breadcrumbs_load_for_type($node->type)) {
+      $titles = explode("\n", $breadcrumb->titles);
+      $paths = explode("\n", $breadcrumb->paths);
+
+      $titles = module_exists('token') ? token_replace($titles, 'node', $node) : $titles;
+      $paths = module_exists('token') ? token_replace($paths, 'node', $node) : $paths;
+
+      $trail = array(l(t('Home'), ''));
+      for ($i = 0; $i < count($titles); $i++) {
+        // skip empty titles
+        if ($title = trim($titles[$i])) {
+          $trail[] = l($title, trim($paths[$i]));
+        }
+      }
+      drupal_set_breadcrumb($trail);
+    }
+  }
+
+}
+
+// Lists all current custom breadcrumbs, and provides a link to the edit page.
+function custom_breadcrumbs_page() {
+  $breadcrumbs = _custom_breadcrumbs_load_all_breadcrumbs(TRUE);
+
+  $header = array(t('node type'), '');
+
+  $rows = array();
+  foreach ($breadcrumbs as $breadcrumb) {
+    $row = array();
+    $row[] = $breadcrumb->node_type;
+    $row[] =  l(t('edit'), 'admin/build/custom_breadcrumbs/edit/' . $breadcrumb->bid);
+    $rows[] = $row;
+  }
+  if (count($rows) == 0) {
+    $rows[] = array(array('data' => t('No custom breadcrumbs have been defined.'), 'colspan' => 2));
+  }
+  
+  $rows[] = array(array('data' => l(t('Add a new custom breadcrumb'), 'admin/build/custom_breadcrumbs/add'), 'colspan' => 2));
+
+
+  return theme('table', $header, $rows);
+}
+
+
+// Displays an edit form for a custom breadcrumb record.
+function custom_breadcrumbs_form() {
+  $bid = arg(4);
+  if (isset($bid)) {
+    $breadcrumb = _custom_breadcrumbs_load_breadcrumb($bid);
+    $form['bid'] = array(
+      '#type' => 'hidden',
+      '#value' => $bid,
+    );
+  }
+
+  $options = array();
+  foreach (node_get_types('names') as $type => $name) {
+    $options[$type] = $name;
+  }
+
+  $form['node_type'] = array(
+    '#type' => 'select',
+    '#title' => t('Node type'),
+    '#required' => TRUE,
+    '#options' => $options,
+    '#description' => t('The node type this custom breadcrumb trail will apply to.'),
+    '#default_value' => $bid ? $breadcrumb->node_type : NULL,
+  );
+
+  $form['titles'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Titles'),
+    '#required' => TRUE,
+    '#description' => t('A list of titles for the breadcrumb links, one on each line.'),
+    '#default_value' => $bid ? $breadcrumb->titles : NULL
+  );
+
+  $form['paths'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Paths'),
+    '#required' => TRUE,
+    '#description' => t('A list of Drupal paths for the breadcrumb links, one on each line.'),
+    '#default_value' => $bid ? $breadcrumb->paths : NULL
+  );
+
+  $form['help'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Placeholder tokens'),
+    '#description' => t("The following placeholder tokens can be used in both paths and titles. When used in a path or title, they will be replaced with the appropriate values."),
+  );
+
+  if (module_exists('token')) {
+    $form['help']['tokens'] = array(
+      '#value' => theme('token_help', 'node'),
+    );
+  }
+  else {
+    $form['help']['#description'] = t("To use dynamic placeholder tokens in your breadcrumb trails (the ID or title of the current node, for example), download and install the <a href='@token'>Token module</a> from Drupal.org.", array('@token' => 'http://www.drupal.org/project/token'));
+    $form['help']['#collapsible'] = FALSE;
+    $form['help']['#collapsed'] = FALSE;
+  }
+
+  $form['buttons']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  if ($bid) {
+    $form['buttons']['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete'),
+    );
+  }
+
+  return $form;
+}
+
+function custom_breadcrumbs_form_validate($form_id, $form_values) {
+  $path_count = count(explode("\n", $form_values['paths']));
+  $title_count = count(explode("\n", $form_values['titles']));
+  if ($title_count != $path_count) {
+    form_set_error(t('Every link path must have a matching title. There are !paths paths, and !titles titles.', array('!paths' => $path_count, '!titles' => $title_count)));
+  }
+}
+
+function custom_breadcrumbs_form_submit($form_id, $form_values) {
+  if ($form_values['op'] == t('Delete')) {
+    _custom_breadcrumbs_delete_breadcrumb($form_values['bid']);
+  }
+  else {
+    $breadcrumb = (object)$form_values;
+    _custom_breadcrumbs_save_breadcrumb($breadcrumb);
+  }
+  return 'admin/build/custom_breadcrumbs';
+}
+
+function _custom_breadcrumbs_load_breadcrumb($bid) {
+  $sql = 'SELECT * FROM {custom_breadcrumb} WHERE bid = %d';
+  $result = db_query($sql, $bid);
+  $breadcrumb = db_fetch_object($result);
+  return $breadcrumb;
+}
+
+function _custom_breadcrumbs_load_for_type($type) {
+  $sql = "SELECT * FROM {custom_breadcrumb} WHERE node_type = '%s'";
+  $result = db_query($sql, $type);
+  while ($breadcrumb = db_fetch_object($result)) {
+    return $breadcrumb;
+  }
+}
+
+function _custom_breadcrumbs_load_all_breadcrumbs($refresh = FALSE) {
+  static $breadcrumbs;
+  if ($refresh || !isset($breadcrumbs)) {
+    $sql = 'SELECT * FROM {custom_breadcrumb}';
+    $result = db_query($sql);
+
+    $breadcrumbs = array();
+    while($breadcrumb = db_fetch_object($result)) {
+      $breadcrumbs[] = $breadcrumb;
+    }
+  }
+  return $breadcrumbs;
+}
+
+function _custom_breadcrumbs_save_breadcrumb($breadcrumb = NULL) {
+  if (isset($breadcrumb->bid)) {
+    $sql  = "UPDATE {custom_breadcrumb} SET";
+    $sql .= " titles = '%s', paths = '%s', node_type = '%s'";
+    $sql .= " WHERE bid = %d";
+    db_query($sql, $breadcrumb->titles, $breadcrumb->paths, $breadcrumb->node_type, $breadcrumb->bid);
+  }
+  else {
+    $sql  = "INSERT INTO {custom_breadcrumb}";
+    $sql .= " (titles, paths, node_type)";
+    $sql .= " VALUES ('%s',  '%s',  '%s')";
+    db_query($sql, $breadcrumb->titles, $breadcrumb->paths, $breadcrumb->node_type);
+  }
+}
+
+function _custom_breadcrumbs_delete_breadcrumb($bid) {
+  $sql = 'DELETE FROM {custom_breadcrumb} WHERE bid = %d';
+  db_query($sql, $bid);
+}

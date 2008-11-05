@@ -1,0 +1,10 @@
+; $Id: commentrss.info,v 1.1.2.2 2007/07/14 22:06:54 tangent Exp $
+name = Comment RSS
+description = Provides RSS feeds for comments
+dependencies = comment
+
+; Information added by drupal.org packaging script on 2007-07-16
+version = "5.x-1.x-dev"
+project = "commentrss"
+datestamp = "1184587329"
+

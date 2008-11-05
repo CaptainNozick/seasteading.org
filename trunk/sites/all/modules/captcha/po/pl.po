@@ -1,0 +1,564 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: drupal PL arche\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2007-11-22 01:41+0100\n"
+"Last-Translator: \n"
+"Language-Team: archetwist\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-Language: Polish\n"
+"X-Poedit-Country: POLAND\n"
+
+#: captcha.module:25
+msgid "\"CAPTCHA\" is an acronym for \"Completely Automated Public Turing test to tell Computers and Humans Apart\". It is typically a challenge-response test to determine whether the user is human. The CAPTCHA module is a tool to fight automated submission by malicious users (spamming) of for example comments forms, user registration forms, guestbook forms, etc. You can extend the desired forms with an additional challenge, which should be easy for a human to solve correctly, but hard enough to keep automated scripts and spam bots out."
+msgstr "\"CAPTCHA\" to \"komputery od ludzi odróżniający, całkowicie zautomatyzowany i publicznie dostępny test Turinga\". Test polega zazwyczaj na przedstawieniu zadań, których prawidłowe wykonanie potwierdzić ma człowieczeństwo badanego. Moduł łapirobota (ang. <q>CAPTCHA</q>) jest więc narzędziem w walce ze zautomatyzowanym korzystaniem z formularzy witryny (formularzy dodawania odpowiedzi, rejestracji, księgi gości, itp.) przez użytkowników wysyłających niepożądane treści, określane zwykle terminem <q>spam</q>. Moduł umożliwia dodanie do formularzy zadania (zastawienie pułapki), które powinno być łatwe do wykonania dla człowieka, ale trudne dla skryptu czy robotów spamerskich."
+
+#: captcha.module:26
+msgid "Note that the CAPTCHA module interacts with page caching (see <a href=\"!performancesettings\">performance settings</a>). Because the challenge should be unique for each generated form, the caching of the page it appears on is prevented. Make sure that these forms do not appear on too many pages or you will lose much caching efficiency. For example, if you put a CAPTCHA on the user login block, which typically appears on each page for anonymous visitors, caching will practically be disabled. The comment submission forms are another example. In this case you should set the \"%commentlocation\" to \"%separatepage\" in <a href=\"!commentsettings\">the comment settings</a> for better caching efficiency."
+msgstr "Weź pod uwagę, że moduł łapirobota wchodzi w interakcję z systemem pamięci podręcznej (<a href=\"!performancesettings\">ustawienia wydajności</a>). Ze względu na to, że zadanie powinno być inne dla każdego z formularzy w danym czasie, pamięć podręczna nie funkcjonuje prawidłowo na stronach zawierających te formularze. Upewnij się więc, że formularze zawierające pułapki nie pojawiają się na zbyt wielu podstronach, ponieważ w przeciwnym razie wydajność pamięci podręcznej będzie znikoma. Dla przykładu, jeśli umieścisz pułapkę w bloku logowania, który zazwyczaj wyświetlany jest anonimowym odwiedzającym na każdej z podstron, pamięć podręczna de facto nie będzie funkcjonować. Innym przykładem są formularze dodawania odpowiedzi. Rozwiązaniem ostatniego z problemów jest ustawienie <q>%separatepage</q> dla opcji <q>%commentlocation</q> ze <a href=\"!commentsettings\">strony ustawień odpowiedzi</a>."
+
+#: captcha.module:29
+msgid "Location of comment submission form"
+msgstr "Lokalizacja formularza dodawania odpowiedzi"
+
+#: captcha.module:30
+msgid "Display on separate page"
+msgstr "Wyświetlaj na osobnej stronie"
+
+#: captcha.module:34
+msgid "CAPTCHA is a trademark of Carnegie Mellon University."
+msgstr "CAPTCHA jest zastrzeżonym znakiem towarowym Carnegie Mellon University."
+
+#: captcha.module:39
+msgid "<p>A CAPTCHA can be added to virtually each Drupal form. Some default forms are already provided in the form list, but arbitrary forms can be easily added and managed when the option \"%adminlinks\" is enabled.</p><p>Users with the \"%skipcaptcha\" <a href=\"@perm\">permission</a> won't be offered a challenge. Be sure to grant this permission to the trusted users (e.g. site administrators). If you want to test a protected form, be sure to do it as a user without the \"%skipcaptcha\" permission (e.g. as anonymous user).</p>"
+msgstr "<p>Pułapki łapirobota mogą być w praktyce dodane do wszystkich formularzy występujących w Drupalu. Niektóre z nich są już ujęte na liście formularzy, a inne można ręcznie dodać do listy, włączając uprzednio opcję \"%adminlinks\".</p><p>Użytkownikom z <a href=\"@perm\">uprawnieniami</a> do omijania pułapek nie zostaną one przedstawione. Pamiętaj, by nadać to uprawnienie zaufanym użytkownikom (np. administratorom witryny). Jeśli chcesz przetestować działanie łapirobota, nie rób tego z konta, które posiada takie uprawnienia.</p>"
+
+#: captcha.module:42;202;210
+msgid "Add CAPTCHA adminstration links to forms"
+msgstr "Dodaj do formularzy odnośniki umożliwiające zarządzanie łapirobotem."
+
+#: captcha.module:57;67;455;106;442;568
+#: captcha.info:0
+#: image_captcha/image_captcha.module:276;358;384
+msgid "CAPTCHA"
+msgstr "Łapirobot"
+
+#: captcha.module:58
+msgid "Administer how and where CAPTCHAs are used."
+msgstr "Zdecyduj jak i gdzie zastawiać pułapki na roboty."
+
+#: captcha.module:73
+msgid "General settings"
+msgstr "Ustawienia ogólne"
+
+#: captcha.module:79
+msgid "Examples"
+msgstr "Przykłady"
+
+#: captcha.module:80
+msgid "An overview of the available challenge types with examples."
+msgstr "Rodzaje zadań i ich przykłady."
+
+#: captcha.module:145;148
+msgid "This question is for testing whether you are a human visitor and to prevent automated spam submissions."
+msgstr "Poniższe zadanie ma na celu stwierdzenie, czy jesteś człowiekiem, a tym samym przeciwdziałanie spamowi."
+
+#: captcha.module:168
+msgid "Disabled CAPTCHA for form %form_id."
+msgstr "Pułapka została zdjęta z formularza %form_id."
+
+#: captcha.module:174
+msgid "Deleted CAPTCHA for form %form_id."
+msgstr "Pułapka zastawiona w formularzu %form_id została usunięta."
+
+#: captcha.module:204
+msgid "This option is very helpful to enable/disable challenges on forms. When enabled, users with the \"%admincaptcha\" permission will see CAPTCHA administration links on all forms (except on administrative pages, which shouldn't be accessible to untrusted users in the first place). These links make it possible to enable a challenge of the desired type or disable it."
+msgstr "Opcja jest bardzo pomocna w zastawianiu lub zdejmowaniu pułapek z konkretnych formularzy. Gdy włączona, użytkownicy z uprawnieniami do <q>zarządzania ustawieniami łapirobota</q> ujrzą odnośniki zarządzania łapirobotem we wszystkich formularzach (prócz tych z działu zarządzania)."
+
+#: captcha.module:209
+msgid "Challenge type per form"
+msgstr "Rodzaje pułapek dla poszczególnych formularzy"
+
+#: captcha.module:210
+msgid "Select the challenge type you want for each of the listed forms (identified by their so called <em>form_id</em>'s). You can easily add arbitrary forms with the help of the '%CAPTCHA_admin_links' option."
+msgstr "Zdecyduj, jakiego rodzaju pułapka ma być zastawiona przy poszczególnych formularzach z poniższej listy (formularze legitymują się tak zwanym identyfikatorem <em>form_id</em>). Za pomocą opcji <q>%CAPTCHA_admin_links</q> możesz w prosty sposób dodać do listy inne formularze."
+
+#: captcha.module:232
+msgid "delete"
+msgstr "usuń"
+
+#: captcha.module:242;257
+msgid "Challenge description"
+msgstr "Opis pułapki"
+
+#: captcha.module:243;258
+msgid "With this description you can explain the purpose of the challenge to the user."
+msgstr "Możesz pozostawić wyjaśnienie potrzeby stosowania pułapki."
+
+#: captcha.module:248
+msgid "For language %lang_name (code %lang_code)"
+msgstr "Dla języka %lang_name (kod %lang_code)"
+
+#: captcha.module:266
+msgid "Persistence"
+msgstr "Obecność pułapek"
+
+#: captcha.module:269
+msgid "Always add a challenge."
+msgstr "Zawsze zastawiaj pułapkę."
+
+#: captcha.module:270
+msgid "Omit challenges for a form once the user has successfully responded to a challenge for that form."
+msgstr "Nie zastawiaj pułapki, jeśli użytkownik rozwiązał już poprawnie zadanie dla danego formularza."
+
+#: captcha.module:271
+msgid "Omit challenges for all forms once the user has successfully responded to a challenge."
+msgstr "Nie zastawiaj pułapki, jeśli użytkownik rozwiązał już którekolwiek z zadań."
+
+#: captcha.module:273
+msgid "Define if challenges should be omitted during the rest of a session once the user successfully responses to a challenge."
+msgstr "Zdecyduj, czy pułapki powinny dręczyć użytkownika, który odpowiedział już poprawnie na któreś z przedstawionych mu zadań, przez resztę sesji."
+
+#: captcha.module:278
+msgid "Log wrong responses"
+msgstr "Zapisuj do dziennika nieprawidłowe odpowiedzi."
+
+#: captcha.module:279
+msgid "Report information about wrong responses to the !watchdoglog."
+msgstr "Zapisuje do dziennika (!watchdoglog) informacje na temat nieprawidłowych odpowiedzi na zadania."
+
+#: captcha.module:285;359;380
+msgid "Submit"
+msgstr "Dodaj"
+
+#: captcha.module:301
+msgid "Challenge type (module)"
+msgstr "Rodzaj pułapki (moduł)"
+
+#: captcha.module:301
+msgid "Operations"
+msgstr "Działania"
+
+#: captcha.module:333
+msgid "The CAPTCHA settings were saved."
+msgstr "Ustawienia łapirobota zostały zapisane."
+
+#: captcha.module:352
+msgid "Select the challenge for @form_id"
+msgstr "Wybierz rodzaj pułapki dla formularza @form_id."
+
+#: captcha.module:364
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: captcha.module:370
+msgid "Unavailable form_id %form_id "
+msgstr "Ten identyfikator form_id jest niedostępny (%form_id)."
+
+#: captcha.module:390
+msgid "Saved CAPTCHA settings."
+msgstr "Ustawienia łapirobota zostały zapisane."
+
+#: captcha.module:443
+msgid "CAPTCHA problem: hook_captcha() of module %module returned nothing when trying to retrieve challenge type %type for form %form_id."
+msgstr "Problem z łapirobotem: hook_captcha() modułu %module zwrócił pustą wartość, gdy próbowano sprawdzić pułapkę typu %type dla formularza %form_id."
+
+#: captcha.module:518;531
+msgid "CAPTCHA administration"
+msgstr "Zarządzanie łapirobotem"
+
+#: captcha.module:519
+msgid "The challenge \"@type\" (by module \"@module\") is enabled here for untrusted users: !edit, !disable or !general."
+msgstr "Pułapka łapirbota \"@type\" (z modułu \"@module\") jest włączona dla niezaufanych użytkowników: !edit, !disable lub !general."
+
+#: captcha.module:522
+msgid "edit challenge type"
+msgstr "edytuj rodzaj pułapki"
+
+#: captcha.module:523
+msgid "disable challenge"
+msgstr "wyłącz pułapkę"
+
+#: captcha.module:524
+msgid "edit general challenge settings"
+msgstr "edytuj ogólne ustawienia pułapki"
+
+#: captcha.module:532
+msgid "Place a challenge here for untrusted users."
+msgstr "Umieść tutaj pułapkę łapirobota dla niezaufanych użytkowników."
+
+#: captcha.module:554
+msgid "Invalid CAPTCHA token."
+msgstr "Nieprawidłowy token łapirobota."
+
+#: captcha.module:563
+msgid "The answer you entered for the CAPTCHA was not correct."
+msgstr "Odpowiedź na przedstawione zadanie jest nieprawidłowa."
+
+#: captcha.module:569
+msgid "%form_id post blocked by CAPTCHA module: challenge \"%challenge\" (by module \"%module\"), user answered \"%response\", but the solution was \"%solution\"."
+msgstr "Próba dodania zawartości przez formularz %form_id zablokowana przez moduł łapirobota. Zadanie <q>%challenge</q> (moduł <q>%module</q>). Użytkownik odpowiedział <q>%response</q>, a prawidłowa odpowiedź brzmiała <q>%solution</q>."
+
+#: captcha.module:623
+msgid "You can't request more than @num challenges without solving them. Your previous challenges were flushed."
+msgstr "Nie możesz zażądać więcej niż @num zadań bez uprzedniego ich rozwiązania. Poprzednie zadania zostały usunięte z pamięci."
+
+#: captcha.module:676
+msgid "This page gives an overview of all available challenge types, generated with their current settings."
+msgstr "Strona ta zawiera omówienie dostępnych rodzajów zadań, wraz z przykładami."
+
+#: captcha.module:687
+msgid "Challenge \"%challenge\" by module \"%module\""
+msgstr "Zadanie <q>%challenge</q>, moduł <q>%module</q>"
+
+#: captcha.module:692
+msgid "10 more examples of this challenge."
+msgstr "10 kolejnych przykładów zadania."
+
+#: captcha.module:721
+msgid "Math Question"
+msgstr "Zadanie matematyczne"
+
+#: captcha.module:722
+msgid "Solve this simple math problem and enter the result. E.g. for 1+3, enter 4."
+msgstr "Rozwiąż proszę powyższe zadanie matematyczne i wprowadź wynik."
+
+#: captcha.module:723
+msgid "@x + @y = "
+msgstr "@x + @y = "
+
+#: captcha.module:107
+msgid "Already @counter blocked form submissions"
+msgstr "Zablokowano @counter prób dodania zawartości."
+
+#: captcha.module:93
+msgid "administer CAPTCHA settings"
+msgstr "zarządzanie ustawieniami łapirobota"
+
+#: captcha.module:93
+msgid "skip CAPTCHA"
+msgstr "omijanie pułapek"
+
+#: captcha.module:0
+msgid "captcha"
+msgstr "łapirobot"
+
+#: captcha.install:31;76
+msgid "Unsupported database."
+msgstr "Nieobsługiwana baza danych."
+
+#: captcha.install:41
+msgid "The installation of the captcha_points table and some default entries was successful"
+msgstr "Instalacja tabeli captcha_points i podstawowych wpisów zakończyła się sukcesem."
+
+#: captcha.install:44
+msgid "The installation of the CAPTCHA module failed"
+msgstr "instalacja modułu łapirobota nie powiodła się."
+
+#: captcha.info:0
+msgid "Base CAPTCHA module for adding challenges to arbitrary forms."
+msgstr "Podstawowy moduł do rozmieszczania pułapek łapirobota przy różnych formularzach."
+
+#: captcha.info:0
+#: image_captcha/image_captcha.info:0
+#: text_captcha/text_captcha.info:0
+msgid "Spam control"
+msgstr "Walka ze spamem"
+
+#: image_captcha/image_captcha.module:20
+msgid "The image CAPTCHA is a popular challenge where a random textual code is obfuscated in an image. The image is generated on the fly for each request, which is rather CPU intensive for the server. Be carefull with the size and computation related settings."
+msgstr "Pułapka graficzna jest popularnym rodzajem zadania, polegającym na przedstawieniu użytkownikowi kodu tekstowego zapisanego w obrazku, który poddany został zniekształceniu. Obrazek jest generowany \"w locie\" za każdym otwarciem strony, co jest dosyć wymagające dla procesora serwera. Do ustawień obrazka należy więc podchodzić ostrożnie."
+
+#: image_captcha/image_captcha.module:24
+msgid "<p>Example image, generated with the current settings:</p>!img"
+msgstr "<p>Przykładowy obrazek, wygenerowany wedle obecnych ustawień:</p>!img"
+
+#: image_captcha/image_captcha.module:39
+#: image_captcha/image_captcha.info:0
+msgid "Image CAPTCHA"
+msgstr "Łapirobot graficzny"
+
+#: image_captcha/image_captcha.module:65
+msgid "Could not find or read the configured font \"%font\" for the image captcha."
+msgstr "Nie udało się znaleźć lub odczytać czcionki <q>%font</q> skonfigurowanej dla modułu graficznego łapirobota."
+
+#: image_captcha/image_captcha.module:75
+msgid "Built-in font"
+msgstr "Wbudowana czcionka"
+
+#: image_captcha/image_captcha.module:93
+msgid "Images cannot be generated, because your PHP installation's GD library has no JPEG support."
+msgstr "Generowanie pułapek graficznych nie jest możliwe, ponieważ biblioteka GD instalacji PHP nie obsługuje formatu JPEG."
+
+#: image_captcha/image_captcha.module:98
+msgid "Code settings"
+msgstr "Ustawienia kodu"
+
+#: image_captcha/image_captcha.module:102
+msgid "Characters to use in the code"
+msgstr "Znaki, które mają się pojawić w obrazku"
+
+#: image_captcha/image_captcha.module:107
+msgid "Code length"
+msgstr "Długość kodu"
+
+#: image_captcha/image_captcha.module:110
+msgid "The code length influences the size of the image. Note that larger values make the image generation more CPU intensive."
+msgstr "Długość kodu wpływa na wielkość obrazka. Większe wartości powodują zwiększenie wykorzystania procesora w trakcie generowania obrazka."
+
+#: image_captcha/image_captcha.module:116
+msgid "Font settings"
+msgstr "Ustawienia czcionki"
+
+#: image_captcha/image_captcha.module:122
+msgid "Font"
+msgstr "Czcionka"
+
+#: image_captcha/image_captcha.module:124
+msgid "The TrueType font (.ttf) to use for the text in the image CAPTCHA."
+msgstr "Czcionka TrueType (.ttf), która ma być wykorzystywana w pułapkach graficznych."
+
+#: image_captcha/image_captcha.module:133
+msgid "Font size"
+msgstr "Czcionka"
+
+#: image_captcha/image_captcha.module:135
+msgid "tiny"
+msgstr "tyci"
+
+#: image_captcha/image_captcha.module:136;151
+msgid "small"
+msgstr "mały"
+
+#: image_captcha/image_captcha.module:137;152;171;209
+msgid "normal"
+msgstr "zwykły"
+
+#: image_captcha/image_captcha.module:138;153
+msgid "large"
+msgstr "duży"
+
+#: image_captcha/image_captcha.module:141
+msgid "The font size influences the size of the image. Note that larger values make the image generation more CPU intensive."
+msgstr "Wielkość czcionki wpływa na wielkość obrazka. Większe wartości powodują zwiększenie wykorzystania procesora w trakcie generowania obrazka."
+
+#: image_captcha/image_captcha.module:147
+msgid "Character spacing"
+msgstr "Znaki, które mają się pojawić w obrazku"
+
+#: image_captcha/image_captcha.module:148
+msgid "Define the average spacing between characters. Note that larger values make the image generation more CPU intensive."
+msgstr "Określ przeciętną odległość między znakami. Większe wartości powodują zwiększenie wykorzystania procesora podczas generowania obrazka."
+
+#: image_captcha/image_captcha.module:160
+msgid "Distortion and noise"
+msgstr "Szum i zniekształcenia"
+
+#: image_captcha/image_captcha.module:161
+msgid "With these settings you can control the degree of obfuscation by distortion and added noise. Do not exaggerate the obfuscation and assure that the code in the image is reasonably readable. For example, do not combine high levels of distortion and noise."
+msgstr "Za pomocą poniższych ustawień możesz kontrolować poziom trudności zadania. Nie zwiększaj go do przesady i upewnij się, że kod zawarty w obrazku jest możliwy do oczytania. W tym celu nie stosuj wysokiego poziomu zniekształceń i szumu zarazem."
+
+#: image_captcha/image_captcha.module:166
+msgid "Distortion level"
+msgstr "Poziom zniekształceń"
+
+#: image_captcha/image_captcha.module:168
+msgid "none"
+msgstr "brak"
+
+#: image_captcha/image_captcha.module:169;208
+msgid "low"
+msgstr "niski"
+
+#: image_captcha/image_captcha.module:170
+msgid "moderate"
+msgstr "umiarkowany"
+
+#: image_captcha/image_captcha.module:172;210
+msgid "high"
+msgstr "wysoki"
+
+#: image_captcha/image_captcha.module:173;211
+msgid "severe"
+msgstr "wielki"
+
+#: image_captcha/image_captcha.module:176
+msgid "Set the degree of wave distortion in the image."
+msgstr "Określ poziom zniekształcenia typu \"fala\"."
+
+#: image_captcha/image_captcha.module:180
+msgid "Smooth distortion"
+msgstr "Wygładzanie zniekształceń"
+
+#: image_captcha/image_captcha.module:182
+msgid "This option enables bilineair interpolation of the distortion which makes the image look smoother, but it is more CPU intensive."
+msgstr "Opcja umożliwia korzystanie z interpolacji dwuliniowej podczas zniekształcania obrazka, co sprawia że wygląda on bardziej \"gładko\". Technika ta jest jednak wymagająca dla procesora."
+
+#: image_captcha/image_captcha.module:187
+msgid "Double vision"
+msgstr "Wzrok stereo"
+
+#: image_captcha/image_captcha.module:189
+msgid "When enabled, characters appear twice in the image, overlayed onto each other."
+msgstr "Znaki występują podwójnie, nakładając się na siebie."
+
+#: image_captcha/image_captcha.module:194
+msgid "Add salt and peper noise"
+msgstr "Posyp solą i pieprzem"
+
+#: image_captcha/image_captcha.module:196
+msgid "This option adds randomly colored point noise."
+msgstr "Dodaje do obrazka generowane losowe, kolorowe punkty."
+
+#: image_captcha/image_captcha.module:200
+msgid "Add line noise"
+msgstr "Dodaj szum w postaci linii"
+
+#: image_captcha/image_captcha.module:202
+msgid "This option enables lines randomly drawn on top of the text code."
+msgstr "Dodaje do obrazka generowane losowo linie. przykrywające kod."
+
+#: image_captcha/image_captcha.module:206
+msgid "Noise level"
+msgstr "Poziom szumu"
+
+#: image_captcha/image_captcha.module:223
+msgid "The image captcha module works best with a TrueType font file (TTF) for generating the images, but because of licencing issues it is not allowed to package fonts with the module. A simple built-in bitmap font is provided as default instead. You can install TrueType fonts yourself by putting them in the fonts directory of the image captcha module (directory \"%fontsdir\") or by uploading them to your Drupal file system (directory \"%filesdir\") with for example the upload module."
+msgstr "Graficzny łapirobot działa najlepiej wraz z czcionkami TrueType (pliki o rozszerzeniu TTF), jednak ze względu na ograniczenia licencyjne moduł nie jest dostarczany wraz z tymi czcionkami. W zamian do modułu dodawana jest czcionka bitmapowa. Możesz jednak na własną rękę zainstalować czcionki TrueType, umieszczając ich pliki w katalogu czcionek modułu (\"%fontsdir\"), lub wysyłając je do systemu plików Drupala (katalog \"%filesdir\")."
+
+#: image_captcha/image_captcha.module:226
+msgid "The usage of the built-in bitmap font it is not recommended because of its small size and missing UTF-8 support."
+msgstr "Wykorzystywanie wbudowanej czcionki bitmapowej nie jest zalecane ze względu na jej małą wielkość i brak obsługi standardu UTF-8."
+
+#: image_captcha/image_captcha.module:239
+msgid "The list of characters to use should not contain spaces."
+msgstr "Lista znaków nie powinna zawierać spacji."
+
+#: image_captcha/image_captcha.module:244
+msgid "You need to select a font"
+msgstr "Musisz wybrać czcionkę."
+
+#: image_captcha/image_captcha.module:247
+msgid "Font does not exist or is not readable."
+msgstr "Czcionka nie istnieje lub jej odczytanie nie jest możliwe."
+
+#: image_captcha/image_captcha.module:276
+msgid "Encountered an illegal byte while splitting an utf8 string in characters."
+msgstr "W trakcie dzielenia wyrażenia UTF-8 na znaki napotkano nieprawidłowy bajt."
+
+#: image_captcha/image_captcha.module:329
+msgid "What code is in the image?"
+msgstr "Jaki kod znajduje się na obrazku?"
+
+#: image_captcha/image_captcha.module:330
+msgid "Copy the characters (respecting upper/lower case) from the image."
+msgstr "Przepisz znaki z obrazka (uwzględniając wielkość liter)."
+
+#: image_captcha/image_captcha.module:358
+msgid "Generation of image CAPTCHA failed. Check your image CAPTCHA configuration and especially the used font."
+msgstr "Generowanie pułapek graficznych nie powiodło się. Sprawdź konfigurację łapirobota graficznego, zwłaszcza jego czcionki."
+
+#: image_captcha/image_captcha.module:0
+msgid "image_captcha"
+msgstr "łapirobot graficzny"
+
+#: image_captcha/image_captcha.info:0
+msgid "Provides an image based CAPTCHA."
+msgstr "Udostępnia graficzne pułapki łapirobota."
+
+#: text_captcha/text_captcha.module:19
+msgid "In this challenge the visitor is asked for the n<sup>th</sup> word of a given phrase."
+msgstr "Zadanie to polega na wprowadzeniu n-tego z podanych wcześniej słów."
+
+#: text_captcha/text_captcha.module:33
+#: text_captcha/text_captcha.info:0
+msgid "Text CAPTCHA"
+msgstr "Łapirobot tekstowy"
+
+#: text_captcha/text_captcha.module:50
+msgid "Kind of words to use in the phrase"
+msgstr "Rodzaj słów stosowanych w pułapce"
+
+#: text_captcha/text_captcha.module:52
+msgid "Generate nonsense random words."
+msgstr "Generuj pozbawioną sensu, losową listę słów."
+
+#: text_captcha/text_captcha.module:53
+msgid "Use user defined words."
+msgstr "Skorzystaj ze słów wprowadzonych przez użytkownika."
+
+#: text_captcha/text_captcha.module:60
+msgid "User defined words"
+msgstr "Słowa zdefiniowane przez użytkownika"
+
+#: text_captcha/text_captcha.module:62
+msgid "Enter a bunch of space separated words (at least @min)."
+msgstr "Wprowadź kilka słów oddzielonych spacjami (przynajmniej @min)."
+
+#: text_captcha/text_captcha.module:67
+msgid "Number of words in the phrase"
+msgstr "Liczba słów pułapki tekstowej"
+
+#: text_captcha/text_captcha.module:84
+msgid "You need to enter at least @min words if you want to use user defined words."
+msgstr "Musisz wprowadzić przynajmniej @min słów, jeśli chcesz skorzystać z tej opcji."
+
+#: text_captcha/text_captcha.module:93
+msgid "Number of words in the phrase should be between 4 and 10."
+msgstr "Liczba słów w wyrażeniu pułapki tekstowej powinna wynosić od 4 do 10."
+
+#: text_captcha/text_captcha.module:145
+msgid "first"
+msgstr "pierwsze"
+
+#: text_captcha/text_captcha.module:145
+msgid "second"
+msgstr "drugie"
+
+#: text_captcha/text_captcha.module:145
+msgid "third"
+msgstr "trzecie"
+
+#: text_captcha/text_captcha.module:146
+msgid "fourth"
+msgstr "czwarte"
+
+#: text_captcha/text_captcha.module:146
+msgid "fifth"
+msgstr "piąte"
+
+#: text_captcha/text_captcha.module:146
+msgid "sixth"
+msgstr "szóste"
+
+#: text_captcha/text_captcha.module:146
+msgid "seventh"
+msgstr "siódme"
+
+#: text_captcha/text_captcha.module:147
+msgid "eighth"
+msgstr "ósme"
+
+#: text_captcha/text_captcha.module:147
+msgid "ninth"
+msgstr "dziewiąte"
+
+#: text_captcha/text_captcha.module:147
+msgid "tenth"
+msgstr "dziesiąte"
+
+#: text_captcha/text_captcha.module:175
+msgid "What is the @nth word in the phrase \"@words\"?"
+msgstr "Jak brzmi @nth ze słów \"@words\""
+
+#: text_captcha/text_captcha.module:0
+msgid "text_captcha"
+msgstr "łapirobot tekstowy"
+
+#: text_captcha/text_captcha.info:0
+msgid "Provides a simple text based CAPTCHA."
+msgstr "Udostępnia tekstowe pułapki łapirobota."
+

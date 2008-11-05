@@ -1,0 +1,221 @@
+<?php
+
+/**
+ * month module:monthly archives
+ *
+ * @authors Mars Zhu, htzhugo##gmail.com
+ *          Wim Mostrey, wim##mostrey.be
+ *   this module is based on Weekly node listing module by Prometheus6
+ *
+ */
+
+function month_perm(){
+  return array('administer month');
+}
+
+function month_menu() {
+  $items = array();
+  if (!$may_cache) {
+    $items[] = array(
+      'path' => 'month',
+      'title' => t('Monthly archives'),
+      'callback' => '_month_page',
+      'type' => MENU_CALLBACK,
+      'access' => user_access('access content'),
+    );
+  }
+  return $items;
+}
+
+function month_links_query($nodes_to_include, $rev_chronsort = NULL, $limit = NULL) {
+  global $db_type;
+  foreach ($nodes_to_include as $key => $value) {
+    $nodes_to_include[$key] = "'". db_escape_string($value) . "'";
+  }
+  switch($db_type) {
+    case 'mysql':
+    case 'mysqli':
+      $query = 'SELECT DATE_FORMAT(FROM_UNIXTIME(created),\'%Y-%m\') AS monthno,COUNT(*) AS nodenum FROM {node} n ';
+      break;
+    case 'pgsql':
+      $query = 'SELECT TO_CHAR(abstime(created), \'YYYY-MM\') AS monthno,COUNT(*) AS nodenum FROM {node} n ';
+      break;
+  }
+  $query = 'SELECT DATE_FORMAT(FROM_UNIXTIME(created),\'%Y-%m\') AS monthno,COUNT(*) AS nodenum FROM {node} n ';
+  $query .= 'WHERE n.created>0 AND (n.status=1) AND n.type IN (' . implode(',', $nodes_to_include) . ') ';
+  $query .=' GROUP BY monthno ';
+  $query .= $rev_chronsort ? '' : 'ORDER BY monthno DESC ';
+  $query .= $limit > 0 ? "LIMIT $limit" : '';
+  return $query;
+}
+
+function month_start_date($wk_num, $yr, $first = 0, $format = 'F d, Y') {
+  $wk_ts  = strtotime('+' . $wk_num . ' months', strtotime($yr . '0101'));
+  $mon_ts = strtotime('-' . date('w', $wk_ts) + $first . ' days', $wk_ts);
+  return $mon_ts;
+}
+
+function month_block($op='list', $delta=0, $edit=array()) {
+  $_month_config = variable_get('month_config', array());
+
+  switch ($op) {
+    // listing of blocks, such as on the admin/system/block page
+    case 'list': {
+      $block[0]['info'] = t('Monthly Archives');
+      return $block;
+    }
+    case 'view': {
+      // our block content
+      // plus one is the easiest way to find out if you need a "more" link
+      $block['subject'] = t('Monthly Archives');
+      if($_month_config['month_include_node_type']) {
+        $month_max_block_links = $_month_config['month_block_link_max'];
+        if (empty($month_max_block_links)) $month_max_block_links = 99;
+        $query = month_links_query($_month_config['month_include_node_type'], $_month_config['month_rev_chronsort'], $month_max_block_links);
+        $monthlist = db_query(db_rewrite_sql($query, 'n', 'nid'));
+        if (db_num_rows($monthlist) >= $month_max_block_links) {
+          $morelink = '<div class="more-link">' . l(t("more"), "month", array("title" => t("Show monthly index."))) . '</div>';
+        }
+        $block_content = array(); $listed_links = 0;
+        while (($listed_links < $month_max_block_links) && $month = db_fetch_object($monthlist)) {
+          $listed_links += 1;
+          $month_start = mktime(0, 0, 0, substr($month->monthno, 5, 2), 1, substr($month->monthno, 0, 4));
+          $block_content[] = l(t(date('F',$month_start))." ".date('Y',$month_start).' ('.$month->nodenum.')', 'month/'.date('Y/m',$month_start));
+        }
+        $block['content'] = theme('item_list', $block_content) . $morelink;
+        return $block;
+      }
+    }
+    case 'configure': {
+
+      $output['month_include_node_type'] = array(
+        '#type' => 'select',
+        '#title' => t('Node types to include'),
+        '#multiple' => TRUE,
+        '#default_value' => isset($_month_config['month_include_node_type']) ? $_month_config['month_include_node_type'] : node_get_types(),
+        '#options' => node_get_types('names'),
+        '#description' => t('Selected node types will be included in the archive pages.'),
+      );
+
+      $output['month_block_link_max'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Maximum month links in block'),
+        '#default_value' => $_month_config['month_block_link_max'],
+        '#size' => 5,
+        '#maxlength' => 5,
+        '#description' => t('Enter a number to limit the number of months linked in the block.'),
+      );
+
+      $output['month_rev_chronsort'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Sort links in chronological order'),
+        '#return_value' => 1,
+        '#default_value' => $_month_config['month_rev_chronsort'],
+        '#description' => t('If checked the list of archive links will be sorted from oldest to newest. Otherwise it will be sorted from newest to oldest'),
+      );
+
+      $output['month_rev_pagesort'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Sort archive page in chronological order'),
+        '#return_value' => 1,
+        '#default_value' => $_month_config['month_rev_pagesort'],
+        '#description' => t('If checked the list of archive links will be sorted from oldest to newest. Otherwise it will be sorted from newest to oldest'),
+      );
+
+      $output['month_paginate'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Paginate archive page'),
+        '#return_value' => 1,
+        '#default_value' => $_month_config['month_paginate'],
+        '#description' => t('If checked the output will be split into pages. The number of posts will respect the global nodes per page setting.'),
+      );
+
+      return $output;
+    }
+    case 'save': {
+      $_month_config['month_include_node_type'] = $edit['month_include_node_type'];
+      $_month_config['month_block_link_max'] = $edit['month_block_link_max'];
+      $_month_config['month_rev_chronsort'] = $edit['month_rev_chronsort'];
+      $_month_config['month_rev_pagesort'] = $edit['month_rev_pagesort'];
+      $_month_config['month_paginate'] = $edit['month_paginate'];
+      variable_set('month_config', $_month_config);
+    }
+  }
+}
+
+function _monthly_contentQuery($query_year, $query_month, $month_rev_pagesort){
+
+  $start_date = mktime(0, 0, 0, $query_month, 1, $query_year);
+  $end_date = mktime(0, 0, 0, ($query_month+1),1, $query_year);
+  $_month_config = variable_get('month_config', array());
+  $_month_config['month_include_node_type'] = $_month_config['month_include_node_type'] ? $_month_config['month_include_node_type']: node_get_types();
+  foreach ($_month_config['month_include_node_type'] as $key => $value) {
+    $nodes_to_include[$key] = "'" . db_escape_string($value) . "'";
+  }
+  // create the SQL for the query
+  $query_info[0] = 'SELECT n.nid FROM {node} n WHERE (n.created >= '.$start_date.') AND (n.created < '.$end_date.') AND (n.status = 1) ';
+  $query_info[0] .= count($nodes_to_include) > 0 ? 'AND n.type IN (' . implode(',', $nodes_to_include) . ') ': '';
+  $query_info[0] .= 'ORDER BY n.created '. ($_month_config['month_rev_pagesort'] ? 'ASC' : 'DESC');
+
+  $query_info[0] = db_rewrite_sql($query_info[0], 'n', 'nid');
+
+  $query_info[1] = $start_date;
+  $query_info[2] = $end_date;
+  $query_info[3] = 'SELECT COUNT(n.nid) FROM {node} n WHERE (n.created >= '.$start_date.') AND (n.created < '.$end_date.') AND (n.status = 1) ';
+  $query_info[3] .= count($nodes_to_include) > 0 ? 'AND n.type IN (' . implode(',', $nodes_to_include) . ') ': '';
+
+  $query_info[3] = db_rewrite_sql($query_info[3], 'n', 'nid');
+
+  return $query_info;
+}
+
+function _month_page() {
+  if (arg(2)) {
+    print theme('page', _month_post_page());
+  } else {
+    print theme('page', _month_link_page());
+  }
+}
+
+function _month_post_page() {
+  $_month_config = variable_get('month_config', array());
+  $_month_config['default_nodes_main'] = variable_get('default_nodes_main', 20);
+
+  $month_paginate = $_month_config['month_paginate'];
+  $month_rev_pagesort = $_month_config['month_rev_pagesort'];
+  // some sort of sanity check would be good here, I suppose
+  $query = _monthly_contentQuery((int)arg(1), (int)arg(2),$month_rev_pagesort);
+  if ($month_paginate){
+    $query_result = pager_query($query[0], $_month_config['default_nodes_main'], 0, $query[3]);
+  } else{
+    $query_result = db_query($query[0]);
+  }
+  // for each node returned by the query, theme the node and append it to the output string
+  while ($outnode = db_fetch_object($query_result)){
+    $theNode = node_load($outnode->nid);
+    $output .= node_view($theNode, TRUE);
+  }
+  if ($month_paginate){
+    $output .= theme('pager', NULL, $_month_config['default_nodes_main'], 0);
+  }
+  drupal_set_title(t("Month of ") . t(date('F', $query[1])) . ", " . date('Y', $query[1]));
+  // if there's no output, don't let them stare at a blank page
+  $output = $output ? $output : t('Sorry, there are no entries for this month.');
+  // return the output string
+  return $output;
+}
+
+function _month_link_page() {
+  $_month_config = variable_get('month_config', array());
+  $linklist = '';
+  $query = month_links_query($_month_config['month_include_node_type'], $_month_config['month_rev_chronsort']);
+  $monthlist = db_query(db_rewrite_sql($query, 'n', 'nid'));
+  $linklist = array();
+  while ($month = db_fetch_object($monthlist)) {
+    $month_start = mktime(0,0,0,substr($month->monthno, 5, 2),1,substr($month->monthno, 0, 4));
+    $linklist[] = l(t(date('F', $month_start)) . ' ' . date('Y', $month_start) . ' (' . $month->nodenum .')', 'month/' . date('Y/m', $month_start));
+  }
+  return theme('item_list', $linklist) . $morelink;
+}
+
+?>

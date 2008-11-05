@@ -1,0 +1,33 @@
+<?php
+// $Id: custom_breadcrumbs.install,v 1.2 2006/12/08 04:06:05 eaton Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function custom_breadcrumbs_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {custom_breadcrumb} (
+        bid int unsigned NOT NULL auto_increment,
+        titles varchar(255) NOT NULL default '',
+        paths varchar(255) NOT NULL default '',
+        node_type varchar(64) default '',
+        PRIMARY KEY (bid)
+      ) /*!40100 DEFAULT CHARACTER SET UTF8 */ ");
+      break;
+    case 'pgsql':
+      db_query("CREATE TABLE {custom_breadcrumb} (
+        bid serial CHECK (nid >= 0),
+        titles varchar(255) NOT NULL default '',
+        paths varchar(255) NOT NULL default '',
+        node_type varchar(64) default ''
+      )");
+      db_query("CREATE INDEX {custom_breadcrumb}_bid_idx ON {custom_breadcrumb} (bid)");
+      break;
+  }
+}
+
+function custom_breadcrumbs_uninstall() {
+  db_query('DROP TABLE {custom_breadcrumb}');
+}

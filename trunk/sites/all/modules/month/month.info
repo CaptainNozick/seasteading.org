@@ -1,0 +1,9 @@
+; $Id: month.info,v 1.1.2.1 2007/01/23 14:03:18 wmostrey Exp $
+name = Month
+description = Construct monthly archive lists and blocks
+
+; Information added by drupal.org packaging script on 2007-12-19
+version = "5.x-1.x-dev"
+project = "month"
+datestamp = "1198022853"
+

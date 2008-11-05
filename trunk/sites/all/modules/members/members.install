@@ -1,0 +1,91 @@
+<?php
+/* $Id: members.install,v 1.1.2.3 2007/06/26 14:02:19 wmostrey Exp $ */
+
+function members_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {members_page} (
+        mid int(10) unsigned NOT NULL auto_increment,
+        name varchar(32) NOT NULL,
+        description varchar(255) NOT NULL,
+        access varchar(255) NOT NULL,
+        page_title varchar(255) default NULL,
+        url varchar(255) default NULL,
+        roles varchar(255) NOT NULL,
+        `fields` longtext NOT NULL,
+        encode_mailto tinyint(1) unsigned NOT NULL,
+        field_length int(10) unsigned NOT NULL,
+        users_per_page int(10) unsigned NOT NULL default '20',
+        -- page fields
+        page int(1),
+        page_header longtext,
+        page_header_format int(4) NOT NULL,
+        page_empty longtext,
+        page_empty_format int(4) NOT NULL,
+        page_footer longtext,
+        page_footer_format int(4) NOT NULL,
+        page_type varchar(20),
+        use_pager int(1),
+        -- menu fields
+        menu int(1),
+        menu_title varchar(255),
+        -- block fields
+        block int(1),
+        block_title varchar(255),
+        block_use_page_header int(1),
+        block_header longtext,
+        block_header_format int(4) NOT NULL,
+        block_use_page_footer int(1),
+        block_footer longtext,
+        block_footer_format int(4) NOT NULL,
+        block_use_page_empty int(1),
+        block_empty longtext,
+        block_empty_format int(4) NOT NULL,
+        users_per_block int(4),
+        block_more int(1),        
+        PRIMARY KEY  (`mid`)
+      )  /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      break;
+  }
+}
+
+function members_update_1() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $small = 'int(4)';
+      $tiny = 'int(1)';
+  }
+  db_add_column($ret, 'members_page', 'menu', $tiny);  
+  db_add_column($ret, 'members_page', 'menu_title', 'varchar(255)');
+  db_add_column($ret, 'members_page', 'page', $tiny);
+  db_add_column($ret, 'members_page', 'use_pager', $tiny);  
+  db_add_column($ret, 'members_page', 'page_header', 'longtext');
+  db_add_column($ret, 'members_page', 'page_header_format', $small, array('default' => 0));
+  db_add_column($ret, 'members_page', 'page_footer', 'longtext');
+  db_add_column($ret, 'members_page', 'page_footer_format', $small, array('default' => 0));
+  db_add_column($ret, 'members_page', 'page_empty', 'longtext');
+  db_add_column($ret, 'members_page', 'page_empty_format', $small, array('default' => 0));  
+  db_add_column($ret, 'members_page', 'block', $tiny);
+  db_add_column($ret, 'members_page', 'block_more', $tiny);   
+  db_add_column($ret, 'members_page', 'block_title', 'varchar(255)');  
+  db_add_column($ret, 'members_page', 'block_use_page_header', $tiny);
+  db_add_column($ret, 'members_page', 'block_header', 'longtext');
+  db_add_column($ret, 'members_page', 'block_header_format', $small, array('default' => 0));  
+  db_add_column($ret, 'members_page', 'block_use_page_footer', $tiny);
+  db_add_column($ret, 'members_page', 'block_footer', 'longtext');
+  db_add_column($ret, 'members_page', 'block_footer_format', $small, array('default' => 0));
+  db_add_column($ret, 'members_page', 'block_use_page_empty', $tiny);
+  db_add_column($ret, 'members_page', 'block_empty', 'longtext');
+  db_add_column($ret, 'members_page', 'block_empty_format', $small, array('default' => 0));
+  db_add_column($ret, 'members_page', 'users_per_block', $small, array('default' => 0));    
+  return $ret;	
+}
+
+function members_uninstall() {
+  if (db_table_exists('members_page')) {
+    db_query("DROP TABLE {members_page}");
+  }
+}

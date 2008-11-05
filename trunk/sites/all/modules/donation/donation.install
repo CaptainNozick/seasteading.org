@@ -1,0 +1,50 @@
+<?php
+// $Id: donation.install,v 1.1 2007/06/10 15:59:41 kbahey Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function donation_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {donations} (
+        did           INT(10)      NOT NULL AUTO_INCREMENT,
+        status        INT(2)       NOT NULL DEFAULT '1',
+        name          VARCHAR(128)          DEFAULT NULL,
+        mail          VARCHAR(128)          DEFAULT NULL,
+        timestamp     INT(11)      NOT NULL DEFAULT '0',
+        amount        FLOAT                 DEFAULT NULL,
+        currency      VARCHAR(5)            DEFAULT 'USD',
+        uid           INT(11)               DEFAULT NULL,
+        donor_name    VARCHAR(255)          DEFAULT NULL,
+        donor_url     VARCHAR(255)          DEFAULT NULL,
+        donor_memo    VARCHAR(255)          DEFAULT NULL,
+        paypal_txn_id VARCHAR(255)          DEFAULT NULL,
+        donor_comment VARCHAR(255)          DEFAULT NULL,
+        PRIMARY KEY (did),
+        KEY {donations}_uid_idx       (uid),
+        KEY {donations}_mail_idx      (mail),
+        KEY {donations}_timestamp_idx (timestamp)
+      ) /*!40100 DEFAULT CHARACTER SET UTF8 */ ");
+
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function donation_uninstall() {
+  db_query('DROP TABLE {donations}');
+}
+
+function donation_update_1() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      // Update the existing data to derive the user id from the email address
+      $ret[] = update_sql("UPDATE {donations} d INNER JOIN {users} u USING(mail) SET d.uid = u.uid WHERE d.uid = 0");
+      return $ret;
+  }
+}

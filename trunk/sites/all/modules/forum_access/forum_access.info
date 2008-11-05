@@ -1,0 +1,10 @@
+name = Forum Access
+description = Allows forums to be set private and allows forums to be given moderators
+dependencies = acl forum
+package = Access control
+
+; Information added by drupal.org packaging script on 2008-03-14
+version = "5.x-1.10"
+project = "forum_access"
+datestamp = "1205457910"
+

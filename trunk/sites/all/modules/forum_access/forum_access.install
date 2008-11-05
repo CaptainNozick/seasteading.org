@@ -1,0 +1,49 @@
+<?php
+// $Id: forum_access.install,v 1.2.2.3 2008/03/14 01:14:28 salvis Exp $
+
+function forum_access_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE IF NOT EXISTS {forum_access} (
+        tid int(10) NOT NULL default 0,
+        rid int(10) NOT NULL default 0,
+        grant_view tinyint(1) unsigned NOT NULL default '0',
+        grant_update tinyint(1) unsigned NOT NULL default '0',
+        grant_delete tinyint(1) unsigned NOT NULL default '0',
+        grant_create tinyint(1) unsigned NOT NULL default '0',
+        KEY tid (tid),
+        KEY rid (rid)
+      );");
+      break;
+
+    case 'pgsql':
+      db_query("CREATE TABLE {forum_access} (
+        tid int NOT NULL DEFAULT 0,
+        rid int NOT NULL DEFAULT 0,
+        grant_view smallint NOT NULL DEFAULT 0,
+        grant_update smallint  NOT NULL DEFAULT 0,
+        grant_delete smallint NOT NULL DEFAULT 0,
+        grant_create smallint NOT NULL DEFAULT 0,
+        PRIMARY KEY (tid, rid)
+      );");
+      break;
+
+  }
+
+  db_query("UPDATE {system} SET weight = 2 WHERE name = 'forum_access'");
+}
+
+function forum_access_uninstall() {
+  db_query("DROP TABLE {forum_access}");
+}
+
+/**
+ * Purge orphaned grants that were left behind when deleting roles.
+ */
+function forum_access_update_1() {
+  $ret = array();
+  db_query("DELETE FROM {forum_access} WHERE rid NOT IN (SELECT rid from {role})");
+  db_query("DELETE FROM {node_access} WHERE realm = 'forum_access' AND gid NOT IN (SELECT rid from {role})");
+  return $ret;
+}

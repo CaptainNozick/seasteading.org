@@ -1,0 +1,423 @@
+<?php
+// $Id: forum_access.module,v 1.3.2.14 2008/03/14 01:14:28 salvis Exp $
+
+/**
+ * @file forum_access.module
+ *
+ * This module uses form_alter to add permissions and moderator settings to
+ * forums.
+ *
+ */
+
+/**
+ * This function supplies the forum access grants. forum_access simply uses
+ * roles as ACLs, so rids translate directly to gids.
+ */
+function forum_access_node_grants($user, $op) {
+  $grants['forum_access'] = array_keys($user->roles);
+  return $grants;
+}
+
+/**
+ * Implementation of hook_node_access_records
+ *
+ * Returns a list of grant records for the passed in node object.
+ * Checks to see if maybe we're being disabled.
+ */
+function forum_access_node_access_records($node) {
+  if (!forum_access_enabled()) {
+    return;
+  }
+
+  static $grants = array();
+  if ($node->type == 'forum') {
+    if (!isset($grants[$node->tid])) {
+      $result = db_query('SELECT * FROM {forum_access} WHERE tid = %d', $node->tid);
+      while ($grant = db_fetch_object($result)) {
+        $grants[$node->tid][] = array('realm' => 'forum_access', 'gid' => $grant->rid, 'grant_view' => $grant->grant_view, 'grant_update' => $grant->grant_update, 'grant_delete' => $grant->grant_delete); 
+      }
+      //drupal_set_message("forum_access_node_access_records($node->nid) (tid=$node->tid) returns ". var_export($grants[$node->tid], TRUE), 'status');
+    }
+    return $grants[$node->tid];
+  }
+}
+
+/**
+ * Implementation of hook_form_alter()
+ *
+ * Remove inaccessible forums from the node form.
+ */
+function forum_access_form_alter($form_id, &$form) {
+  if (isset($form['type']) && $form['type']['#value'] .'_node_form' == $form_id) {
+    forum_access_node_form($form_id, $form);
+  }
+  else if ($form_id == 'forum_form_container') {
+    forum_access_forum_form($form_id, $form, TRUE);
+  }
+  else if ($form_id == 'forum_form_forum') {
+    forum_access_forum_form($form_id, $form, FALSE);
+  }
+  else if ($form_id == 'user_admin_role') {
+    forum_access_user_admin_role_form($form_id, $form);
+  }
+}
+
+/**
+ * Rewrite the taxonomy item on the node form
+ */
+function forum_access_node_form($form_id, &$form) {
+  if (!is_array($form['taxonomy'][_forum_get_vid()]['#options'])) {
+    return;
+  }
+
+  // forum administrators do NOT get their forms rewritten here.
+  if (user_access('administer forums')) {
+    return; 
+  }
+  global $user;
+  $roles = _forum_access_get_roles($user);
+  $result = db_query("SELECT tid FROM {forum_access} WHERE rid IN (%s) AND grant_create = 1", $roles);
+  while ($obj = db_fetch_object($result)) {
+    $tids[$obj->tid] = $obj->tid;
+  }
+
+  // Also get all forums they happen to be able to moderate.
+
+  $result = db_query("SELECT a.name AS tid FROM {acl} a INNER JOIN {acl_user} u ON a.acl_id = u.acl_id WHERE a.module = 'forum_access' AND u.uid = %d", $user->uid);
+  while ($obj = db_fetch_object($result)) {
+    $tids[$obj->tid] = $obj->tid;
+  }
+
+  // Ensure the forum they're trying to post to directly is allowed, otherwise
+  // there will be much confusion.
+  $forum_tid = arg(3);
+  if (is_numeric($forum_tid) && $forum_tid && !$tids[$forum_tid]) {
+    drupal_access_denied();
+    module_invoke_all('exit');
+    exit;
+  }
+
+  foreach ($form['taxonomy'][_forum_get_vid()]['#options'] as $tid => $name) {
+    if (!is_numeric($tid)) {
+      $options[$tid] = $name;
+    }
+    elseif (is_object($name)) {
+      foreach ($name->option as $sub_tid => $sub_name) {
+        if ($tids[$sub_tid]) {
+          $options[$tid]->option[$sub_tid] = $sub_name;
+        }
+      }
+    }
+    elseif ($tids[$tid]) {
+      $options[$tid] = $name;
+    }
+  }
+
+  if ($options) {
+    $form['taxonomy'][_forum_get_vid()]['#options'] = $options;
+  }
+  else {
+    unset($form['taxonomy'][_forum_get_vid()]);
+  }
+}
+
+/**
+ * Rewrite the forum administration page with our new access rules
+ */
+function forum_access_forum_form($form_id, &$form, $container) {
+  $rids = array();
+  $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
+  while ($obj = db_fetch_object($result)) {
+    $rids[$obj->rid] = $obj->name;
+  }
+
+  if (isset($form['tid']['#value'])) {  // edit
+    $result = db_query("SELECT * FROM {forum_access} where tid=%d", $form['tid']['#value']);
+
+    while ($forum_access = db_fetch_object($result)) {
+      $row_received = TRUE;
+      if ($forum_access->grant_view) {
+        $view[] = $forum_access->rid;
+      }
+      if ($forum_access->grant_update) {
+        $update[] = $forum_access->rid;
+      }
+      if ($forum_access->grant_delete) {
+        $delete[] = $forum_access->rid;
+      }
+      if ($forum_access->grant_create) {
+        $create[] = $forum_access->rid;
+      }
+    }
+    if (!isset($row_received) && empty($form['#post'])) {
+      drupal_set_message('If you have only just installed Forum Access, then the posts in this forum may still be accessible, but once your permissions get rebuilt (intentionally or behind-the-scenes by some other module), they will vanish &mdash; so, be sure to set the desired Access Control below and save!', 'error');
+    }
+  }
+  else {  // create
+    // Default to all users can read; all logged in users can post.
+    $view = array(1, 2);
+    $create = array(2);
+    $update = $delete = array();
+  }
+  
+  $form['forum_access'] = array('#type' => 'fieldset', 
+    '#title' => t('Access control'),
+    '#collapsible' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  $form['forum_access']['view'] = array('#type' => 'checkboxes',
+    '#prefix' => '<div class="forum-access-div">',
+    '#suffix' => '</div>',
+    '#options' => $rids,
+    '#title' => t('View this forum'),
+    '#default_value' => $view
+  );
+  $form['forum_access']['create'] = array('#type' => 'checkboxes',
+    '#prefix' => '<div class="forum-access-div">',
+    '#suffix' => '</div>',
+    '#options' => $rids,
+    '#title' => t('Post in this forum'),
+    '#default_value' => $create
+  );
+
+  // Containers do not contain any nodes, so these fields become meaningless for them.
+  if (!$container) {
+    $form['forum_access']['update'] = array('#type' => 'checkboxes',
+      '#prefix' => '<div class="forum-access-div">',
+      '#suffix' => '</div>',
+      '#options' => $rids,
+      '#title' => t('Edit posts'),
+      '#default_value' => $update
+    );
+    $form['forum_access']['delete'] = array('#type' => 'checkboxes',
+      '#prefix' => '<div class="forum-access-div">',
+      '#suffix' => '</div>',
+      '#options' => $rids,
+      '#title' => t('Delete posts'),
+      '#default_value' => $delete
+    );
+  }
+  // Find our moderator ACL:
+
+  $form['forum_access']['clearer'] = array(
+    '#value' => '<div class="forum-access-clearer"></div>',
+  );
+  drupal_add_css(drupal_get_path('module', 'forum_access') .'/forum_access.css');
+  if (isset($form['tid']['#value'])) {  // edit, not new
+    $acl_id = db_result(db_query("SELECT acl_id from {acl} WHERE module = 'forum_access' AND name = '%d'", $form['tid']['#value']));
+    if (!$acl_id) { // create one
+      $acl_id = acl_create_new_acl('forum_access', $form['tid']['#value']);
+      // update every existing node in this forum to use this acl.
+      $result = db_query("SELECT nid FROM {term_node} WHERE tid = %d", $form['tid']['#value']);
+      while ($node = db_fetch_object($result)) {
+        // all privs to this ACL.
+        acl_node_add_acl($node->nid, $acl_id, 1, 1, 1);
+      }
+    }
+    $form['forum_access']['acl'] = acl_edit_form($acl_id, t('Moderators'));
+    // Move some stuff down so our block goes in a nice place.
+  }
+  $form['submit']['#weight'] = 10;
+  $form['delete']['#weight'] = 10;
+
+  $form['#submit']['forum_access_form_submit'] = current($form['#submit']);
+}
+
+function forum_access_form_submit($form_id, $form_values) {
+  db_query("DELETE FROM {forum_access} WHERE tid = %d", $form_values['tid']);
+  $access = $form_values['forum_access']; // shortcut
+  if (array_key_exists('acl', $access)) {
+    acl_save_form($access['acl']);
+  }
+  foreach ($access['view'] as $rid => $checked) {
+    $grants[] = array(
+      'realm' => 'forum_access',
+      'gid' => $rid,
+      'grant_view' => (bool) $checked,
+      'grant_update' => !empty($access['update'][$rid]),
+      'grant_delete' => !empty($access['delete'][$rid]),
+    );
+    db_query("INSERT INTO {forum_access} (tid, rid, grant_view, grant_update, grant_delete, grant_create) VALUES (%d, %d, %d, %d, %d, %d)", $form_values['tid'], $rid, (bool) $checked, !empty($access['update'][$rid]), !empty($access['delete'][$rid]), !empty($access['create'][$rid]));
+  }
+
+  // mass update
+  $result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {term_node} tn ON tn.nid = n.nid WHERE tn.tid = %d", $form_values['tid']);
+  while ($node = db_fetch_object($result)) {
+    node_access_write_grants($node, $grants, 'forum_access');
+  }
+}
+
+/**
+ * We must know when a role is deleted.
+ */
+function forum_access_user_admin_role_form($form_id, &$form) {
+  $form['#submit']['forum_access_user_admin_role_submit'] = array();
+}
+
+/**
+ * If a role is deleted, we remove the grants it provided.
+ */
+function forum_access_user_admin_role_submit($form, &$form_state) {
+  if ($form_state['op'] == $form_state['delete']) {
+    db_query("DELETE FROM {forum_access} WHERE rid = %d", $form_state['rid']);
+    db_query("DELETE FROM {node_access} WHERE gid = %d AND realm = 'forum_access'", $form_state['rid']);
+  }
+}
+
+/**
+ * Because in order to restrict the visible forums, we have to rewrite
+ * the sql. This is because there isn't a node_access equivalent for
+ * taxonomy. There should be.
+ */
+function forum_access_db_rewrite_sql($query, $primary_table, $primary_field, $args) {
+  if ($primary_field == 'tid' && !user_access('administer forums')) {
+    global $user;
+    $roles = _forum_access_get_roles($user);
+    $sql['join'] = "LEFT JOIN {forum_access} fa ON $primary_table.tid = fa.tid LEFT JOIN {acl} acl ON acl.name = $primary_table.tid AND acl.module = 'forum_access' LEFT JOIN {acl_user} aclu ON aclu.acl_id = acl.acl_id AND aclu.uid = $user->uid";
+    $sql['where'] = "(fa.grant_view >= 1 AND fa.rid IN ($roles)) OR fa.tid IS NULL OR aclu.uid = $user->uid";
+    $sql['distinct'] = 1;
+    return $sql;
+  }
+}
+
+/**
+ * nodeapi hook to add ACL data to fresh forum posts.
+ */
+function forum_access_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  static $old_tid = NULL;
+  
+  if ($node && $node->type == 'forum') {
+    switch ($op) {
+      case 'prepare':
+        $old_tid = $node->tid;
+        break;
+        
+      case 'update':
+        if ($node->tid == $old_tid) {
+          break;
+        }
+        $acl_id = db_result(db_query("SELECT acl_id from {acl} WHERE module = 'forum_access' AND name = '%d'", $old_tid));
+        acl_node_remove_acl($node->nid, $acl_id);
+        // fall through to 'insert' to enter the new tid...
+        
+      case 'insert':
+        $acl_id = db_result(db_query("SELECT acl_id from {acl} WHERE module = 'forum_access' AND name = '%d'", $node->tid));
+        acl_node_add_acl($node->nid, $acl_id, 1, 1, 1);
+        $old_tid = NULL;
+        break;
+    }
+  }
+}
+
+/**
+ * This is also required by ACL module.
+ */
+function forum_access_enabled($set = NULL) {
+  static $enabled = true;
+  if ($set !== NULL) {
+    $enabled = $set;
+  }
+  return $enabled;
+}
+
+/**
+ * Implementation of hook_enable
+ */
+function forum_access_enable() {
+  node_access_rebuild();
+}
+
+/**
+ * Implementation of hook_disable
+ */
+function forum_access_disable() {
+  forum_access_enabled(FALSE);
+  node_access_rebuild();
+}
+
+/**
+ * use hook init to deny access to forums if the user does not have access
+ * to it.
+ */
+function forum_access_init() {
+  if (!function_exists('user_access')) {
+    // page is cached; bail.
+    return;
+  }
+
+  if (!user_access('administer forums') && arg(0) == 'forum' && is_numeric(arg(1))) {
+    global $user;
+    if (!forum_access_access(arg(1), 'view')) {
+      drupal_access_denied();
+      module_invoke_all('exit');
+      exit;
+    }
+  }
+}
+
+/**
+ * See if a given user has access to a forum.
+ *
+ * $tid -- the tid of the forum
+ * $type -- view, update, delete or create
+ * $account -- the account to test for. If NULL use current user.
+ */
+function forum_access_access($tid, $type, $account = NULL) {
+  static $cache = array();
+
+  if (!$account) {
+    global $user;
+    $account = $user;
+  }
+
+  if (user_access('administer forums', $account)) {
+    return TRUE;
+  }
+
+  if (!isset($cache[$account->uid][$tid][$type])) {
+    $roles = _forum_access_get_roles($user);
+    $result = db_result(db_query("SELECT tid FROM {forum_access} WHERE rid IN (%s) AND grant_$type = 1 AND tid = %d", $roles, $tid));
+
+    if ($result) {
+      $cache[$account->uid][$tid][$type] = TRUE;
+    }
+    else {
+      // check our moderators too
+      $acl_id = db_result(db_query("SELECT acl_id from {acl} WHERE module = 'forum_access' AND name = '%d'", $tid));
+      $result = db_result(db_query("SELECT uid FROM {acl_user} WHERE acl_id = %d AND uid = %d", $acl_id, $account->uid));
+      if ($result) {
+        $cache[$account->uid][$tid][$type] = TRUE;
+      }
+      else {
+        $cache[$account->uid][$tid][$type] = FALSE;
+      }
+    }
+  }
+  return $cache[$account->uid][$tid][$type];
+}
+
+/**
+ * Get the roles on a user, and add in the missing authenticated/anonymous roles
+ */
+function _forum_access_get_roles($user) {
+  // if the user has a uid, they get 1 as a role; otherwise 0.
+  $roles = array(intval((bool) $user->uid) + 1);
+  // add in their roles
+  $roles += array_keys($user->roles);
+  return implode(', ', $roles);
+}
+
+/**
+ * Implementation of hook_node_access_explain
+ */
+function forum_access_node_access_explain($row) {
+  static $roles = NULL;
+  if ($row->realm == 'forum_access') {
+    if (!isset($roles)) {
+      $roles = user_roles();
+    }
+    return array($roles[$row->gid]);
+  }
+}
+

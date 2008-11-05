@@ -1,0 +1,9 @@
+name = Donation
+description = "Enables donations to be tracked online."
+dependencies = simple_paypal
+
+; Information added by drupal.org packaging script on 2008-03-08
+version = "5.x-1.0"
+project = "donation"
+datestamp = "1205003704"
+

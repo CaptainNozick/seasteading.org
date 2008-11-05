@@ -1,0 +1,3 @@
+; $Id$
+name = iCal News
+description = Allows to read iCal feed and display a simple block containing latest events + more link

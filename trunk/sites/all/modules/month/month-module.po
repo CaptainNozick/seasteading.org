@@ -1,0 +1,96 @@
+# Russian translation of Drupal (captcha.module)
+# Copyright 2007 vadbars <vadbars@mail.ru>
+# Generated from file: month.info,v 1.1.2.1 2007/01/23 14:03:18 wmostrey
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Drupal 5.x\n"
+"POT-Creation-Date: 2007-03-12 11:47+0500\n"
+"PO-Revision-Date: 2007-03-12 14:55+0500\n"
+"Last-Translator: vadbars <vadbars@mail.ru>\n"
+"Language-Team: Russian Drupal Translation Team (RDTT) <translators@drupal.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((($n%10==1) && ($n%100!=11))?(0):((((($n%10)>=2)&&(($n%10)<=4))&&((($n%100)<10)||(($n%100)>=20)))?(1):2))\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+
+#: month.module:51;57
+msgid "Monthly Archives"
+msgstr "Архивы по месяцам"
+
+#: month.module:80
+msgid "Node types to include"
+msgstr "Какие типы материалов включать"
+
+#: month.module:84
+msgid "Selected node types will be included in the archive pages."
+msgstr "Отмеченные типы материалов будут показываться на страницах архива."
+
+#: month.module:89
+msgid "Maximum month links in block"
+msgstr "Максимальное количество ссылок в блоке "
+
+#: month.module:93
+msgid "Enter a number to limit the number of months linked in the block, blank or \"0\" to list all months."
+msgstr "Укажите, какое количество месяцев должно показываться в блоке."
+#Пустое поле или \"0\" покажет все месяцы."
+
+#: month.module:97
+msgid "Sort links in chronological order"
+msgstr "Сортировать ссылки в хронологическом порядке"
+
+#: month.module:100;107
+msgid "If checked the list of archive links will be sorted from oldest to newest. Otherwise it will be sorted from newest to oldest"
+msgstr "Если отмечено, то список ссылок на архивы будет отсортирован от старых к новым. Иначе - от новых к старым."
+
+#: month.module:104
+msgid "Sort archive page in chronological order"
+msgstr "Сортировать страницы с архивами в хронологическом порядке"
+
+#: month.module:111
+msgid "Paginate archive page"
+msgstr "Показывать архивы постранично"
+
+#: month.module:114
+msgid "If checked the output will be split into pages. The number of posts will respect the global nodes per page setting."
+msgstr "Если отмечено, то содержание архивов будет показываться с разбивкой по страницам. Количество сообщений на страницу настраивается в <a href=\"?q=admin/content/node-settings\">общих установках сайта</a>."
+
+#: month.module:186
+msgid "Sorry, there are no entries for this month."
+msgstr "Извините, в этом месяце не было материалов."
+
+#: month.module:207
+msgid "monthly archives"
+msgstr "Архивы по месяцам"
+
+#: month.module:0
+#: month.info:0
+msgid "month"
+msgstr "месяц"
+
+#: month.info:0
+msgid "Month"
+msgstr "Месяц"
+
+#: month.info:0
+msgid "Construct monthly archive lists and blocks"
+msgstr "Создает списки архивов по месяцам и соответствующие блоки"
+
+#: month.module:63
+msgid "more..."
+msgstr "еще..."
+
+#: month.module:184
+msgid "Month of "
+msgstr "За "
+
+#: month.module:41
+msgid " days"
+msgstr " дней"
+
+#: month.module:40
+msgid " months"
+msgstr " месяцев"
+

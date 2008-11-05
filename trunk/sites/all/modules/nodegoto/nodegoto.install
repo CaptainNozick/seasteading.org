@@ -1,0 +1,19 @@
+<?php
+/**
+ * Implementation of hook_install()
+ */
+function nodegoto_install() {
+  // New module weights in core: put nodegoto as the very last in the chain.
+  $ret[] = db_query("UPDATE {system} SET weight = 10 WHERE name = 'nodegoto'");
+  
+  return $ret;
+}
+/**
+ * Do update 1 again as the hook_install() was missing and new
+ * installations are not having the weight set.
+ */
+function nodegoto_update_1() {
+  // New module weights in core: put nodegoto as the very last in the chain.
+  $ret[] = update_sql("UPDATE {system} SET weight = 10 WHERE name = 'nodegoto'");
+  return $ret;
+}

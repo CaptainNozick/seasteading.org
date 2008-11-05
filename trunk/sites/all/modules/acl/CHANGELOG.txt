@@ -1,0 +1,28 @@
+CHANGELOG for ACL for Drupal 5
+
+ACL 5.x-1.6:
+  Enhancements:
+    o Improve acl_node_access_explain().
+    o New hook_node_access_explain() to help debugging with devel_node_access.module (existing functionality is unchanged!).
+  Bugs fixed:
+    o Implement hook_user('delete') and remove orphaned {acl_user} records.
+    o #231096: implement hook_nodeapi('delete') and remove orphaned {acl_node} records.
+
+ACL 5.x-1.5:
+  Bugs fixed:
+    o #168750: acl_id created without $db_prefix when using shared table.
+    o #169985: fixed acl db scheme (primary keys, utf8) and added an uninstallation routine
+    o #150106: tell the user to rebuild permissions after disabling ACL
+    o Fixed minor code formatting issue.
+
+
+ACL 5.x-1.4:
+  Bugs fixed:
+    o fixed acl_remove_user()
+    o Changed acl_has_users() to use a COUNT() query rather than db_affected_rows()
+      which isn't always reliable on SELECT queries.
+    o fixed htmlspecialchars() warning if one removes the last user from an
+    o #135684 follow up, fixes denying access only to nodes that are assigned to an
+    o #135684 implement hook node grants and some other improvements
+    o #124070: acl_add_user had a typo preventing it from working.
+    o #124088: E_ALL fix in acl_edit_form

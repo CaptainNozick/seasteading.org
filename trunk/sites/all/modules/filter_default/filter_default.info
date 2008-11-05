@@ -1,0 +1,9 @@
+; $Id: filter_default.info,v 1.1 2007/09/12 20:40:39 bjaspan Exp $
+name = Filter Default
+description = Allows each role to have a default input format for nodes and comments.
+
+; Information added by drupal.org packaging script on 2007-09-13
+version = "5.x-1.x-dev"
+project = "filter_default"
+datestamp = "1189641818"
+

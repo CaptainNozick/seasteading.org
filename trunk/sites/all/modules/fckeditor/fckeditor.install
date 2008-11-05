@@ -1,0 +1,353 @@
+<?php
+// $Id: fckeditor.install,v 1.1.4.9 2008/03/19 18:42:01 wwalc Exp $
+
+/*
+* FCKeditor - The text editor for Internet - http://www.fckeditor.net
+* Copyright (C) 2003-2007 Frederico Caldeira Knabben
+*
+* == BEGIN LICENSE ==
+*
+* Licensed under the terms of any of the following licenses at your
+* choice:
+*
+*  - GNU General Public License Version 2 or later (the "GPL")
+*    http://www.gnu.org/licenses/gpl.html
+*
+*  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+*    http://www.gnu.org/licenses/lgpl.html
+*
+*  - Mozilla Public License Version 1.1 or later (the "MPL")
+*    http://www.mozilla.org/MPL/MPL-1.1.html
+*
+* == END LICENSE ==
+
+* Implementation of hook_install()
+*
+* This will automatically install the database tables for the FCKeditor module for both the MySQL and PostgreSQL databases.
+*
+* If you are using another database, you will have to install the tables by hand, using the queries below as a reference.
+*
+* Note that the curly braces around table names are a drupal-specific feature to allow for automatic database table prefixing,
+* and will need to be removed.
+*/
+function fckeditor_install() {
+
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {fckeditor_settings} (
+                name varchar(128) NOT NULL default '',
+                settings text,
+                PRIMARY KEY (name)
+               ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+
+      db_query("CREATE TABLE {fckeditor_role} (
+                name varchar(128) NOT NULL default '',
+                rid tinyint(3) unsigned NOT NULL default '0',
+                PRIMARY KEY (name,rid)
+               ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      break;
+
+    case 'pgsql':
+      db_query("CREATE TABLE {fckeditor_settings} (
+                name varchar(128) NOT NULL default '',
+                settings text,
+                PRIMARY KEY (name)
+               );");
+
+      db_query("CREATE TABLE {fckeditor_role} (
+                name varchar(128) NOT NULL default '',
+                rid smallint NOT NULL default '0',
+                PRIMARY KEY (name,rid)
+               );");
+      break;
+  }
+
+  //create two default roles based on previous settings
+  db_query("INSERT INTO {fckeditor_role} (name, rid) VALUES ('%s', %d)",
+  "Default", defined('DRUPAL_ANONYMOUS_RID') ? DRUPAL_ANONYMOUS_RID : 1);
+  db_query("INSERT INTO {fckeditor_role} (name, rid) VALUES ('%s', %d)",
+  "Advanced", defined('DRUPAL_AUTHENTICATED_RID') ? DRUPAL_AUTHENTICATED_RID : 2);
+
+  //insert settings for default role
+  $arr = array();
+  $arr['allow_user_conf'] = "f";
+  $arr['min_rows'] = variable_get('fckeditor_minimum_rows', 1);
+  $arr['excl_mode'] = variable_get('fckeditor_exclude_toggle', 0);
+
+  //appearance
+  $arr['default'] = "t";
+  $arr['show_toggle'] = "t";
+  $arr['popup'] = variable_get('fckeditor_popup', 0) ? "t" : "f";
+  $arr['skin'] = "default";
+  $arr['toolbar'] = variable_get('fckeditor_default_toolbar', 'DrupalBasic');
+  $arr['expand'] = variable_get('fckeditor_toolbar_start_expanded', 1) ? "t" : "f";
+  $arr['width'] = variable_get("fckeditor_width", "100%");
+  $arr['lang'] = "en";
+  $arr['auto_lang'] = "t";
+
+  //output
+  $arr['enter_mode'] = "p";
+  $arr['shift_enter_mode'] = "br";
+  $arr['font_format'] = 'p;div;pre;address;h1;h2;h3;h4;h5;h6';
+  $arr['format_source'] = "t";
+  $arr['format_output'] = "t";
+
+  //css
+  $arr['css_mode'] = "theme";
+  $arr['css_path'] = variable_get("fckeditor_stylesheet", "");
+
+  //upload
+  //get permissions here like in _update_role_permissions
+  $arr['upload_basic'] = variable_get("fckeditor_upload_basic", 0) ? "t" : "f";
+  $arr['upload_advanced'] = variable_get('fckeditor_upload_advanced', 0) ? "t" : "f";
+  $arr['user_choose'] = "f";
+
+  db_query("INSERT INTO {fckeditor_settings} (name, settings) VALUES ('%s', '%s')", "Default", serialize($arr));
+
+  //insert settings for advanced role
+  $arr['toolbar'] = variable_get('fckeditor_advanced_toolbar', 'DrupalFiltered');
+  db_query("INSERT INTO {fckeditor_settings} (name, settings) VALUES ('%s', '%s')", "Advanced", serialize($arr));
+
+  $arr = array();
+
+  //exclude by default some known textareas where HTML is not expected
+  //edit-recipients //contact module
+  //edit-reply //contact module
+  //edit-description //taxonomy module
+  //edit-synonyms //taxonomy module
+  //edit-img-assist-textareas //img assist module
+  $arr['excl_fields'] = variable_get("fckeditor_exclude",
+  "edit-user-mail-welcome-body\n".
+  "edit-user-mail-admin-body\n".
+  "edit-user-mail-approval-body\n".
+  "edit-user-mail-pass-body\n".
+  "edit-user-mail-register-admin-created-body\n".
+  "edit-user-mail-register-no-approval-required-body\n".
+  "edit-user-mail-register-pending-approval-body\n".
+  "edit-user-mail-password-reset-body\n".
+  "edit-user-mail-status-activated-body\n".
+  "edit-user-mail-status-blocked-body\n".
+  "edit-user-mail-status-deleted-body\n".
+  "edit-pages\n".
+  "edit-recipients\n".
+  "edit-reply\n".
+  "edit-description\n".
+  "edit-synonyms\n".
+  "edit-img-assist-textareas\n".
+  "edit-nodewords-description\n".
+  "edit-allowed-values-php\n".
+  "edit-allowed-values\n"
+  );
+
+  //force by default simple toolbar on selected textareas
+  $arr['simple_incl_fields'] =
+  "edit-signature\n".
+  "edit-site-mission\n".
+  "edit-site-footer\n".
+  "edit-site-offline-message\n".
+  "edit-page-help\n".
+  "edit-user-registration-help\n".
+  "edit-user-picture-guidelines\n";
+  db_query("INSERT INTO {fckeditor_settings} (name, settings) VALUES ('%s', '%s')", "FCKeditor Global Profile", serialize($arr));
+}
+
+/**
+ * Update from 5.x-1.x to 5.x-2.x
+ */
+function fckeditor_update_2() {
+  $ret = array();
+
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("CREATE TABLE {fckeditor_settings} (
+                name varchar(128) NOT NULL default '',
+                settings text,
+                PRIMARY KEY (name)
+               ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+
+      $ret[] = update_sql("CREATE TABLE {fckeditor_role} (
+                name varchar(128) NOT NULL default '',
+                rid tinyint(3) unsigned NOT NULL default '0',
+                PRIMARY KEY (name,rid)
+               ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      break;
+
+    case 'pgsql':
+      $ret[] = update_sql("CREATE TABLE {fckeditor_settings} (
+                name varchar(128) NOT NULL default '',
+                settings text,
+                PRIMARY KEY (name)
+               );");
+
+      $ret[] = update_sql("CREATE TABLE {fckeditor_role} (
+                name varchar(128) NOT NULL default '',
+                rid smallint NOT NULL default '0',
+                PRIMARY KEY (name,rid)
+               );");
+      break;
+  }
+
+  //create two default roles based on previous settings
+  db_query("INSERT INTO {fckeditor_role} (name, rid) VALUES ('%s', %d)",
+  "Default", defined('DRUPAL_ANONYMOUS_RID') ? DRUPAL_ANONYMOUS_RID : 1);
+  db_query("INSERT INTO {fckeditor_role} (name, rid) VALUES ('%s', %d)",
+  "Advanced", defined('DRUPAL_AUTHENTICATED_RID') ? DRUPAL_AUTHENTICATED_RID : 2);
+
+  //insert settings for default role
+  $arr = array();
+  $arr['allow_user_conf'] = "f";
+  $arr['min_rows'] = variable_get('fckeditor_minimum_rows', 1);
+  $arr['excl_mode'] = variable_get('fckeditor_exclude_toggle', 0);
+
+  //exclude by default some known textareas where HTML is not expected
+  //edit-recipients //contact module
+  //edit-reply //contact module
+  //edit-description //taxonomy module
+  //edit-synonyms //taxonomy module
+  //edit-img-assist-textareas //img assist module
+  $arr['excl_list'] = variable_get("fckeditor_exclude",
+  "edit-user-mail-welcome-body\n".
+  "edit-user-mail-admin-body\n".
+  "edit-user-mail-approval-body\n".
+  "edit-user-mail-pass-body\n".
+  "edit-recipients\n".
+  "edit-reply\n".
+  "edit-description\n".
+  "edit-synonyms\n".
+  "edit-img-assist-textareas\n".
+ "edit-nodewords-description\n"
+);
+
+  //force by default simple toolbar on selected textareas
+  $arr['simple_incl_mode'] = 1;
+  $arr['simple_incl_list'] =
+  "edit-signature\n".
+  "edit-site-mission\n".
+  "edit-site-footer\n".
+  "edit-site-offline-message\n".
+  "edit-page-help\n".
+  "edit-user-registration-help\n".
+  "edit-user-picture-guidelines\n";
+
+  //appearance
+  $arr['default'] = "t";
+  $arr['popup'] = variable_get('fckeditor_popup', 0) ? "t" : "f";
+  $arr['show_toggle'] = ($arr['popup'] == "f") ? "t" : "f";
+  $arr['skin'] = "default";
+  $arr['toolbar'] = variable_get('fckeditor_default_toolbar', 'DrupalBasic');
+  $arr['expand'] = variable_get('fckeditor_toolbar_start_expanded', 1) ? "t" : "f";
+  $arr['width'] = variable_get("fckeditor_width", "100%");
+  $arr['lang'] = "en";
+  $arr['auto_lang'] = "t";
+
+  //output
+  $arr['enter_mode'] = "p";
+  $arr['shift_enter_mode'] = "br";
+  $arr['font_format'] = 'p;div;pre;address;h1;h2;h3;h4;h5;h6';
+  $arr['format_source'] = "t";
+  $arr['format_output'] = "t";
+
+  //css
+  $arr['css_mode'] = "theme";
+  $arr['css_path'] = variable_get("fckeditor_stylesheet", "");
+
+  //upload
+  //get permissions here like in _update_role_permissions
+  $arr['upload_basic'] = variable_get("fckeditor_upload_basic", 0) ? "t" : "f";
+  $arr['upload_advanced'] = variable_get('fckeditor_upload_advanced', 0) ? "t" : "f";
+  $arr['user_choose'] = "f";
+
+  db_query("INSERT INTO {fckeditor_settings} (name, settings) VALUES ('%s', '%s')", "Default", serialize($arr));
+
+  //insert settings for advanced role
+  $arr['toolbar'] = variable_get('fckeditor_advanced_toolbar', 'DrupalFiltered');
+  db_query("INSERT INTO {fckeditor_settings} (name, settings) VALUES ('%s', '%s')", "Advanced", serialize($arr));
+
+  $variable_result = db_query("SELECT rid, perm FROM {permission}");
+  while ($variable = db_fetch_object($variable_result)) {
+    if (false === strpos($variable->perm, "access fckeditor")) {
+      if (false !== strpos($variable->perm, "use default fckeditor")) {
+        db_query("UPDATE {permission} SET perm = '%s' WHERE rid = '%s'", str_replace("use default fckeditor", "access fckeditor", $variable->perm), $variable->rid);
+      }
+      else if (false !== strpos($variable->perm, "use advanced fckeditor")) {
+        db_query("UPDATE {permission} SET perm = '%s' WHERE rid = '%s'", str_replace("use advanced fckeditor", "access fckeditor", $variable->perm), $variable->rid);
+      }
+    }
+  }
+  return $ret;
+}
+
+/**
+ * Update from 5.x-2.0 to 5.x-2.1
+ *
+ */
+function fckeditor_update_3() {
+  $ret = array();
+
+  $result = db_query('SELECT * FROM {fckeditor_settings}');
+  $global_profile_found = false;
+  while ($data = db_fetch_object($result)) {
+    if ($data->name == "FCKeditor Global Profile") {
+      $global_profile_found = true;
+    }
+    if ($data->settings) {
+      $settings = unserialize($data->settings);
+    }
+    if (isset($settings['excl_mode'], $settings['excl_list']) && !empty($settings['excl_list'])) {
+      switch ($settings['excl_mode']) {
+        case 0:
+          // normal exclusion based on the id
+          $settings['excl_fields'] = $settings['excl_list'];
+          $settings['excl_mode'] = 0;
+          break;
+        case 1:
+          //normal inclusion based on the id
+          $settings['excl_fields'] = $settings['excl_list'];
+          $settings['excl_mode'] = 1;
+          break;
+        case 2:
+          //path exclusion
+          $settings['excl_paths'] = $settings['excl_list'];
+          $settings['excl_mode'] = 0;
+          break;
+        case 3:
+          //path inclusion
+          $settings['excl_paths'] = $settings['excl_list'];
+          $settings['excl_mode'] = 1;
+          break;
+      }
+      unset($settings['excl_list']);
+    }
+    if (isset($settings['simple_incl_mode'], $settings['simple_incl_list']) && !empty($settings['simple_incl_list'])) {
+      switch ($settings['simple_incl_mode']) {
+        case 1:
+          //normal inclusion based on the id
+          $settings['simple_incl_fields'] = $settings['simple_incl_list'];
+          break;
+        case 3:
+          //path inclusion
+          $settings['simple_incl_paths'] = $settings['simple_incl_list'];
+          break;
+      }
+      unset($settings['simple_incl_mode']);
+      unset($settings['simple_incl_list']);
+    }
+
+    db_query("UPDATE {fckeditor_settings} SET settings='%s' WHERE name='%s'", serialize($settings), $data->name);
+  }
+  
+  if (!$global_profile_found) {
+    db_query("INSERT INTO {fckeditor_settings} (name, settings) VALUES ('%s', '%s')", "FCKeditor Global Profile", serialize(array()));
+  }
+  return $ret;
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function fckeditor_uninstall() {
+  db_query('DROP TABLE {fckeditor_settings}');
+  db_query('DROP TABLE {fckeditor_role}');
+}

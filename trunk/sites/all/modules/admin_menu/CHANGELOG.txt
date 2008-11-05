@@ -1,0 +1,91 @@
+// $Id: CHANGELOG.txt,v 1.10.2.5 2007/12/02 11:48:50 sun Exp $
+
+Admin Menu x.x-x.x, xxxx-xx-xx
+------------------------------
+
+
+Admin Menu 5.x-2.x, xxxx-xx-xx
+------------------------------
+
+
+Admin Menu 5.x-2.1, 2007-12-02
+------------------------------
+Fixed adding menu items with negative weight not always working.
+Fixed admin_menu_copy_items() is overwriting already existing items.
+Fixed display menu item ids in devel settings does not work.
+
+
+Admin Menu 5.x-2.0, 2007-12-02
+------------------------------
+Added devel_admin_menu() for fast access to clear-cache, variable editor and
+  switch_user.
+Added username to logout button.
+Added hook_admin_menu() to allow other modules to alter admin_menu.
+#194189 by sun: Added counter for current anonymous/authenticated users.
+Added Drupal.org project issue queue links for all enabled contrib modules.
+#189701 by sun: Changed admin_menu icon to be a menu.
+#193925 by sun: Removed obsolete menu slicing code.
+#193669 by smk-ka: Moved admin_menu builder functions into include file.
+
+
+Admin Menu 5.x-1.2, 2007-11-18
+------------------------------
+#176969 by smk-ka: Fixed performance issues with path(auto) module by
+  introducing a menu cache for admin_menu.
+#179648 by sun: Inject admin_menu into theme.
+  Fixes several CSS bugs in various themes and also activation of admin_menu
+  immediately after installation.
+#191213 by Standard: Fixed block info shouldn't contain the word "block".
+#187816 by sun: Fixed "Add" not translatable.
+#186218 by sun: Fixed admin menu icon too big in Safari.
+#182563 by sun: Fixed wrong datatype for array_search in _admin_menu_get_children().
+#183496 by sun: Fixed invalid argument supplied for foreach in admin_menu_copy_items().
+
+
+Admin Menu 5.x-1.1, 2007-10-10
+------------------------------
+#178876 by sun: Fixed 3rd-level submenus expand without hover over.
+#153455 by sun: Fixed add product node sub-elements are empty.
+Fixed path_to_theme() call breaking blocks page.
+#177582 by sun: Fixed bluebreeze theme compatibility.
+
+
+Admin Menu 5.x-1.0, 2007-09-06
+------------------------------
+#156952 by sun: Fixed admin menu inaccessible due to margins.
+#149229 by sun: Fixed admin menu not expanding in IE7.
+#172545 by sun: Use opacity instead of -moz-opacity.
+#132867 Fixed z-index too low.
+- Fixed admin menu block selectors to override any other theme styles.
+#155589 by sun: Added permission to access administration menu.
+- Fixed a PHP warning when there are no content types defined in the system, as
+  node/add then has no child menu items.
+#155312 by sun: Fixed menu item tooltip clashes.
+Added support for custom stylesheets per theme.
+Removed 4.7.x compatibility.
+
+
+Admin Menu 4.7-1.3, 2007-03-30
+------------------------------
+#126601 Fixed Users can see inaccessible items.
+#121027 Fixed Page not found entries for menu-collapsed.png.
+
+
+Admin Menu 4.7-1.2, 2007-03-04
+------------------------------
+- Fixed menu item adjustments
+- Fixed IE / Safari support
+- Fixed base_path for IE support
+- Added create content options to content management menu
+
+
+Admin Menu 4.7-1.1, 2007-01-24
+------------------------------
+First stable release, compatible to Drupal 4.7.x and 5.x.
+
+
+Admin Menu 4.7-1.0, 2007-01-16
+------------------------------
+Initial release of admin_menu module. Already supporting Drupal 5.0.
+
+

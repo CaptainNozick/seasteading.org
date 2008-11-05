@@ -1,0 +1,11 @@
+; $Id: link.info,v 1.1 2006/11/22 02:48:17 quicksketch Exp $
+name = Link
+description = Defines simple link field types.
+dependencies = content
+package = CCK
+
+; Information added by drupal.org packaging script on 2007-10-21
+version = "5.x-2.1"
+project = "link"
+datestamp = "1192948805"
+

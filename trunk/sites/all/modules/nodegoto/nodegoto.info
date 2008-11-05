@@ -1,0 +1,10 @@
+; $Id: nodegoto.info,v 1.2 2007/12/26 02:31:15 introfini Exp $
+name = Node Go To
+description = This module allows you to define any page or URL as the target.
+
+
+; Information added by drupal.org packaging script on 2008-02-17
+version = "5.x-2.0"
+project = "nodegoto"
+datestamp = "1203221413"
+

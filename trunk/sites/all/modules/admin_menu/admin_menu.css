@@ -1,0 +1,91 @@
+/* $Id: admin_menu.css,v 1.15.2.1 2007/12/02 05:05:19 sun Exp $ */
+/**
+ * admin_menu dropdowns
+ * 
+ * Implementation of Sons of Suckerfish Dropdowns.
+ * @see www.htmldog.com/articles/suckerfish
+ **/
+#admin_menu { position: absolute; top: 0px; left: 0px; font-size: 9px; background: url(bkg.png) bottom left repeat-x #101010; width: 100%; }
+#admin_menu li.admin_menu-icon a { padding: 1px 8px 4px; }
+#admin_menu li.admin_menu-icon ul a { padding: 4px 8px; }
+#admin_menu li.admin_menu-icon img { vertical-align: bottom; }
+#admin_menu li.admin_menu-users img { margin-top: 1px; }
+#admin_menu li.admin_menu-action { float: right; }
+#admin_menu li.admin_menu-action a { border-left: 1px solid #323232; border-right: none; }
+
+/* all lists */
+#admin_menu, #admin_menu ul { padding: 0; margin: 0; list-style: none; line-height: 1.4em; z-index: 999; }
+#admin_menu ul { position: static; }
+#admin_menu ul a { display: block; border-right: 1px solid #323232; border-bottom: none; padding: 4px 8px; font-weight: normal; color: #eee; text-decoration: none; text-align: left; }
+#admin_menu li li a { border-right: none; border-top: 1px solid #323232; }
+
+/* all list items */
+/* width needed or else Opera goes nuts */
+#admin_menu li { float: left; height: 100%; margin: 0 !important; padding: 0; list-style-image: none; list-style-type: none; background-image: none; }
+#admin_menu li li { width: 160px; background: #202020; filter:Alpha(opacity=88); opacity: 0.88; }
+
+/* second-level lists */
+/* using left instead of display to hide menus because display: none isn't read by screen readers */
+#admin_menu li ul { position: absolute; background: none; margin: 0; width: 160px; left: -999em; line-height: 1.2em; }
+
+/* third-and-above-level lists */
+#admin_menu li li.expandable ul { margin: -20px 0 0 160px; }
+
+#admin_menu li:hover ul ul,
+#admin_menu li:hover ul ul ul,
+#admin_menu li:hover ul ul ul ul,
+#admin_menu li:hover ul ul ul ul ul,
+#admin_menu li.sfhover ul ul,
+#admin_menu li.sfhover ul ul ul,
+#admin_menu li.sfhover ul ul ul ul,
+#admin_menu li.sfhover ul ul ul ul ul {
+  left: -999em;
+}
+
+/* lists nested under hovered list items */
+#admin_menu li:hover ul,
+#admin_menu li li:hover ul,
+#admin_menu li li li:hover ul,
+#admin_menu li li li li:hover ul,
+#admin_menu li li li li li:hover ul,
+#admin_menu li.sfhover ul,
+#admin_menu li li.sfhover ul,
+#admin_menu li li li.sfhover ul,
+#admin_menu li li li li.sfhover ul,
+#admin_menu li li li li li.sfhover ul {
+  left: auto;
+}
+#admin_menu li.admin_menu-action:hover ul {
+  right: 0;
+}
+
+/* second-and-more-level hovering */
+#admin_menu li li.expandable { background: #45454a url(arrow.png) no-repeat 145px 7px; }
+#admin_menu li li:hover,
+#admin_menu li li.sfhover {
+  background-color: #111;
+}
+#admin_menu li li:hover a,
+#admin_menu li li:hover li:hover a,
+#admin_menu li li:hover li:hover li:hover a {
+  color: #fff;
+}
+#admin_menu li li.expandable:hover a,
+#admin_menu li li.expandable:hover li.expandable:hover a {
+  border-color: #666666; color: #eee;
+}
+#admin_menu li li.expandable:hover li a,
+#admin_menu li li.expandable:hover li.expandable:hover li a {
+  border-color: #323232;
+}
+#admin_menu li li:hover li a,
+#admin_menu li li.sfhover li a,
+#admin_menu li li.sfhover li.sfhover li a {
+  color: #eee;
+}
+#admin_menu li li.sfhover a,
+#admin_menu li li.sfhover li.sfhover a,
+#admin_menu li li.sfhover li.sfhover li.sfhover a {
+  color: #fff; width: 90%; /* IE */
+}
+

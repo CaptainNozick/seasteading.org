@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: members\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-07-02 16:14-0500\n"
+"Last-Translator: Cernick <cernick@hotmail.com>\n"
+"Language-Team: Cernick <cernick@hotmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: CANADA\n"
+
+#: members.module:7
+msgid "Enables users to list all members."
+msgstr "Permet aux utilisateurs de voir la liste de tous les membres."
+
+#: members.module:13
+msgid "Roles to show"
+msgstr "Rôles à afficher"
+
+#: members.module:13
+msgid "Select roles to show in the members listing."
+msgstr "Sélectionnez les rôles à afficher dans la liste des membres."
+
+#: members.module:14
+msgid "Columns to show"
+msgstr "Colonnes à afficher"
+
+#: members.module:14
+msgid "Select the fields which should be displayed on your members overview page. Note that some fields require certain modules to be active."
+msgstr "Sélectionner les champs qui devraient être affichés sur la page de la liste des membres. Notez que certains champs requièrent que certains modules soient actifs."
+
+#: members.module:24
+#: ;0
+msgid "members"
+msgstr "membres"
+
+#: members.module:134
+msgid "Warning: there aren't any users with roles configured to be shown here."
+msgstr "Attention: il n'y a aucun utilisateur avec les rôles configurés pour être affichés ici."
+
+#: members.module:142
+msgid "Roles"
+msgstr "rôles"
+
+#: members.module:143
+msgid "Username"
+msgstr "Nom d'usager"
+
+#: members.module:153
+msgid "Email"
+msgstr "Courriel"
+
+#: members.module:154
+msgid "Last Seen"
+msgstr "Dernière visite"
+
+#: members.module:155
+msgid "Picture"
+msgstr "Avatar"
+
+#: members.module:35
+msgid "access members list"
+msgstr "accéder à la liste des membres"
+

@@ -1,0 +1,11 @@
+; $Id: imagefield.info,v 1.4.2.1 2007/06/18 23:06:46 dww Exp $
+name = Image
+description = Defines an image field type.
+dependencies = content
+package = CCK
+
+; Information added by drupal.org packaging script on 2007-12-17
+version = "5.x-1.2-rc1"
+project = "imagefield"
+datestamp = "1197871807"
+

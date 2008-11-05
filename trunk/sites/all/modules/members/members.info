@@ -1,0 +1,9 @@
+; $Id: members.info,v 1.1 2007/03/16 03:07:37 walkah Exp $
+name = Members
+description = Create lists of users and groups of users
+
+; Information added by drupal.org packaging script on 2007-11-22
+version = "5.x-1.x-dev"
+project = "members"
+datestamp = "1195733114"
+

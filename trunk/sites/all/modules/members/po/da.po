@@ -1,0 +1,450 @@
+# Danish translation of Drupal (members.module)
+# Copyright 2005-2007 Morten Wulff <wulff@ratatosk.net>
+msgid ""
+msgstr ""
+"Project-Id-Version: Danish translation of Drupal (members.module) $Id: da.po,v 1.3.2.1 2007/09/12 11:51:16 wulff Exp $\n"
+"POT-Creation-Date: 2005-07-06 14:43+0200\n"
+"PO-Revision-Date: 2007-09-12 13:50+0100\n"
+"Last-Translator: Morten Wulff <wulff@ratatosk.net>\n"
+"Language-Team: Danish <l10n@drupaldanmark.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Danish\n"
+"X-Poedit-Country: DENMARK\n"
+
+#: members.module:23
+#: members.info:0
+msgid "Members"
+msgstr "Medlemmer"
+
+#: members.module:26
+msgid "Members pages are customized lists of users on your system."
+msgstr "Medlemsoversigter er tilpassede lister af brugere på dit site."
+
+#: members.module:31
+msgid "List"
+msgstr "Vis"
+
+#: members.module:39
+msgid "Add"
+msgstr "Tilføj"
+
+#: members.module:46
+msgid "Delete members page"
+msgstr "Slet medlemsoversigt"
+
+#: members.module:61
+#: ;131
+msgid "Edit"
+msgstr "Rediger"
+
+#: members.module:70
+#: ;133
+msgid "Clone"
+msgstr "Klon"
+
+#: members.module:88
+msgid "The members module creates customized lists of users."
+msgstr "Medlems-modulet laver tilpassede lister af brugere."
+
+#: members.module:90
+msgid "This screen shows all of the members pages that are currently defined in your system."
+msgstr "Oversigten viser alle medlemsoversigter på dit site."
+
+#: members.module:102
+msgid "Administer members"
+msgstr "Administrer medlemsoversigter"
+
+#: members.module:132
+#: ;195;647;666
+msgid "Delete"
+msgstr "Slet"
+
+#: members.module:139
+msgid "Members page"
+msgstr "Medlemsoversigt"
+
+#: members.module:139
+#: ;323
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: members.module:139
+msgid "Provides"
+msgstr "Tilbyder"
+
+#: members.module:139
+#: ;365
+msgid "URL"
+msgstr "URL"
+
+#: members.module:139
+msgid "Actions"
+msgstr "Handlinger"
+
+#: members.module:139
+msgid "Existing members pages"
+msgstr "Eksisterende medlemsoversigter"
+
+#: members.module:143
+msgid "<p>No members pages have currently been defined.</p>"
+msgstr "<p>Ingen medlemsoversigter defineret</p>"
+
+#: members.module:152
+msgid "Add a members page"
+msgstr "Tilføj medlemsoversigt"
+
+#: members.module:166
+msgid "Clone a members page"
+msgstr "Klon medlemsoversigt"
+
+#: members.module:192
+msgid "Are you sure you want to delete %title?"
+msgstr "Ønsker du at slette %title?"
+
+#: members.module:194
+msgid "This action cannot be undone."
+msgstr "Denne handling kan ikke fortrydes."
+
+#: members.module:196
+#: ;652;663
+msgid "Cancel"
+msgstr "Annuller"
+
+#: members.module:244
+#: ;669
+msgid "Add Field"
+msgstr "Tilføj felt"
+
+#: members.module:300
+msgid "Basic information"
+msgstr "Grundlæggende information"
+
+#: members.module:305
+msgid "Name"
+msgstr "Navn"
+
+#: members.module:309
+msgid "The unique identifier of the members page. Only alphanumeric and _ allowed here"
+msgstr "Unik identifikation af medlemsoversigten. Kun alfanumeriske tegn og _ er tilladt."
+
+#: members.module:315
+msgid "Access"
+msgstr "Adgang"
+
+#: members.module:318
+msgid "Only the checked roles will be able to see this members page in any form; if no roles are checked, access will not be restricted."
+msgstr "Kun de markerede rolle kan se denne medlemsoversigt. Hvis ingen roller er markeret har alle adgang."
+
+#: members.module:327
+msgid "A description of the members page for the admin list."
+msgstr "En beskrivelse af medlemsoversigten til brug på administrationssiden."
+
+#: members.module:332
+msgid "Truncated field length"
+msgstr "Længde af afkortet felt"
+
+#: members.module:336
+msgid "If set (and not zero), all fields will be truncated to this length to preserve table layouts"
+msgstr "Hvis denne værdi er forskellig fra nul beskæres alle felter til den angivne værdi for at bevare udseendet af tabellen."
+
+#: members.module:341
+msgid "Obfuscate e-mail addresses using javascript"
+msgstr "Skjul e-mail-adresse med javascript"
+
+#: members.module:344
+msgid "When checked, email addresses will not be included directly in the HTML source to deter spam crawlers.<br/>Note: this requires users have a javascript-enabled browser"
+msgstr "For at mindske spam-problemer inkluderes e-mail-adresser ikke direkte i HTML-kilden.<br />Bemærk: Kræver at brugerne anvender en browser, som understøtter javascript."
+
+#: members.module:352
+msgid "Page"
+msgstr "Side"
+
+#: members.module:357
+msgid "Provide Page"
+msgstr "Opret side"
+
+#: members.module:360
+msgid "If checked this member list will be provided as a page. If not checked, the fields in this group will be ignored."
+msgstr "Gør medlemsoversigten tilgængelig som en side. Hvis dette ikke er markeret ignoreres felterne i denne gruppe."
+
+#: members.module:369
+msgid "Enter the URL to use for this members page. Do not begin or end the URL with a /. Example: 'members/premium'."
+msgstr "Indtast medlemsoversigtens URL. URLen må ikke starte eller slutte med /. Eksempel: 'brugere/oldboys'."
+
+#: members.module:374
+#: ;489
+msgid "Title"
+msgstr "Titel"
+
+#: members.module:378
+msgid "The title that will. be shown at the top of the members page. May be blank."
+msgstr "Titlen der vises over medlemsoversigten. Kan være tom."
+
+#: members.module:383
+msgid "Use Pager"
+msgstr "Brug sideinddeling"
+
+#: members.module:386
+msgid "If checked this query may be multiple pages. If not checked this query will be one page."
+msgstr "Spred visning over flere sider."
+
+#: members.module:391
+msgid "Users per page"
+msgstr "Brugere pr. side"
+
+#: members.module:393
+msgid "The amount of users to show per page. If not using a pager, this will be the maximum number of nodes in the list. Use 0 or blank for all users."
+msgstr "Antal brugere, der vises pr. side. Hvis du ikke bruger sideinddeling er dette det maksimale antal brugere der vises. Indtast 0 for at vise alle brugere."
+
+#: members.module:400
+#: ;518;531
+msgid "Header"
+msgstr "Sidehovede"
+
+#: members.module:407
+msgid "Text to display at the top of the page. May contain an explanation or links or whatever you like. Optional."
+msgstr "Tekst der vises øverst på siden. Kan indholde tekst, links m.m. Valgfri."
+
+#: members.module:416
+#: ;544;556
+msgid "Footer"
+msgstr "Sidefod"
+
+#: members.module:423
+msgid "Text to display at the bottom of the page. May contain an explanation or links or whatever you like. Optional."
+msgstr "Tekst der vises i bunden af siden. Kan indholde tekst, links m.m. Valgfri."
+
+#: members.module:432
+msgid "Empty Text"
+msgstr "Tom liste"
+
+#: members.module:439
+msgid "Text to display if a list returns no users. Optional."
+msgstr "Tekst der vises hvis listen er tom. Valgfri."
+
+#: members.module:450
+msgid "Menu"
+msgstr "Menu"
+
+#: members.module:455
+msgid "Provide Menu"
+msgstr "Opret menu"
+
+#: members.module:458
+msgid "If checked this page be given a menu entry in the Drupal menu system. If not checked the data in this group will be ignored."
+msgstr "Placer siden i Drupal's menustruktur."
+
+#: members.module:463
+msgid "Menu Title"
+msgstr "Menutitel"
+
+#: members.module:467
+msgid "Enter the title to use for the menu entry or tab. If blank, the page title will be used."
+msgstr "Indtast menupunktets titel. Hvis du ikke angiver en titel bruges sidens navn i stedet."
+
+#: members.module:476
+msgid "Block"
+msgstr "Blok"
+
+#: members.module:481
+msgid "Provide Block"
+msgstr "Opret blok"
+
+#: members.module:484
+msgid "If checked this view will be provided as a block. If checked title may not be blank."
+msgstr "Opret blok med medlemsoversigt. Husk at udfylde titlen."
+
+#: members.module:493
+msgid "The title that will be shown at the top of the block. May be blank."
+msgstr "Titlen der vises i toppen af blokken. Kan være tom."
+
+#: members.module:498
+msgid "Users per Block"
+msgstr "Brugere pr. blok"
+
+#: members.module:502
+msgid "If using a block, the maximum number of users to display in the block. Pagers are not used in blocks."
+msgstr "Det maksimale antal bruger der vises i blokken. Sideinddeling bruges ikke i blokke."
+
+#: members.module:508
+msgid "[More] Link?"
+msgstr "[mere] link?"
+
+#: members.module:511
+msgid "If using a list as both a page and a block, display a more link in the block that links to the view URL?"
+msgstr "Hvis en oversigt vises både som en blok og en side kan du indsætte et link i blokken, der peger på siden."
+
+#: members.module:523
+msgid "Use Page Header"
+msgstr "Brug sidehovede"
+
+#: members.module:526
+msgid "If checked, use the Page Header for block view instead. If so, you should leave the Block Header blank."
+msgstr "Brug sidehovedet i blokken. Lad blokhovedet stå tomt."
+
+#: members.module:535
+msgid "Text to display at the top of the view. May contain an explanation or links or whatever you like. Optional."
+msgstr "Tekst der vises øverst på siden. Kan indholde tekst, links m.m. Valgfri."
+
+#: members.module:548
+msgid "Use Page Footer"
+msgstr "Brug sidefod"
+
+#: members.module:551
+msgid "If checked, use the page footer for block view instead. If so, you should leave the block footer blank."
+msgstr "Brug sidefoden i blokken. Lad blokfoden stå tom."
+
+#: members.module:560
+msgid "Text to display at the bottom of the view. May contain an explanation or links or whatever you like. Optional."
+msgstr "Tekst der vises i bunden af siden. Kan indholde tekst, links m.m. Valgfri."
+
+#: members.module:569
+#: ;582
+msgid "Empty text"
+msgstr "Tom liste"
+
+#: members.module:574
+msgid "Use Page empty"
+msgstr "Brug tom side"
+
+#: members.module:577
+msgid "If checked, use the Page Empty Text for block view instead. If so, you should leave the block empty text blank."
+msgstr "Brug \"tom side\"-teksten i blokken. Lad \"tom blok\"-teksetn stå tom."
+
+#: members.module:586
+msgid "Text to display if a view results in no nodes. Optional."
+msgstr "Tekst der vises hvis visningen ikke returnerer indholdselementer. Valgfri."
+
+#: members.module:597
+msgid "Filters"
+msgstr "Filtre"
+
+#: members.module:602
+msgid "Role Is One Of"
+msgstr "Rolle er"
+
+#: members.module:605
+msgid "Select roles to show in the members listing. Select <em>authenticated user</em> if you want to display all users."
+msgstr "Vælg hvilke roller, der skal vises i medlemsoversigten. Vælg <em>godkendte brugere</em> hvis du ønsker at vise alle brugere."
+
+#: members.module:638
+#: ;738
+msgid "Save"
+msgstr "Gem"
+
+#: members.module:642
+#: ;741
+msgid "Save and edit"
+msgstr "Gem og rediger"
+
+#: members.module:674
+msgid "Name already taken."
+msgstr "Navnet er allerede i brug."
+
+#: members.module:677
+msgid "You need to specify a url if you want to create a page."
+msgstr "Du skal angive en URL hvis du ønsker at oprette en side."
+
+#: members.module:681
+msgid "URL already taken."
+msgstr "URL er allerede i brug."
+
+#: members.module:686
+msgid "Users per page should be blank or a numeric value (0 is allowed)"
+msgstr "Brugere pr. side skal være tom eller et tal (0 er tilladt)"
+
+#: members.module:689
+msgid "Users per page cannot be 0 if using the pager."
+msgstr "Brugere pr. side kan ikke være 0 hvis du bruger sideinddeling."
+
+#: members.module:730
+msgid "Members page successfully saved."
+msgstr "Medlemsoversigt gemt."
+
+#: members.module:733
+msgid "Members page successfully added."
+msgstr "Medlemsoversigt tilføjet."
+
+#: members.module:772
+msgid "Username"
+msgstr "Brugernavn"
+
+#: members.module:773
+msgid "Picture"
+msgstr "Billede"
+
+#: members.module:774
+msgid "Email"
+msgstr "E-mail"
+
+#: members.module:775
+msgid "Registered"
+msgstr "Registreret"
+
+#: members.module:776
+msgid "Last seen"
+msgstr "Sidst set"
+
+#: members.module:777
+msgid "Status"
+msgstr "Status"
+
+#: members.module:778
+msgid "Roles"
+msgstr "Roller"
+
+#: members.module:1018
+msgid "Never"
+msgstr "Aldrig"
+
+#: members.module:1021
+msgid "Active"
+msgstr "Aktiv"
+
+#: members.module:1021
+msgid "Blocked"
+msgstr "Blokeret"
+
+#: members.module:1067
+msgid "read more"
+msgstr "læs mere"
+
+#: members.module:1090
+msgid "Warning: there aren't any users to be shown here."
+msgstr "Advarsel: Der er ingen brugere at vise her."
+
+#: members.module:1190
+msgid "Field"
+msgstr "Felt"
+
+#: members.module:1190
+msgid "Ops"
+msgstr "Handlinger"
+
+#: members.module:1198
+msgid "Add all fields you want to display in the members list."
+msgstr "Tilføj alle felter, som du ønsker at vise i medlemsoversigten."
+
+#: members.module:1201
+msgid "Fields"
+msgstr "Felter"
+
+#: members.module:9
+msgid "administer members"
+msgstr "administrer medlemsoversigter"
+
+#: members.module:10
+msgid "access all members pages"
+msgstr "tilgå medlemsoversigter"
+
+#: members.module:0
+msgid "members"
+msgstr "medlemmer"
+
+#: members.info:0
+msgid "Create lists of users and groups of users"
+msgstr "Opret lister af brugere og grupper af brugere"
+

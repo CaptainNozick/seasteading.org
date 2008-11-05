@@ -1,0 +1,113 @@
+<?php
+
+define('SIMPLE_PAYPAL_URL_LIVE', 0);
+define('SIMPLE_PAYPAL_URL_TEST', 1);
+
+define('SIMPLE_PAYPAL_URL',      'simple_paypal_url');
+
+function simple_paypal_get_urls() {
+  return array(
+    SIMPLE_PAYPAL_URL_LIVE => 'https://www.paypal.com/cgi-bin/webscr',
+    SIMPLE_PAYPAL_URL_TEST => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+  );
+}
+
+function simple_paypal_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/settings/paypal',
+      'title' => t('Paypal'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('simple_paypal_settings'),
+      'description' => t('Administer Paypal'),
+      'access' => user_access('administer site configuration'),
+    );
+  }
+
+  return $items;
+}
+
+function simple_paypal_settings() {
+  $form[SIMPLE_PAYPAL_URL] = array(
+    '#type'           => 'select',
+    '#title'          => t('Payment URL for Paypal'),
+    '#default_value'  => variable_get(SIMPLE_PAYPAL_URL, SIMPLE_PAYPAL_URL_LIVE),
+    '#options'        => simple_paypal_get_urls(),
+    '#description' => t('Select whether you want to use a live URL, or a test one.'),
+  );
+  return system_settings_form($form);
+}
+
+function simple_paypal_get_url() {
+  $urls = simple_paypal_get_urls();
+  return $urls[variable_get(SIMPLE_PAYPAL_URL, SIMPLE_PAYPAL_URL_LIVE)];
+}
+
+function simple_paypal_get_currencies() {
+  return array(
+		'USD' => t('US Dollar'),
+    'EUR' => t('Euro')
+  );
+}
+
+function simple_paypal_format_amount($amount, $currency) {
+  $amount = number_format($amount, 2);
+  switch($currency) {
+    case 'EUR':
+      return "€ $amount";
+    case 'USD':
+      return "$ $amount";
+    default:
+      return check_plain($currency). " $amount";
+  }
+}
+
+function simple_paypal_ipn_verify($vars = array()) {
+  // If we are in test mode, log the variables.
+  if (SIMPLE_PAYPAL_URL_TEST == variable_get(SIMPLE_PAYPAL_URL, SIMPLE_PAYPAL_URL_TEST)) {
+    watchdog('debug', t('Post variables from Paypal IPN <pre>@vars</pre>', array(
+      '@vars' => print_r($vars, TRUE))));
+  }
+
+  $url = simple_paypal_get_url();
+  $ch = curl_init();
+
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, simple_paypal_post($vars));
+
+  ob_start();
+
+  if (curl_exec($ch)) {
+    $info = ob_get_contents();
+    curl_close($ch);
+    ob_end_clean();
+
+    if (eregi('VERIFIED', $info)) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+  else {
+    watchdog('paypal', t('Call to curl_exec() failed. url=@url vars=@vars', array(
+      '@vars' => print_r($vars, TRUE),
+      '@url'  => $url,
+      )));
+    return FALSE;
+  }
+}
+
+function simple_paypal_post($data = array()) {
+  $post = '';
+  foreach($data as $key => $value) {
+    $post .= $key . '=' . urlencode($value) . '&';
+  }
+  $post .= 'cmd=_notify-validate';
+
+  return $post;
+}

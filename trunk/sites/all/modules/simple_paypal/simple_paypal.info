@@ -1,0 +1,8 @@
+name = Simple Paypal framework
+description = "Simple Paypal framework, for use by other modules."
+
+; Information added by drupal.org packaging script on 2008-03-08
+version = "5.x-1.0"
+project = "simple_paypal"
+datestamp = "1205005209"
+

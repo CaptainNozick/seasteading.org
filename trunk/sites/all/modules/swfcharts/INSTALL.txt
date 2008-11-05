@@ -1,0 +1,20 @@
+$Id: INSTALL.txt,v 1.4 2007/10/06 18:59:54 hlslaughter Exp $
+
+swfcharts requires the XML/SWF Charts package available here:
+
+http://www.maani.us/xml_charts/index.php?menu=Download
+
+This module was built around XML/SWF Charts version 4.5
+
+The files you will need are:
+
+ - charts.swf and 
+ - library dir called "charts_library"
+
+Note: You do *not* need the charts.php script which may or may not be
+included in your download.
+
+After downloading and unpacking the library, place the 'charts' directory in a
+directory accessible to the web server. Then configure the module at 
+admin/settings/swfcharts 
+

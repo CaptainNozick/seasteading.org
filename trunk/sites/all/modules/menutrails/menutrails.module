@@ -1,0 +1,266 @@
+<?php
+// $Id:
+
+/**
+* Implementation of hook_menu
+*
+* For settings page
+*/
+function menutrails_menu($may_cache) {
+  $items = array();
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/settings/menutrails',
+      'access' => user_access('administer site configuration'),
+      'title' => t('Menu Trails'),
+      'description' => t('Configure your menu trails.'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('menutrails_settings_form'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+  }
+  return $items;
+}
+
+/***
+* Implementation of hook_nodeapi
+*
+* This will evaluate individual nodes when being viewed and take the necessary
+* steps to set the active_trail for menus.
+*
+* This will retain menu state at the node/view level. For instance, forum nodes
+* would maintain an active trail to the forum menu item.
+*
+*/
+
+// TODO: this too cries out for an admin configuration screen
+function menutrails_nodeapi(&$node, $op, $a3 = NULL, $page = FALSE) {
+  if ($op == 'view' && $page == TRUE) {
+    $location = menutrails_node_location($node);
+    menu_set_location($location);
+  }
+}
+
+
+// inspired by _menu_get_active_trail()
+function menutrails_node_location($node) {
+  // this should only fire if the menu isn't already active
+  $item = menu_get_item(NULL, 'node/'.$node->nid);
+  // type = 4 is for a callback
+  if ($item['type'] == 4) {
+    $type_trails = variable_get('menutrails_node_types', array());
+    $mid = $type_trails[$node->type];
+    $term_trails = variable_get('menutrails_terms', array());
+    foreach($node->taxonomy as $tid => $term) {
+      if ($term_trails[$tid] > 0) {
+        $mid = $term_trails[$tid];
+      }
+    }
+    if ($mid > 0) {
+      // Follow the parents up the chain to get the trail.
+      while ($mid && ($item = menu_get_item($mid))) {
+        $location[] = $item;
+        $mid = $mid = $item['pid'];
+      }
+      $location = array_reverse($location);
+      $location[] = array('path' => 'node/'.$node->nid, 'title' => $node->title);
+    }
+    return $location;
+  }
+}
+
+/***
+* This implements the same functionality as the nodeapi, but for comment urls.
+*
+*/
+function menutrails_comment($comment, $op) {
+  if ($op == 'form' && arg(0) == 'comment') {
+    $node = node_load($comment['nid']['#value']);
+    $location = menutrails_node_location($node);
+    $location[] = array('path' => "comment/reply/$node->nid");
+    menu_set_location($location);
+  }
+}
+
+/***
+* Form function for settings
+*
+* This is where menutrails rules are set. The interface here could definitely stand for some improvement. It's especially unhelpful for tagging vocabularies with lots and lots of terms.
+*
+* TODO: See about integrating views (e.g. node qualifies to be in a view, gets a menutrail, similar to how noderefrence lets you limit possibilities)
+*/
+
+function menutrails_settings_form() {
+  $options = array('NONE');
+  $options = $options + menu_parent_options($item['mid'], variable_get('menu_parent_items', 0)); 
+  $node_types = node_get_types('names');
+  $node_trails = variable_get('menutrails_node_types', array());
+  $vocabs = taxonomy_get_vocabularies();
+  $term_trails = variable_get('menutrails_terms', array());
+  $form['description'] = array(
+    '#tyoe' => 'markup',
+    '#weight' => '-100',
+    '#value' => t('Use these settings to configure the "menu trails" for your nodes. This determines what menu items are activated when viewing an individual node. For instance, if you have a menu item for "Blog," you may want to have all blog posts fall under that menu.'),
+  );
+    $form['oder'] = array(
+    '#tyoe' => 'markup',
+    '#weight' => '-99',
+    '#value' => t('<p>Menu trials are evaluated in the following order:</p> <ol><li>Node type</li><li>Taxonomy category</li><li>Node-specific menu setting</li></ol><p>In other words, category-based menu trails override node-type, and specific settings made on the node itself override both. Category-based menu trails are evaluated by weight in the order shown here, so settings in lower vocabularies take precidence.</p>'),
+  );
+  $form['menutrails_node_types'] = array(
+      '#tree' => TRUE,
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#title' => t('Menu trails by node type'),
+  );
+  foreach ($node_types as $key => $value) {
+    $form['menutrails_node_types'][$key] = array('#type' => 'select',
+      '#title' => t('Parent item for'). " $value",
+      '#default_value' => $node_trails[$key],
+      '#options' => $options,
+    );
+  }
+  foreach ($vocabs as $vocab) {
+    $form[$vocab->vid]['menutrails_terms'] = array(
+      '#tree' => TRUE,
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#title' => t('Menu trails by category:'). " $vocab->name",
+    );
+    $terms = taxonomy_get_tree($vocab->vid);
+    foreach ($terms as $term) {
+       $form[$vocab->vid]['menutrails_terms'][$term->tid] = array('#type' => 'select',
+        '#title' => t('Parent item for'). " $term->name",
+        '#default_value' => $term_trails[$term->tid],
+        '#options' => $options,
+      );
+    }
+  }
+  
+  return system_settings_form($form);
+}
+
+
+/***
+* This is an example _phptemplate_variables() implementation. 
+*
+* You need to add this code (or something like it) to your template.php file 
+* for this module to do anything useful. Obviously in template.php you don't
+* want the code commented out.
+*
+*/
+
+/*
+function _phptemplate_variables($hook, $vars = array()) {
+  switch ($hook) { // what function is active?
+    case 'page': // page is where menu comes into play
+      // set the primary links
+      $vars['primary_links'] = menutrails_primary_links(1);
+      // you may want to also override secondary_links
+      $vars['secondary_links'] = menutrails_primary_links(2);
+      break;
+  }
+}
+*/
+
+
+/***
+* SUBSTITUTE MENU FUNCTIONS
+*/
+
+/***
+* This is a substitute function for menu_primary_links()
+*
+* The important difference is a different criteria for determining if an item
+* is "active" or not, and the use of our own _menu_item() function to make use
+* of that active status.
+*
+*/
+
+function menutrails_primary_links($start_level = 1, $pid = 0) {
+  if (!module_exists('menu')) {
+    return NULL;
+  }
+  if (!$pid) {
+    $pid = variable_get('menu_primary_menu', 0);
+  }
+  if (!$pid) {
+    return NULL;
+  }
+
+  if ($start_level < 1) {
+    $start_level = 1;
+  }
+
+  if ($start_level > 1) {
+    $trail = _menu_get_active_trail_in_submenu($pid);
+    if (!$trail) {
+      return NULL;
+    }
+    else {
+      $pid = $trail[$start_level - 1];
+    }
+  }
+
+  $menu = menu_get_menu();
+  $links = array();
+  $trail = _menu_get_active_trail();   // Custom data for use down the line
+  if ($pid && is_array($menu['visible'][$pid]) && isset($menu['visible'][$pid]['children'])) {
+    $count = 1;
+    foreach ($menu['visible'][$pid]['children'] as $cid) {
+      $index = "menu-$start_level-$count-$pid";
+      unset($active); // this needs to be unset
+      if  (in_array($cid, $trail)) { // changed from menu_in_active_subtrail
+        $index .= "-active";
+        $active = TRUE; // we use this below
+      }
+      $links[$index] = menutrails_item_link($cid, FALSE, $active); // use $active
+      $count++;
+    }
+  }
+
+  // Special case - provide link to admin/build/menu if primary links is empty.
+  if (empty($links) && $start_level == 1 && $pid == variable_get('menu_primary_menu', 0) && user_access('administer menu')) {
+    $links['1-1'] = array(
+      'title' => t('Edit primary links'),
+      'href' => 'admin/build/menu'
+    );
+  }
+
+  return $links;
+} 
+
+/***
+* This is a substitute function for menu_item_link()
+*
+* The important difference is that this will pick up the $active bit from the
+* function above, and assign the "active" class to the link if it is present.
+*
+*/
+
+function menutrails_item_link($mid, $theme = TRUE, $active = FALSE) {
+  $item = menu_get_item($mid);
+  $link_item = $item;
+  $link = '';
+  while ($link_item['type'] & MENU_LINKS_TO_PARENT) {
+    $link_item = menu_get_item($link_item['pid']);
+  }
+
+  if ($theme) {
+    $link = theme('menu_item_link', $item, $link_item);
+  }
+  else {
+    $link = array(
+      'title' => $item['title'],
+      'href' => $link_item['path'],
+      'attributes' => !empty($item['description']) ? array('title' => $item['description']) : array()
+    );
+    if ($active) {
+      $link['attributes']['class'] = 'active';
+    }
+  }
+  $link['mid'] = $mid;
+  return $link;
+} 

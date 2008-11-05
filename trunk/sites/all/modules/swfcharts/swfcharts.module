@@ -1,0 +1,490 @@
+<?php
+// $Id: swfcharts.module,v 1.8 2007/10/13 18:57:13 hlslaughter Exp $
+
+/**
+ * @file
+ * Creates a wrapper around the XML/SWF Charts program. Allows an API for
+ * generation of graphs and charts as well as a filter for use in a node
+ * context.
+ *
+ * For general XML/SWF Charts info, see:
+ *   http://www.maani.us/xml_charts/
+ *
+ * For details on the XML/SWF Charts API, see:
+ *  http://www.maani.us/xml_charts/index.php?menu=Reference
+ *
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function swfcharts_help($section) {
+  switch ($section) {
+    case 'admin/help#swfcharts':
+      return t('');
+      break;
+    case 'admin/modules#description':
+      return t('API for generating attractive flash charts and graphs.');
+      break;
+    case 'admin/settings/swfcharts':
+      return t('These are default settings for the "frame" which will be placed around the chart.');
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function swfcharts_perm() {
+  return array('administer swfcharts');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function swfcharts_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $items[] = array(
+      'path'               => 'admin/settings/swfcharts',
+      'title'              => t('SWF Charts'),
+      'description'        => t('Configure default settings for SWF Charts.'),
+      'callback'           => 'drupal_get_form',
+      'callback arguments' => array('swfcharts_admin_settings'),
+      'access'             => user_access('administer swfcharts'),
+      'type'               => MENU_NORMAL_ITEM
+    );
+    $items[] = array(
+      'path'               => 'swfcharts/generate_chart',
+      'description'        => t('Configure SWF Charts.'),
+      'callback'           => 'swfcharts_chart',
+      'callback arguments' => array(),
+      'access'             => TRUE,
+      'type'               => MENU_CALLBACK
+    );
+  }
+  return $items;
+}
+
+/**
+ * Implementation of hook_cron().
+ */
+function swfcharts_cron() {
+  // Note: if files are created in this dir by a non-apache user, they cannot
+  // be removed by cron and will result in warning messages being generated
+  // when cron is run. Do not put files in this dir.
+  $files_dir = variable_get('swfcharts_xmldir', '');
+  $files_purge = variable_get('swfcharts_files_purge', 120);
+
+  if (!empty($files_dir) && $files_purge) {
+    $d = dir($files_dir);
+    while (FALSE !== ($filename = $d->read())) {
+      $file = $files_dir . '/' . $filename;
+      if (is_file($file)) {
+        $atime = fileatime($file);
+        if ( $atime < time() - (60 * $files_purge)) {
+          unlink($file);
+        }
+      }
+    }
+    $d->close();
+  }
+}
+
+/**
+ * Description
+ *
+ * @param (array)$data
+ *   Contains the attributes and data of the actual chart. This will be converted
+ *   to XML. For a complete reference of possible values, see:
+ *   http://www.maani.us/charts/index.php?menu=Reference
+ *
+ * @param optional (array)$config
+ *   Named parameters for the chart wrapper. Possible values are as follows:
+ *
+ *   $config[height] - Height of background wrapper in pixels
+ *   $config[width] - Width of background wrapper in pixels
+ *   $config[bgcolor] - Background color (eg #FFFFFF)
+ *   $config[quality] - Flash quality. One of: low, medium, high
+ *   $config[license] - XML/SWF Charts license
+ *
+ * @return (string)
+ *   A themed chart
+ */
+function swfcharts_chart($data, $config = array()) {
+  global $base_url;
+
+  $charts_rootdir = _swfcharts_charts_rootdir();
+
+  if (!$charts_rootdir) {
+    drupal_set_message("Unable to generate Chart", 'error');
+    watchdog('swfcharts', t('The SWF Charts API does not appear to be installed properly. Please check the ') . l(t('SWF Charts configuration'), 'admin/settings/swfcharts'), WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  $xml_filename = swfcharts_generate_xml_file($data);
+  if (!$xml_filename) {
+    watchdog('swfcharts', 'Unable to create XML output file, cannot generate SWF Chart.', WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  $base_url = $base_url . '/';
+  $charts_swf_file = $base_url . $charts_rootdir . '/charts.swf';
+  $charts_library_path = $base_url . $charts_rootdir . '/charts_library';
+  $height = $config['height'] ? $config['height'] :
+    variable_get('swfcharts_default_height', 300);
+  $width = $config['width'] ? $config['width'] :
+    variable_get('swfcharts_default_width', 400);
+  $bgcolor = $config['bgcolor'] ? $config['bgcolor'] :
+    variable_get('swfcharts_default_background_color', '#FFFFFF');
+  $quality = $config['quality'] ? $config['quality'] :
+    variable_get('swfcharts_default_quality','high');
+  $license = $config['license'] ? $config['license'] :
+    variable_get('swfcharts_api_key', NULL);
+
+  $chart_source_string = $charts_swf_file . '?library_path=' . $charts_library_path
+    . '&xml_source=' . $xml_filename;
+  if ($license != NULL) {
+    $chart_source_string .= "&license=" . $license;
+  }
+
+  $output .= '
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+      codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0"
+      width="'. $width . '"
+      height="'. $height . '"
+      id="charts"
+    >
+    <param name="movie" value="' . $chart_source_string . '" />
+    <param name="quality" value="'. $width . '" />
+    <param name="bgcolor" value="'. $bgcolor . '" />
+		<param name="wmode" value="transparent">
+    <embed src="' . $chart_source_string . '"
+      quality=' . $quality . '
+      bgcolor='. $bgcolor . '
+      width="'. $width . '"
+      height="'. $height . '"
+      name="charts"
+      align=""
+      swliveconnect="false"
+      type="application/x-shockwave-flash"
+      pluginspage="http://www.macromedia.com/go/getflashplayer"
+			wmode = "transparent">
+    </embed>
+    </object>
+  ';
+  return theme('swf_chart', $output);
+}
+
+/**
+ * Description
+ *
+ * @param (string)$chart
+ *   Contains all the HTML required for swfcharts to generate an image.
+ *
+ * @return (string)
+ *   themed chart
+ */
+function theme_swf_chart($chart) {
+  //$output = '<h2>Source</h2> <pre>' . htmlentities($chart) . '<pre>';
+  $output .= '<div class="swf_chart">' . $chart . '</div>';
+  return $output;
+}
+
+/**
+ * Virtual hook 'admin_settings'
+ */
+function swfcharts_admin_settings() {
+  // General
+  $form['config'] = array(
+    '#type'          => 'fieldset',
+    '#title'         => t('SWF Charts configuration'),
+    '#collapsible'   => TRUE,
+    '#description'   => t('Configuration of XML/SWF Charts library')
+  );
+  $form['config']['swfcharts_rootdir'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 64,
+    '#title'         => t('Path to installation directory'),
+    '#description'   => t('The location of the directory where !download_swfcharts
+      is installed. (i.e <b>!swfcharts_rootdir</b>).',
+      array (
+        '!swfcharts_rootdir' => drupal_get_path('module', 'swfcharts') . '/charts',
+        '!download_swfcharts' => l(t('XML/SWF Charts'),
+          'http://www.maani.us/xml_charts/index.php?menu=Download'),
+      )
+    ),
+    '#default_value' => variable_get('swfcharts_rootdir', ''),
+
+
+  );
+  $form['config']['swfcharts_api_key'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 32,
+    '#title'         => t('XML/SWF API Key'),
+    '#description'   => t('Optional API Key obtained from ') .
+      l('Mannie.us', 'http://www.maani.us/') . '.',
+    '#default_value' => variable_get('swfcharts_api_key', ''),
+  );
+  $form['general'] = array(
+    '#type'          => 'fieldset',
+    '#title'         => t('General settings'),
+    '#collapsible'   => TRUE,
+  );
+  $form['general']['swfcharts_files_purge'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 8,
+    '#title'         => t('XML cache expire'),
+    '#description'   => t('The XML data used to generate charts is cached on the
+      filesystem (files/swfcharts). Files which have not been accessed in this number of
+      minutes will be removed. You may set this to a very large number if your
+      charts are mostly based on static data or if you do not mind a lot of files
+      being stored. Set to 0 to turn off, but be aware of your file system\'s
+      limitations.'),
+    '#default_value' => variable_get('swfcharts_files_purge', '120'),
+  );
+  $form['general']['swfcharts_default_height'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 5,
+    '#title'         => t('Default height'),
+    '#description'   => t('Unless specified at runtime, this will be the height
+      of all charts generated.'),
+    '#default_value' => variable_get('swfcharts_default_height', 300),
+  );
+  $form['general']['swfcharts_default_width'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 5,
+    '#title'         => t('Default width'),
+    '#description'   => t('Unless specified at runtime, this will be the width
+      of all charts generated.'),
+    '#default_value' => variable_get('swfcharts_default_width', 400),
+  );
+  $form['general']['swfcharts_default_background_color'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 8,
+    '#title'         => t('Background color'),
+    '#description'   => t('Color used in the background that will frame the chart. For example, "#FFFFFF"'),
+    '#default_value' => variable_get('swfcharts_default_background_color', '#FFFFFF'),
+  );
+  $form['general']['swfcharts_default_quality'] = array(
+    '#type'          => 'select',
+    '#title'         => t('SWF Quality'),
+    '#description'   => t('SWF default quality.'),
+    '#default_value' => variable_get('swfcharts_default_quality','high'),
+    '#options'       => array(
+      'low' => t('Low'),
+      'medium' => t('Medium'),
+      'high' => t('High'),
+      ),
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Description
+ *
+ * @param (array)$data
+ *   Contains one or more rows of data that will be converted to XML
+ *
+ * @return (string)
+ *   The full (site relative) URL to the temporary file used to store the XML
+ */
+function swfcharts_generate_xml_file($data) {
+  global $base_url;
+
+  $xmldir = _swfcharts_xmldir();
+  if ($xmldir) {
+    // create a distinct filename corresponding to the data structure so we
+    // can reuse xml files
+    $xml_filename = md5(print_r($data, TRUE)) . '.xml';
+    $xml_filepath = file_create_path($xmldir . '/' . $xml_filename);
+    $xml_fileurl = $base_url . '/' . $xmldir . '/' . $xml_filename;
+
+    if (file_exists($xml_filepath)) {
+      return $xml_fileurl;
+    }
+    else {
+      $xml = _array2chartsXml($data);
+
+      if (file_save_data($xml, $xml_filepath, FILE_EXISTS_ERROR)) {
+        return $xml_fileurl;
+      }
+      else {
+        return FALSE;
+      }
+    }
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Determine whether swf charts API is installed properly, if so, return
+ * path to API file
+ */
+function _swfcharts_charts_rootdir() {
+  $installed = variable_get('swfcharts_api_installed', FALSE);
+  $swfcharts_rootdir = variable_get('swfcharts_rootdir', '');
+
+  // for now, our only criteria is that a file named charts.swf exists
+  if (!$installed) {
+    if (file_exists($swfcharts_rootdir . '/charts.swf') &&
+        file_exists($swfcharts_rootdir . '/charts_library')) {
+      variable_set('swfcharts_api_installed', TRUE);
+      $installed = TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+  return $swfcharts_rootdir;
+}
+
+/**
+ * Determine the location where tmp XML files will be stored, create dir
+ * if not exists, report problems.
+ */
+function _swfcharts_xmldir() {
+  $swfcharts_xmldir = variable_get('swfcharts_xmldir', FALSE);
+  if (empty($swfcharts_xmldir)) {
+    $swfcharts_xmldir = file_directory_path() . '/swfcharts';
+    $dir_created = mkdir($swfcharts_xmldir, 0777);
+    if ($dir_created) {
+      variable_set('swfcharts_xmldir', $swfcharts_xmldir);
+      drupal_set_message(t('Created ' . $swfcharts_xmldir));
+    }
+    else {
+      watchdog('swfcharts', 'Unable to create directory for XML files. SWF Charts will not function properly', WATCHDOG_ERROR);
+      return FALSE;
+    }
+  }
+  return $swfcharts_xmldir;
+}
+
+/**
+ * Test the whole process
+ */
+function _swfcharts_test_chart() {
+
+  $chart['chart_type'] = "bar";
+  $chart [ 'chart_border' ] = array (
+    'top_thickness' => 0,
+    'bottom_thickness' => 4,
+    'left_thickness' => 4,
+    'right_thickness' => 4
+  );
+  $chart['chart_data'] = array (
+    array ( "",         "2001", "2002", "2003", "2004" ),
+    array ( "Region A",     5,     10,     30,     63  ),
+    array ( "Region B",   100,     20,     65,     55  ),
+    array ( "Region C",    56,     21,      5,     90  )
+  );
+
+  return swfcharts_chart($chart);
+}
+
+/**
+ * This code is copied directly from charts.php with one change. Instead of printing
+ * the XML output, we're returning it so it can be saved to a file
+ */
+function _array2chartsXml($chart=array()) {
+
+	$xml="<chart>\r\n";
+	$Keys1= array_keys((array) $chart);
+	for ($i1=0;$i1<count($Keys1);$i1++){
+		if(is_array($chart[$Keys1[$i1]])){
+			$Keys2=array_keys($chart[$Keys1[$i1]]);
+			if(is_array($chart[$Keys1[$i1]][$Keys2[0]])){
+				$xml.="\t<".$Keys1[$i1].">\r\n";
+				for($i2=0;$i2<count($Keys2);$i2++){
+					$Keys3=array_keys((array) $chart[$Keys1[$i1]][$Keys2[$i2]]);
+					switch($Keys1[$i1]){
+						case "chart_data":
+						$xml.="\t\t<row>\r\n";
+						for($i3=0;$i3<count($Keys3);$i3++){
+							switch(true){
+								case ($chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]===null):
+								$xml.="\t\t\t<null/>\r\n";
+								break;
+
+								case ($Keys2[$i2]>0 and $Keys3[$i3]>0):
+								$xml.="\t\t\t<number>".$chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]."</number>\r\n";
+								break;
+
+								default:
+								$xml.="\t\t\t<string>".$chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]."</string>\r\n";
+								break;
+							}
+						}
+						$xml.="\t\t</row>\r\n";
+						break;
+
+						case "chart_value_text":
+						$xml.="\t\t<row>\r\n";
+						$count=0;
+						for($i3=0;$i3<count($Keys3);$i3++){
+							if($chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]===null){$xml.="\t\t\t<null/>\r\n";}
+							else{$xml.="\t\t\t<string>".$chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]."</string>\r\n";}
+						}
+						$xml.="\t\t</row>\r\n";
+						break;
+
+						/*case "link_data_text":
+						$xml.="\t\t<row>\r\n";
+						$count=0;
+						for($i3=0;$i3<count($Keys3);$i3++){
+							if($chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]===null){$xml.="\t\t\t<null/>\r\n";}
+							else{$xml.="\t\t\t<string>".$chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]."</string>\r\n";}
+						}
+						$xml.="\t\t</row>\r\n";
+						break;*/
+
+						case "draw":
+						$text="";
+						$xml.="\t\t<".$chart[$Keys1[$i1]][$Keys2[$i2]]['type'];
+						for($i3=0;$i3<count($Keys3);$i3++){
+							if($Keys3[$i3]!="type"){
+								if($Keys3[$i3]=="text"){$text=$chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]];}
+								else{$xml.=" ".$Keys3[$i3]."=\"".$chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]."\"";}
+							}
+						}
+						if($text!=""){$xml.=">".$text."</text>\r\n";}
+						else{$xml.=" />\r\n";}
+						break;
+
+
+						default://link, etc.
+						$xml.="\t\t<value";
+						for($i3=0;$i3<count($Keys3);$i3++){
+							$xml.=" ".$Keys3[$i3]."=\"".$chart[$Keys1[$i1]][$Keys2[$i2]][$Keys3[$i3]]."\"";
+						}
+						$xml.=" />\r\n";
+						break;
+					}
+				}
+				$xml.="\t</".$Keys1[$i1].">\r\n";
+			}else{
+				if($Keys1[$i1]=="chart_type" or $Keys1[$i1]=="series_color" or $Keys1[$i1]=="series_image" or $Keys1[$i1]=="series_explode" or $Keys1[$i1]=="axis_value_text"){
+					$xml.="\t<".$Keys1[$i1].">\r\n";
+					for($i2=0;$i2<count($Keys2);$i2++){
+						if($chart[$Keys1[$i1]][$Keys2[$i2]]===null){$xml.="\t\t<null/>\r\n";}
+						else{$xml.="\t\t<value>".$chart[$Keys1[$i1]][$Keys2[$i2]]."</value>\r\n";}
+					}
+					$xml.="\t</".$Keys1[$i1].">\r\n";
+				}else{//axis_category, etc.
+					$xml.="\t<".$Keys1[$i1];
+					for($i2=0;$i2<count($Keys2);$i2++){
+						$xml.=" ".$Keys2[$i2]."=\"".$chart[$Keys1[$i1]][$Keys2[$i2]]."\"";
+					}
+					$xml.=" />\r\n";
+				}
+			}
+		}else{//chart type, etc.
+			$xml.="\t<".$Keys1[$i1].">".$chart[$Keys1[$i1]]."</".$Keys1[$i1].">\r\n";
+		}
+	}
+	$xml.="</chart>\r\n";
+	return $xml;
+}

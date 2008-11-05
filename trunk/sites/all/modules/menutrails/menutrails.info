@@ -1,0 +1,11 @@
+; $Id: menutrails.info,v 1.1 2007/05/29 22:06:33 joshk Exp $
+name = Menu Trails
+description = Contains functions for utilization in your theme to keep Drupal's menu's active when looking at sub-sections and/or individual nodes.
+dependencies = menu
+version = "$Name: DRUPAL-5 $"
+
+; Information added by drupal.org packaging script on 2007-06-28
+version = "5.x-1.x-dev"
+project = "menutrails"
+datestamp = "1182989390"
+

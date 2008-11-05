@@ -1,0 +1,63 @@
+<?php
+// $Id: jquery_update.module,v 1.1.2.2 2007/04/27 11:55:23 jjeff Exp $
+
+/**
+ * @abstract
+ * This Drupal module helps with updating core JQuery
+ * Drupal 5 comes with JQuery 1.0.1
+ * This module helps you to install a later version
+ * 
+ * @todo - js to fix collapse behavior?
+ */
+
+/**
+ * Implementation of hook_menu()
+ */
+function jquery_update_menu($may_cache) {
+  $items = array();
+  if (!$may_cache) {
+    $path = drupal_get_path('module', 'jquery_update');
+    drupal_add_js($path .'/compat-1.0.js');
+    drupal_add_js($path .'/collapse-fix.js', 'theme');
+  }
+  return $items;
+}
+
+/**
+ * Implementation of hook_requirements()
+ */
+function jquery_update_requirements($phase) {
+  $requirements = array();
+  $t = get_t();
+  switch ($phase) {
+    case 'install' :
+    case 'runtime' :
+      $path = drupal_get_path('module', 'jquery_update') .'/jquery.js';
+      if (file_exists($path) && file_exists('misc/jquery.js') && md5_file($path) != md5_file('misc/jquery.js')) {
+        $requirements['jquery'] = array(
+          'title' => $t('Please copy JQuery'),
+          'description' => $t('In order for the JQuery Update module to work correctly, please copy the file at %mod and use it to replace %core.', array('%core' => 'misc/jqeury.js', '%mod' => $path)),
+          'severity' => $phase == 'install' ? REQUIREMENT_WARNING : REQUIREMENT_ERROR,
+          'value' => $t('Copy jquery.js'),
+        );
+      }
+      elseif (!file_exists($path)) {
+        $requirements['jquery'] = array(
+          'title' => $t('jquery.js no longer exists in the JQuery Update directory'),
+          'description' => $t('You probably <em>moved</em> rather than <em>copied</em> the jquery.js file from %mod to %core. You should leave a copy of this file in the module directory so that will not lose this file when you upgrade to another revision of Drupal.', array('%core' => 'misc/jqeury.js', '%mod' => $path)),
+          'severity' => $phase == 'install' ? REQUIREMENT_WARNING : REQUIREMENT_ERROR,
+          'value' => $t('Copy jquery.js'),
+        );
+      }
+      elseif ($phase == 'runtime') {
+        $requirements['jquery'] = array(
+          'title' => $t('JQuery Update'),
+          'description' => t('The current installed version of JQuery is !version', 
+            array('%core' => 'misc/jqeury.js', '%mod' => $path, '!version' => '<strong><script>document.write($().jquery);</script><noscript>javascript not enabled</noscript></strong>')),
+          'severity' => REQUIREMENT_OK,
+          'value' => $t('Installed correctly'),
+        );
+      }
+  }
+  return $requirements;
+}

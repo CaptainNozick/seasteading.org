@@ -1,0 +1,523 @@
+<?php
+
+/**
+ * Originally by Dries Butyaert.  Work in progress. Not released until further notice.
+ * Maintained by Khalid Baheyeldin http://2bits.com
+ */
+
+define('DONATION_HIDDEN',              0);
+define('DONATION_PUBLIC',              1);
+
+define('DONATION_PAGER',               25);
+
+define('DONATION_EMAIL',               'donation_email');
+define('DONATION_STATE',               'donation_state');
+define('DONATION_THANKS_TEXT',         'donation_thanks_text');
+define('DONATION_THANKS_DEFAULT_TEXT', t('Thank you for your donation.'));
+define('DONATION_DONORS_TEXT',         'donation_donors_text');
+define('DONATION_DONORS_DEFAULT_TEXT', t('<ul><li><a href="/donate">Donate now</a> or <a href="/about/donations">learn about donating.</a></li><li><p>This page lists all donors. Donation amounts exclude transaction fees charged by Paypal.</li><li>If you wish to edit your donor name, you may do so from your <a href="/user">profile page</a>.</p></li></ul>'));
+
+function donation_perm() {
+  return array('administer donations');
+}
+
+function donation_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $access = user_access('administer site configuration');
+
+    $items[] = array(
+      'path'     => 'ipn/donation',
+      'callback' => 'donation_ipn',
+      'access'   => TRUE,
+      'type'     => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path'     => 'donation/thanks',
+      'title'    => t('Thank you'),
+      'callback' => 'donation_thanks',
+      'access'   => TRUE,
+      'type'     => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path' => 'admin/settings/donations',
+      'title' => t('Donations'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('donation_settings'),
+      'description' => t('Administer donations'),
+      'access' => $access,
+    );
+    $items[] = array(
+      'path' => 'admin/build/donations',
+      'title' => t('Donations'),
+      'access' => $access,
+      'callback' => 'donation_admin',
+      'description' => t('Manages donations to your site via Paypal'),
+    );
+    $items[] = array(
+      'path' => 'admin/build/donations/list',
+      'title' => t('List'),
+      'access' => $access,
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
+    );
+    $items[] = array(
+      'path' => 'admin/build/donations/add',
+      'title' => t('Add donation'),
+      'access' => $access,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('donation_edit', 'add'),
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => 'admin/build/donations/edit',
+      'title' => t('Edit donation'),
+      'access' => $access,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('donation_edit', 'edit'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path' => 'admin/build/donations/delete',
+      'title' => t('Delete donation'),
+      'access' => $access,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('donation_edit', 'delete'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path' => 'admin/build/donations/import',
+      'title' => t('Import'),
+      'access' => $access,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('donation_import'),
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => 'donate',
+      'title' => t('Donate'),
+      'access' => TRUE,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('donation_form_build'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path' => 'donations',
+      'title' => t('Donations'),
+      'access' => TRUE,
+      'callback' => 'donation_public_page',
+      'type' => MENU_CALLBACK,
+    );
+  }
+  return $items;
+}
+
+function donation_settings() {
+  $form[DONATION_EMAIL] = array(
+    '#type' => 'textfield',
+    '#title' => t('Donations email address'),
+    '#default_value' => variable_get(DONATION_EMAIL, 'donations@drupal.org'),
+    '#description' => t('Only donations to this email address are considered by this module.'),
+  );
+
+  $form[DONATION_STATE] = array(
+    '#type'           => 'select',
+    '#title'          => t('Default donation state'),
+    '#default_value'  => variable_get(DONATION_STATE, DONATION_PUBLIC),
+    '#options'        => array(
+      DONATION_PUBLIC  => t('Public'),
+      DONATION_HIDDEN  => t('Hidden')
+      ),
+    '#description' => t('Select whether donations will be public or private for this site.'),
+    );
+
+  $form[DONATION_DONORS_TEXT] = array(
+    '#type' => 'textarea',
+    '#title' => t('Text for the donors list page'),
+    '#default_value' => variable_get(DONATION_DONORS_TEXT, DONATION_DONORS_DEFAULT_TEXT),
+    '#description' => t('This text will be displayed at the top of the donors list page.'),
+  );
+
+  $form[DONATION_THANKS_TEXT] = array(
+    '#type' => 'textarea',
+    '#title' => t('Text for the donations thank you page'),
+    '#default_value' => variable_get(DONATION_THANKS_TEXT, DONATION_THANKS_DEFAULT_TEXT),
+    '#description' => t('This text will be displayed to the user after they come back from Paypal.'),
+  );
+
+  return system_settings_form($form);
+}
+
+function donation_edit($mode) {
+  $timestamp = format_date(time(), 'custom', 'Y-m-d H:i O');
+
+  switch($mode) {
+    case 'edit':
+    case 'delete':
+      $did = (int)arg(4);
+      if ($did) {
+        $result = db_query('SELECT * FROM {donations} WHERE did = %d', $did);
+        $donation = db_fetch_object($result);
+        $timestamp = format_date($donation->timestamp, 'custom', 'Y-m-d H:i O');
+        $uid = $donation->uid;
+      }
+    }
+
+    $form['timestamp'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Date'),
+      '#default_value' => $timestamp,
+      '#size'          => 30,
+      '#maxlength'     => 30,
+      '#description'   => 'Format: Y-M-D H:M Z',
+      );
+    $form['uid'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('User ID'),
+      '#default_value' => $uid,
+      '#description'   => t('If the user is registered on this site, enter his/her the Drupal uid.'),
+      );
+    $form['name'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Name of donor'),
+      '#default_value' => $donation->name,
+      '#size'          => 60,
+      '#maxlength'     => 60,
+      '#description'   => t('The name of the person or the company who donated money.'),
+      );
+    $form['mail'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('E-mail address of donor'),
+      '#default_value' => $donation->mail,
+      '#size'          => 60,
+      '#maxlength'     => 60,
+      '#description'   => t('The e-mail address of the person or the company who donated money.'),
+      );
+    $form['amount'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Amount'),
+      '#default_value' => $donation->amount,
+      '#size'          => 12,
+      '#maxlength'     => 12,
+      '#description'   => t('The amount of money donated, after subtracting transfer fees.'),
+      );
+    $form['currency'] = array(
+      '#type'          => 'select',
+      '#title'         => t('Currency'),
+      '#default_value' => $donation->currency,
+      '#options'       => simple_paypal_get_currencies(),
+      );
+    $form['status'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Status'),
+      '#default_value'  => $donation->status,
+      '#options'        => array(
+        DONATION_PUBLIC  => t('Public'),
+        DONATION_HIDDEN  => t('Hidden')
+        ),
+      );
+
+    if ($mode == 'delete') {
+      $form['delete'] = array(
+     '#type'  => 'submit',
+      '#value' => t('Delete'),
+      );
+    }
+    else {
+      $form['add'] = array(
+        '#type'  => 'submit',
+        '#value' => t('Save'),
+        );
+    }
+
+    $form['mode'] = array(
+      '#type'  => 'hidden',
+      '#value' => $mode,
+    );
+
+    $form['did'] = array(
+      '#type'  => 'hidden',
+      '#value' => $did,
+    );
+
+    return($form);
+  }
+
+function donation_edit_submit($form_id, $form = NULL) {
+  $mode = $form['mode'];
+
+  if ($form['delete'] == t('Delete')) {
+    $mode = 'delete';
+  }
+
+  switch($mode) {
+    case 'add':
+      db_query("INSERT INTO {donations} (timestamp, uid, name, mail, amount, currency, status) VALUES
+        (%d, %d, '%s', '%s', '%s', '%s', %d)", 
+        strtotime($form['timestamp']),
+        $form['uid'],
+        $form['name'],
+        $form['mail'],
+        $form['amount'],
+        $form['currency'],
+        $form['status']);
+      drupal_set_message(t('The donation has been added.'));
+      break;
+
+    case 'edit':
+      if ($form['did']) {
+        db_query("UPDATE {donations}
+          SET timestamp = %d, uid = %d, name = '%s', mail = '%s', amount = %f, currency = '%s', status = %d WHERE did = %d", 
+          strtotime($form['timestamp']),
+          $form['uid'],
+          $form['name'],
+          $form['mail'],
+          $form['amount'],
+          $form['currency'],
+          $form['status'],
+          $form['did']);
+        drupal_set_message(t('The donation has been updated.'));
+      }
+      break;
+
+    case 'delete':
+      if ($form['did']) {
+        db_query("DELETE FROM {donations} WHERE did = %d", $form['did']);
+        drupal_set_message(t('The donation has been deleted.'));
+      }
+      break;
+  }
+
+  drupal_goto('admin/build/donations');
+}
+
+function donation_import($form = NULL) {
+  $form = array(
+    '#value' => t('Paypal lets you export your payment history to a CSV file.  Copy/paste the contents of the file (or parts thereof) in the form below to mass import your Paypal history into Drupal. Note that the import routine does not check for duplicate entries.'),
+  );
+  $form['data'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Data'),
+    '#default_value' => NULL,
+    '#cols' => 70,
+    '#rows' => 30,
+  );
+
+  $form['import'] = array(
+    '#type' => 'submit',
+    '#value' => t('Import donations'),
+  );
+
+  return $form;
+}
+
+function donation_import_submit($form_id, $form = NULL) {
+  $lines = explode("\n", $form['data']);
+  foreach ($lines as $line) {
+    list($date, $time, $timezone, $name, $type, $status, $currency, $gross, $fee, $net, $from_email,
+      $to_email, $tid, $cp_status, $shipping_address, $address_status, $item_title, $item_id, $sh_amount,
+      $insurance_amount, $sales_tax, $opt_1_name, $opt_1_value, $opt_2_name, $opt_2_value, $auction_site,
+      $buyer_id, $item_url, $closing_date, $escrow_id, $invoice_id, $ref_txn_id, $invoice_number,
+      $custom_number, $receipt_id, $contact_phone_number ) = explode('","', $line);
+    if ($to_email == variable_get(DONATION_EMAIL, 'donations@drupal.org') && $name && $net) {
+      // We need to swap the day and month in Paypal's date format:
+      list($month, $day, $year) = explode('/', substr($date, 1), 3);
+
+      $uid = donation_resolve_uid($mail);
+      db_query("INSERT INTO {donations} (timestamp, uid, name, mail, amount, currency, status) VALUES
+        (%d, %d, '%s', '%s', '%s', '%s', %d)",
+        strtotime("$month/$day/$year $time $timezone"), // date + time + timezone
+        $uid,
+        $name,
+        $from_email,
+        (float)str_replace(',', '', $net), // net amount (gross - fee), commas stripped
+        $currency,
+        variable_get(DONATION_STATE, DONATION_PUBLIC));
+      }
+  }
+
+  drupal_set_message(t('The donations have been imported.'));
+  drupal_goto('admin/build/donations');
+}
+
+function donation_resolve_uid($mail) {
+  return (int)db_result(db_query("SELECT uid FROM {users} WHERE mail = '%s'", $mail));
+}
+
+function donation_admin() {
+  $rows = array();
+  $header = array(
+    array('data' => t('Date'),       'field' => 'timestamp', 'sort' => 'desc'),
+    array('data' => t('Name'),       'field' => 'name'),
+    array('data' => t('Amount'),     'field' => 'amount'),
+    array('data' => t('Status'),     'field' => 'status'),
+    array('data' => t('Operations'), 'colspan' => '2')
+  );
+
+  $sql = 'SELECT d.* FROM {donations} d' . tablesort_sql($header);
+  $result = pager_query($sql, DONATION_PAGER, 0, NULL);
+  while ($donation = db_fetch_object($result)) {
+    $rows[] = array(format_date($donation->timestamp, 'small'),
+        ($donation->uid ? theme('username', $donation) : check_plain($donation->name)),
+        simple_paypal_format_amount($donation->amount, $donation->currency),
+        ($donation->status == DONATION_PUBLIC ? t('public') : t('hidden')),
+        "<a href=\"mailto:$donation->mail\">". t('mail') ."</a>",
+        l(t('edit'), "admin/build/donations/edit/$donation->did"),
+        l(t('delete'), "admin/build/donations/delete/$donation->did"),
+        );
+  }
+
+  $output = theme('table', $header, $rows);
+  $output .= theme('pager', NULL, DONATION_PAGER, 0);
+  print theme('page', $output);
+}
+
+function donation_public_page() {
+  $rows = array();
+  $header = array(
+    array('data' => t('Name'),   'field' => 'name'),
+    array('data' => t('Amount'), 'field' => 'amount'),
+    array('data' => t('Date'),   'field' => 'timestamp', 'sort' => 'desc'),
+    );
+
+  $sql = 'SELECT d.* FROM {donations} d WHERE d.status = %d' . tablesort_sql($header);
+  $result = pager_query($sql, DONATION_PAGER, 0, NULL, DONATION_PUBLIC);
+
+  while ($donation = db_fetch_object($result)) {
+    if ($donation->uid) {
+      $user = user_load(array('uid' => $donation->uid));
+      $name = theme('username', $user);
+    }
+    else {
+      $name = $donation->name;
+    }
+
+    $rows[] = array(
+      $name,
+      simple_paypal_format_amount($donation->amount, $donation->currency),
+      t('%time ago', array('%time' => format_interval(time() - $donation->timestamp, 1)))); 
+  }
+
+  $output = variable_get(DONATION_DONORS_TEXT, DONATION_DONORS_DEFAULT_TEXT);
+  $output .= theme('table', $header, $rows);
+  $output .= theme('pager', NULL, DONATION_PAGER, 0);
+  print theme('page', $output);
+}
+
+function donation_thanks () {
+  print theme('page', variable_get(DONATION_THANKS_TEXT, DONATION_THANKS_DEFAULT_TEXT));
+}
+
+function donation_ipn() {
+  // Verify that the request came from Paypal, and not from some intrusion
+  if (!simple_paypal_ipn_verify($_POST)) {
+    // curl verification failed
+    return;
+  }
+
+  if ($_POST['business'] != variable_get(DONATION_EMAIL, 'donations@drupal.org')) {
+    // Payment is not for the email address configured
+    return;
+  }
+
+  // Format the fields
+  $name = check_plain($_POST['first_name'] .' '. $_POST['last_name'] . ($_POST['payer_business_name'] ? ' ('. $_POST['payer_business_name'] .')' : ''));
+  $amount      = check_plain((float)$_POST['mc_gross'] - (float)$_POST['mc_fee']);
+  $timestamp   = check_plain(strtotime($_POST['payment_date']));
+  $payer_email = check_plain($_POST['payer_email']);
+  $currency    = check_plain($_POST['mc_currency']);
+  $uid         = check_plain($_POST['custom']);
+  $uid         = $uid ? $uid : donation_resolve_uid($mail);
+  // Record the donation in the database
+  db_query("INSERT INTO {donations} (timestamp, uid, name, mail, amount, currency, status) VALUES
+    (%d, %d, '%s', '%s', '%s', '%s', %d)", 
+    $timestamp,
+    $uid,
+    $name,
+    $payer_email,
+    $amount,
+    $currency,
+    variable_get(DONATION_STATE, DONATION_PUBLIC));
+  watchdog('donation', t('Donation from @name (@mail) amount of @amount @currency.', array(
+    '@name'     => $name,
+    '@mail'     => $payer_email,
+    '@amount'   => $amount,
+    '@currency' => $currency,
+    )));
+}
+
+/**
+ * Output this function in a PHP node when you want a form which points to Paypal.
+ */
+function donation_form() {
+  return drupal_get_form('donation_form_build');
+}
+
+function donation_form_build() {
+  global $user;
+  if (!$user->uid) {
+    $form['body'] = array(
+      '#value' => t('You do not need to register to donate. However, if you do, there will be a link to your user profile from the donors page. If you want that, then please <a href="!login">login</a> or <a href="!register">register</a> and then return back to this page.', array(
+        '!login'    => url('user/login', drupal_get_destination()),
+        '!register' => url('user/register', drupal_get_destination())
+        ))
+    );
+  }
+  $form['#action'] = simple_paypal_get_url();
+  $form['pre'] = array(
+    '#value' => '<p>Please complete the form below and then you will be directed through the Paypal donation process.</p>');
+  $form['business'] = array(
+    '#type' => 'hidden',
+    '#name' => 'business',
+    '#value' => variable_get(DONATION_EMAIL, 'donations@drupal.org'));
+  $form['cmd'] = array(
+    '#type' => 'hidden',
+    '#value' => '_xclick',
+    '#name' => 'cmd');
+  $form['item_name'] = array(
+    '#type' => 'hidden',
+    '#value' => 'Donation to the Seasteading Institute',
+    '#name' => 'item_name');
+  $form['no_shipping'] = array(
+    '#type' => 'hidden',
+    '#value' => 1,
+    '#name' => 'no_shipping');
+  $form['return'] = array(
+    '#type' => 'hidden',
+    '#value' => url('donation/thanks', NULL, NULL, TRUE),
+    '#name' => 'return');
+  $form['currency_code'] = array(
+    '#type' => 'select',
+    '#title' => t('Currency'),
+    '#options' => simple_paypal_get_currencies(),
+    '#name' => 'currency_code',
+    '#description' => t('We accept payments in these currencies.'),
+  );
+  $form['amount'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Amount'),
+    '#description' => t('Enter the amount you wish to donate.'),
+    '#size' => 40,
+    '#required' => TRUE,
+    '#maxlength' => 255,
+    '#name' => 'amount',
+  );
+  $form['notify_url'] = array(
+    '#type' => 'hidden',
+    '#value' => url('ipn/donation', NULL, NULL, TRUE),
+    '#name' => 'notify_url',
+  );
+  $form['custom'] = array(
+    '#type' => 'hidden',
+    '#value' => $user->uid,
+    '#name' => 'custom',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit', 
+    '#value' => t('Proceed to paypal.com for payment'),
+    '#name' => 'submit',
+  );
+
+  return $form;
+}

@@ -1,0 +1,1209 @@
+<?php
+// $Id: members.module,v 1.40.2.25 2007/11/22 10:36:28 ax Exp $
+
+/**
+ * Implementation of hook_perm()
+ */
+function members_perm() {
+  return array(
+    "administer members",
+    "access all members pages",
+  );
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function members_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/user/members',
+      'title' => t('Members'),
+      'callback' => 'members_admin_page',
+      'access' => user_access('administer members'),
+      'description' => t('Members pages are customized lists of users on your system.'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+    $items[] = array(
+      'path' => 'admin/user/members/list',
+      'title' => t('List'),
+      'callback' => 'members_admin_page',
+      'access' => user_access('administer members'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => '-1',
+    );
+    $items[] = array(
+      'path' => 'admin/user/members/add',
+      'title' => t('Add'),
+      'callback' => 'members_admin_add_page',
+      'access' => user_access('administer members'),
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => 'admin/user/members/delete',
+      'title' => t('Delete members page'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('members_admin_delete_confirm'),
+      'access' => user_access('administer members'),
+      'type' => MENU_CALLBACK,
+    );
+
+    members_menu_items($items);
+    
+  }
+  else {
+  	$arg = arg(4);
+  	if($arg == "edit" || $arg =="clone") {
+      $items[] = array(
+        'path' => 'admin/user/members/' . arg(3) . '/edit',
+        'title' => t('Edit'),
+        'callback' => 'drupal_get_form',
+        'callback arguments' => array('members_edit_page', arg(3)),
+        'access' => user_access('administer members'),
+        'type' => MENU_LOCAL_TASK,
+        'weight' => '-5',      
+      );
+      $items[] = array(
+        'path' => 'admin/user/members/' . arg(3) . '/clone',
+        'title' => t('Clone'),
+        'callback' => 'members_admin_clone_page',
+        'callback arguments' => array(arg(3)),
+        'access' => user_access('administer members'),
+        'type' => MENU_LOCAL_TASK,
+      );
+  	}
+  }
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_help()
+ */
+function members_help($section) {
+  switch ($section) {
+    case 'admin/help#members':
+      return t('The members module creates customized lists of users.');  	
+    case 'admin/user/members':
+      return t('This screen shows all of the members pages that are currently defined in your system.');
+  }
+}
+
+/**
+ * This page lists all member pages and provides links to edit them.
+ */
+function members_admin_page() {
+
+  $nummembers = 25;
+  $items = array();
+  
+  drupal_set_title(t('Administer members'));
+  
+  $result = pager_query("SELECT mid, name, description, url, block, page, menu FROM {members_page} ORDER BY name", $nummembers);
+
+  while ($member = db_fetch_object($result)) {
+  	
+    $provides = array();
+    if ($member->page) {
+      $provides[] = 'Page';
+    }
+    if ($member->block) {
+      $provides[] = 'Block';
+    }
+    if ($member->menu) {
+      $provides[] = 'Menu';
+    }
+
+    if($member->page) {
+      $url = l($member->url, $member->url);
+    }
+    else {
+      $url = "";	
+    }
+    $items[] = array(
+      $member->name, 
+      $member->description, 
+      implode(", ", $provides),
+      $url, 
+      theme('links', array(
+        array('title' => t('Edit'), 'href' => "admin/user/members/$member->name/edit"), 
+        array('title' => t('Delete'), 'href' => "admin/user/members/delete/$member->mid"),
+        array('title' => t('Clone'), 'href' => "admin/user/members/$member->name/clone"),
+      ))
+    );
+  }
+
+  if ($items) {
+    $output = theme('table', array(t('Members page'), t('Description'), t('Provides'), t('URL'), t('Actions')), $items, array("cellpadding" => "4"), t('Existing members pages'));
+    $output .= theme('pager', NULL, $nummembers);
+  }
+  else {
+    $output .= t('<p>No members pages have currently been defined.</p>');
+  }  
+  return $output;
+}
+
+/**
+ * Provide a form to add a members page. Allow adding a listing from default templates.
+ */
+function members_admin_add_page() {
+  drupal_set_title(t('Add a members page'));
+  return drupal_get_form('members_edit_page', NULL);
+}
+
+/**
+ * Provide a form to clone a members page.
+ */
+function members_admin_clone_page($name) {
+
+  $member = members_load_settings($name);
+  if (!$member) {
+    return drupal_not_found();
+  }
+
+  drupal_set_title(t('Clone a members page'));
+
+  return drupal_get_form('members_edit_page', $name, 'clone');
+}
+
+/**
+ * Provide a form to confirm deletion of a members page.
+ */
+function members_admin_delete_confirm($mid = '') {
+
+  $member = members_load_settings($mid);
+  if (!$member) {
+    return drupal_goto('admin/user/members');
+  }
+
+  $form['mid'] = array(
+    '#type' => 'value',
+    '#value' => $member->mid,
+  );
+
+  $form['name'] = array(
+    '#type' => 'value',
+    '#value' => $member->mid,
+  );
+
+  $form = confirm_form($form,
+    t('Are you sure you want to delete %title?', array('%title' => $member->name)),
+    $_GET['destination'] ? $_GET['destination'] : 'admin/user/members',
+    t('This action cannot be undone.'),
+    t('Delete'),
+    t('Cancel')
+  );
+  	
+  return $form;
+}
+
+/**
+ * Handle the submit button to delete a members page.
+ */
+function members_admin_delete_confirm_submit($form_id, $form) {
+  db_query("DELETE FROM {members_page} WHERE mid=%d LIMIT 1", $form['mid']);
+  menu_rebuild();
+  drupal_goto('admin/user/members');
+}
+
+/**
+ *  A member page's settings
+ */
+function members_edit_page($name, $op="") {
+
+  $member = members_load_settings($name);
+  
+  $form = array();
+
+  if(!isset($_POST['op'])) {
+    if(is_array($member->fields)) {
+      $tempfields = array_filter($member->fields);
+    }
+    else {
+      $tempfields = array();	
+    }
+  }
+  else {
+    $tempfields = unserialize($_POST['tempfields']);
+  }
+  
+  if($member->mid && empty($op)) {
+    $form['mid'] = array(
+      '#type' => 'hidden',
+      '#value' => $member->mid,
+    ); 
+    drupal_set_title("Edit members page <em>$name</em>");
+  }
+
+  // Check for new fields
+
+  $op = $_POST['op'];
+  $editfield = 0;
+  if ($op == t('Add Field')) {
+  	$editfield = 1;
+    $tempfields[] = filter_xss($_POST['select']);
+  }
+  elseif (substr($op, 0, 3) == "go-") {
+  	$editfield = 1;  	
+    list($go, $fid, $action) = split("-", $op);
+    switch($action) {
+      case 'trash':
+        unset($tempfields[$fid]);
+        _members_arrange_fields($tempfields);
+        break;
+
+      case 'top':
+        $temp = $tempfields[$fid];
+        unset($tempfields[$fid]);
+        array_unshift($tempfields, $temp);
+        _members_arrange_fields($tempfields);
+        break;
+
+      case 'bottom':
+        $temp = $tempfields[$fid];
+        unset($tempfields[$fid]);
+        array_push($tempfields, $temp);
+        _members_arrange_fields($tempfields);
+        break;
+
+      case 'up':
+        $upfid = $fid - 1;
+        $temp = $tempfields[$upfid];
+        $tempfields[$upfid] = $tempfields[$fid];
+        $tempfields[$fid] = $temp;
+        _members_arrange_fields($tempfields);
+        break;
+
+      case 'down':
+        $downfid = $fid + 1;
+        $temp = $tempfields[$downfid];
+        $tempfields[$downfid] = $tempfields[$fid];
+        $tempfields[$fid] = $temp;
+        _members_arrange_fields($tempfields);
+        break;	
+    }
+  }
+
+  $form['tempfields'] = array(
+    '#type' => 'hidden',
+    '#value' => serialize($tempfields),
+  );
+
+  // Basic information
+
+  $form['basic-info'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => $editfield,
+    '#title' => t('Basic information'),
+  );
+
+  $form['basic-info']['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#default_value' => $member->name,
+    '#size' => 20,
+    '#maxlength' => 32,
+    '#description' => t('The unique identifier of the members page. Only alphanumeric and _ allowed here'),
+    '#required' => TRUE,
+  );
+  
+  $form['basic-info']['access'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Access'),
+    '#default_value' => $member->access,
+    '#options' => members_handler_filter_role(),
+    '#description' => t('Only the checked roles will be able to see this members page in any form; if no roles are checked, access will not be restricted.'),
+  );
+
+  $form['basic-info']['description'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Description'),
+    '#default_value' => $member->description,
+    '#size' => 60,
+    '#maxlength' => 255,
+    '#description' => t('A description of the members page for the admin list.'),
+  );
+
+  $form['basic-info']['field_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Truncated field length'),
+    '#default_value' => $member->field_length,
+    '#size' => 4,
+    '#maxlength' => 6,
+    '#description' => t('If set (and not zero), all fields will be truncated to this length to preserve table layouts'),
+   );
+
+  $form['basic-info']['encode_mailto'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Obfuscate e-mail addresses using javascript'),
+    '#return_value' => 1,
+    '#default_value' => $member->encode_mailto,
+    '#description' => t('When checked, email addresses will not be included directly in the HTML source to deter spam crawlers.<br/>Note: this requires users have a javascript-enabled browser'),
+   );
+
+  // Page settings
+  $form['page-info'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => ($editfield == 1 || $member->page == 0),
+    '#title' => t('Page'),
+  );
+
+  $form['page-info']['page'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Provide Page'),
+    '#return_value' => 1,
+    '#default_value' => $member->page,
+    '#description' => t('If checked this member list will be provided as a page. If not checked, the fields in this group will be ignored.'),
+  );
+
+  $form['page-info']['url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('URL'),
+    '#default_value' => $member->url,
+    '#size' => 60,
+    '#maxlength' => 255,
+    '#description' => t('Enter the URL to use for this members page. Do not begin or end the URL with a /. Example: \'members/premium\'.'),
+  );
+
+  $form['page-info']['page_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => $member->page_title,
+    '#size' => 60,
+    '#maxlength' => 255,
+    '#description' => t('The title that will. be shown at the top of the members page. May be blank.'),
+  );
+
+  $form['page-info']['use_pager'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use Pager'),
+    '#return_value' => 1,
+    '#default_value' => $member->use_pager,
+    '#description' => t('If checked this query may be multiple pages. If not checked this query will be one page.'),
+  );
+
+  $form['page-info']['users_per_page'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Users per page'),
+    '#default_value' => $member->users_per_page,
+    '#description' => t('The amount of users to show per page. If not using a pager, this will be the maximum number of nodes in the list. Use 0 or blank for all users.'),
+   );
+
+  $form['page-info']['page_header_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Header'),
+  );
+  $form['page-info']['page_header_fieldset']['page_header'] = array(
+    '#type' => 'textarea',
+    '#default_value' => $member->page_header,
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Text to display at the top of the page. May contain an explanation or links or whatever you like. Optional.'),
+  );
+
+  $form['page-info']['page_header_fieldset']['page_header_format'] = filter_form($member->page_header_format, 1, array('page_header_format'));
+
+  $form['page-info']['page_footer_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Footer'),
+  );
+  $form['page-info']['page_footer_fieldset']['page_footer'] = array(
+    '#type' => 'textarea',
+    '#default_value' => $member->page_footer,
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Text to display at the bottom of the page. May contain an explanation or links or whatever you like. Optional.'),
+  );
+
+  $form['page-info']['page_footer_fieldset']['page_footer_format'] = filter_form($member->page_footer_format, 1, array('page_footer_format'));
+
+  $form['page-info']['page_empty_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Empty Text'),
+  );
+  $form['page-info']['page_empty_fieldset']['page_empty'] = array(
+    '#type' => 'textarea',
+    '#default_value' => $member->page_empty,
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Text to display if a list returns no users. Optional.'),
+  );
+
+  $form['page-info']['page_empty_fieldset']['page_empty_format'] = filter_form($member->page_empty_format, 1, array('page_empty_format'));
+
+  // Menu info
+
+  $form['page-info']['menu-info'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Menu'),
+  );
+
+  $form['page-info']['menu-info']['menu'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Provide Menu'),
+    '#return_value' => 1,
+    '#default_value' => $member->menu,
+    '#description' => t('If checked this page be given a menu entry in the Drupal menu system. If not checked the data in this group will be ignored.'),
+  );
+
+  $form['page-info']['menu-info']['menu_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Menu Title'),
+    '#default_value' => $member->menu_title,
+    '#size' => 60,
+    '#maxlength' => 255,
+    '#description' => t('Enter the title to use for the menu entry or tab. If blank, the page title will be used.'),
+  );
+
+  // Block info
+
+  $form['block-info'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => true,
+    '#collapsed' => ($editfield == 1 || $member->block == 0),
+    '#title' => t('Block'),
+  );
+
+  $form['block-info']['block'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Provide Block'),
+    '#return_value' => 1,
+    '#default_value' => $member->block,
+    '#description' => t('If checked this view will be provided as a block. If checked title may not be blank.'),
+  );
+
+  $form['block-info']['block_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => $member->block_title,
+    '#size' => 60,
+    '#maxlength' => 255,
+    '#description' => t('The title that will be shown at the top of the block. May be blank.'),
+  );
+
+  $form['block-info']['users_per_block'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Users per Block'),
+    '#default_value' => $member->users_per_block,
+    '#size' => 3,
+    '#maxlength' => 3,
+    '#description' => t('If using a block, the maximum number of users to display in the block. Pagers are not used in blocks.'),
+    '#attributes' => NULL,
+  );
+
+  $form['block-info']['block_more'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('[More] Link?'),
+    '#return_value' => 1,
+    '#default_value' => $member->block_more,
+    '#description' => t('If using a list as both a page and a block, display a more link in the block that links to the view URL?'),
+  );
+
+  $form['block-info']['block_header_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Header'),
+  );
+  
+  $form['block-info']['block_header_fieldset']['block_use_page_header'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use Page Header'),
+    '#return_value' => 1,
+    '#default_value' => $member->block_use_page_header,
+    '#description' => t('If checked, use the Page Header for block view instead. If so, you should leave the Block Header blank.'),
+  );
+
+  $form['block-info']['block_header_fieldset']['block_header'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Header'),
+    '#default_value' => $member->block_header,
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Text to display at the top of the view. May contain an explanation or links or whatever you like. Optional.'),
+  );
+
+  $form['block-info']['block_header_fieldset']['block_header_format'] = filter_form($member->block_header_format, 1, array('block_header_format'));
+
+  $form['block-info']['block_footer_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Footer'),
+  );
+  $form['block-info']['block_footer_fieldset']['block_use_page_footer'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use Page Footer'),
+    '#return_value' => 1,
+    '#default_value' => $member->block_use_page_footer,
+    '#description' => t('If checked, use the page footer for block view instead. If so, you should leave the block footer blank.'),
+  );
+
+  $form['block-info']['block_footer_fieldset']['block_footer'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Footer'),
+    '#default_value' => $member->block_footer,
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Text to display at the bottom of the view. May contain an explanation or links or whatever you like. Optional.'),
+  );
+
+  $form['block-info']['block_footer_fieldset']['block_footer_format'] = filter_form($member->block_footer_format, 1, array('block_footer_format'));
+
+  $form['block-info']['block_empty_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Empty text'),
+  );
+  
+  $form['block-info']['block_empty_fieldset']['block_use_page_empty'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use Page empty'),
+    '#return_value' => 1,
+    '#default_value' => $member->block_use_page_empty,
+    '#description' => t('If checked, use the Page Empty Text for block view instead. If so, you should leave the block empty text blank.'),
+  );
+
+  $form['block-info']['block_empty_fieldset']['block_empty'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Empty text'),
+    '#default_value' => $member->block_empty,
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Text to display if a view results in no nodes. Optional.'),
+  );
+
+  $form['block-info']['block_empty_fieldset']['block_empty_format'] = filter_form($member->block_empty_format, 1, array('block_empty_format'));
+
+  // Filters
+  
+  $form['filters'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => $editfield,
+    '#title' => t('Filters'),
+  );  
+
+  $form['filters']['roles'] = array(
+    '#type' => 'select',
+    '#title' => t("Role Is One Of"),
+    '#default_value' => $member->roles,
+    '#options' => user_roles(1),
+    '#description' => t("Select roles to show in the members listing. Select <em>authenticated user</em> if you want to display all users."),
+    '#extra' => 0,
+    '#multiple' => 1,
+    '#required' => TRUE,
+  );
+
+  // Field settings
+
+  if (!empty($tempfields)) {
+  	$count = count($tempfields) - 1;
+  	foreach($tempfields as $key => $field) {
+      $form['fields'][$key]['top']['op'] = _members_add_op($key, 'top', $count);  		
+      $form['fields'][$key]['up']['op'] = _members_add_op($key, 'up', $count);
+      $form['fields'][$key]['down']['op'] = _members_add_op($key, 'down', $count);
+      $form['fields'][$key]['bottom']['op'] = _members_add_op($key, 'bottom', $count);
+      $form['fields'][$key]['trash']['op'] = _members_add_op($key, 'trash', $count);      
+    }
+  }
+
+  $form['field']['select'] = array(
+    '#type' => 'select',
+    '#options' => _members_fields(),
+  );
+
+  $form['field']['button'] = array(
+    '#type' => 'button',
+    '#value' => 'Add Field',
+  );
+
+  // Buttons
+
+  $form['save'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  $form['save_and_edit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save and edit'),
+  );
+  if ($member->mid) {
+    $form['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete'),
+    );
+  }
+  $form['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),
+  );
+
+  return $form;
+}
+
+/**
+ *  Handle validate button on members form.
+ */
+function members_edit_page_validate($form_id, $form_values) {
+	
+  if ($form_values['op'] == t('Cancel')) {
+    drupal_goto('admin/user/members');
+  }
+  elseif ($form_values['op'] == t('Delete')) {
+    drupal_goto("admin/user/members/delete/" . $form['mid']);
+  }
+  elseif (substr($form_values['op'], 0, 3) == "go-" || $form_values['op'] == t('Add Field')) {
+    drupal_set_message("Changes will not be processed unless you <em>Save</em> the form.");	
+  }
+  
+  $name = db_query("SELECT mid FROM {members_page} WHERE name='%s' AND mid != %d LIMIT 1", $form_values['name'], $form_values['mid']);
+  if(db_num_rows($name)) form_set_error('name', t('Name already taken.'));
+
+  if(!empty($form_values['page']) && empty($form_values['url']))
+    form_set_error('url', t('You need to specify a url if you want to create a page.'));
+
+  if(!empty($form_values['url'])) {
+    $url = db_query("SELECT mid FROM {members_page} WHERE url='%s' AND mid != %d LIMIT 1", $form_values['url'], $form_values['mid']);
+    if(db_num_rows($url)) form_set_error('url', t('URL already taken.'));
+  }
+  
+  if(!empty($form_values['users_per_page'])) {
+    if (!is_numeric($form_values['users_per_page']))
+      form_set_error('users_per_page', t('Users per page should be blank or a numeric value (0 is allowed)'));
+  }
+  elseif($form_values['use_pager']) {
+  	form_set_error('users_per_page', t('Users per page cannot be 0 if using the pager.'));
+  }
+}
+
+/**
+ * Handle submit buttons on a members form.
+ */
+function members_edit_page_submit($form_id, $form) {
+
+  $access = array();
+  foreach($form['access'] as $index => $value) {
+    if($value!=0) $access[] = $index;
+  }
+  if(!empty($access)) {
+    $access = implode(",", $access);
+  }
+  else {
+  	$access = "";
+  }
+
+  $roles = array();
+  foreach($form['roles'] as $index => $value) {
+    if($value!=0) $roles[] = $index;
+  }
+  if(!empty($roles)) {
+    $roles = implode(",", $roles);
+  }
+  else {
+  	$roles = "";
+  }
+  
+  $fields = implode(",", unserialize($form['tempfields']));
+
+  if ($form['mid']) {
+    db_query("UPDATE {members_page} SET name='%s', description='%s', access='%s', page=%d, page_title='%s', url='%s', use_pager=%d, page_header='%s', page_header_format=%d, page_footer='%s', page_footer_format=%d, page_empty='%s', page_empty_format=%d, menu=%d, menu_title='%s', block=%d, block_title='%s', users_per_block=%d, block_more=%d, block_use_page_header=%d, block_header='%s', block_header_format=%d, block_use_page_footer=%d, block_footer='%s', block_footer_format=%d, block_use_page_empty=%d, block_empty='%s', block_empty_format=%d, roles='%s', `fields`='%s', encode_mailto=%d, field_length=%d, users_per_page=%d WHERE mid=%d LIMIT 1", $form['name'], $form['description'], $access, $form['page'], $form['page_title'], $form['url'], $form['use_pager'], $form['page_header'], $form['page_header_format'], $form['page_footer'], $form['page_footer_format'], $form['page_empty'], $form['page_empty_format'], $form['menu'], $form['menu_title'], $form['block'], $form['block_title'], $form['users_per_block'], $form['block_more'], $form['block_use_page_header'], $form['block_header'], $form['block_header_format'], $form['block_use_page_footer'], $form['block_footer'], $form['blocker_footer_format'], $form['block_use_page_empty'], $form['block_empty'], $form['block_empty_format'], $roles, $fields, $form['encode_mailto'], $form['field_length'], $form['users_per_page'], $form['mid']);
+  }
+  else {
+    db_query("INSERT INTO {members_page} (name, description, access, page, page_title, url, use_pager, page_header, page_header_format, page_footer, page_footer_format, page_empty, page_empty_format, menu, menu_title, block, block_title, users_per_block, block_more, block_use_page_header, block_header, block_header_format, block_use_page_footer, block_footer, block_footer_format, block_use_page_empty, block_empty, block_empty_format, roles, `fields`, encode_mailto, field_length, users_per_page) VALUES ('%s', '%s', '%s', %d, '%s', '%s', %d, '%s', %d, '%s', %d, '%s', %d, %d, '%s', %d, '%s', %d, %d, %d, '%s', %d, %d, '%s', %d, %d, '%s', %d, '%s', '%s', %d, %d, %d)", $form['name'], $form['description'], $access, $form['page'], $form['page_title'], $form['url'], $form['use_pager'], $form['page_header'], $form['page_header_format'], $form['page_footer'], $form['page_footer_format'], $form['page_empty'], $form['page_empty_format'], $form['menu'], $form['menu_title'], $form['block'], $form['block_title'], $form['users_per_block'], $form['block_more'], $form['block_use_page_header'], $form['block_header'], $form['block_header_format'], $form['block_use_page_footer'], $form['block_footer'], $form['block_footer_format'], $form['block_use_page_empty'], $form['block_empty'], $form['block_empty_format'], $roles, $fields, $form['encode_mailto'], $form['field_length'], $form['users_per_page']);
+  }
+
+  if ($form['mid']) {
+    drupal_set_message(t('Members page successfully saved.'));
+  }
+  else {
+    drupal_set_message(t('Members page successfully added.'));
+  }
+  
+  menu_rebuild();
+  
+  if ($form['op'] == t('Save')) {
+      return 'admin/user/members';
+  }
+  elseif ($form['op'] == t('Save and edit')) {
+    return 'admin/user/members/' . $form['name'] . '/edit';
+  }
+}
+
+/**
+ * Load the members page settings in an object
+ */
+function members_load_settings($name = "") {
+  $settings = new stdClass();
+  
+  if(!empty($name)) {
+  	if(!is_numeric($name)) {
+      $settings = db_fetch_object(db_query("SELECT * FROM {members_page} WHERE name='%s' LIMIT 1", $name));  
+  	}
+  	else {
+      $settings = db_fetch_object(db_query("SELECT * FROM {members_page} WHERE mid=%d LIMIT 1", $name));    		
+  	}
+    $settings->access = explode(",", $settings->access);
+    $settings->roles  = explode(",", $settings->roles); 
+    $settings->fields = explode(",", $settings->fields);        
+  }
+  return $settings;
+}
+
+/**
+ * Select all available fields
+ */
+function _members_fields() {
+  $output = array();
+
+  $output['name'] = t('Username');
+  $output['picture'] = t('Picture');    
+  $output['mail'] = t('Email');
+  $output['created'] = t('Registered');
+  $output['access'] = t('Last seen');
+  $output['status'] = t('Status');
+  $output['rid'] = t('Roles');
+//$output['gid'] = t('Organic groups');
+
+  // Profile fields
+  if (module_exists('profile')) {
+  
+    if (module_exists('i18nprofile')) {
+      $language = i18n_get_lang();
+      $result = db_query("SELECT p.name, t.title FROM {profile_fields} p INNER JOIN {i18n_profile_fields} t ON p.fid = t.fid WHERE t.language='%s' ORDER BY weight ASC, title ASC", $language);
+      while($row = db_fetch_object($result)) {
+        $output["profile.$row->name"] = $row->title;
+      }
+    }
+    else {
+      $result = db_query("SELECT name, title FROM {profile_fields} pf ORDER BY weight ASC, title ASC");
+      while ($row = db_fetch_object($result)) {
+        $output["profile.$row->name"] = $row->title;
+      }
+    }
+  }
+
+  return $output;
+}
+
+/**
+ * Obfuscate e-mail addresses using javascript
+ */
+function _members_encode_mailto($mail) {
+  $link = 'document.write(\'<a href="mailto:' . $mail . '">' . $mail . '</a>\');';
+
+  $js_encode = '';
+  for ($x = 0; $x < strlen($link); $x++) {
+    $js_encode .= '%' . bin2hex($link{$x});
+  }
+
+  $link = '<script type="text/javascript" language="javascript">eval(unescape(\''.$js_encode.'\'))</script>';
+  if (isset($matches[3])) {
+    $link = $matches[1] . $link;
+  }
+
+  return $link;
+}
+
+/**
+ * Create a list of roles.
+ */
+function members_handler_filter_role() {
+  $rids = array();
+  $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
+  while ($obj = db_fetch_object($result)) {
+    $rids[$obj->rid] = $obj->name;
+  }
+  return $rids;
+}
+
+/**
+ * Create a menu item for each members page
+ */
+function members_menu_items(&$items) {
+  $members = db_query("SELECT mid, page_title, menu, menu_title, url, access FROM {members_page} WHERE page=1");
+  while($member = db_fetch_object($members)) {
+    if(empty($member->menu_title)) $member->menu_title = $member->page_title;
+  	global $user;
+  	$account = $user;
+  	$access = FALSE;
+  	if(user_access("access all members pages", $account) || empty($member->access)) {
+  	  $access = TRUE;	
+  	}
+  	else {
+      $roles[$account->uid] = array_keys($account->roles);
+      $roles[$account->uid][] = $account->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;  	
+  	  $access = explode(",", $member->access);
+      $access = array_intersect($access, $roles[$account->uid]);
+  	}
+  	if($member->menu==1) {
+  	  $type=MENU_NORMAL_ITEM;
+  	}
+  	else {
+  	  $type=MENU_CALLBACK;
+  	}
+    $items[] = array(
+      'path' => $member->url,
+      'title' => t($member->menu_title),
+      'callback' => 'members_page',
+      'callback arguments' => array($member->mid),
+      'type' => $type,
+      'access' => $access,
+    );   	
+  }
+}
+
+/**
+ * Implementation of hook_block()
+ */
+function members_block($op = 'list', $delta = 0) {
+  $block = array();
+  if ($op == 'list') {
+    // Grab member lists from the database and provide them as blocks.
+    $result = db_query("SELECT mid, block_title, page_title, name FROM {members_page} WHERE block = 1");
+    while ($member = db_fetch_object($result)) {
+      $block[$member->mid]['info'] = filter_xss_admin($member->block_title);
+    }
+    return $block;
+  }
+  else if ($op == 'view') {
+    return members_view_block($delta);
+  }
+}
+
+/**
+ * This views a view by block. Can be used as a callback or programmatically.
+ */
+function members_view_block($name) {
+	
+  $member = members_load_settings($name);
+
+  if (!$member || !$member->block) {
+    return NULL;
+  }
+
+  global $user;
+  $account = $user;
+  $roles[$account->uid] = array_keys($account->roles);
+  $roles[$account->uid][] = $account->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;  	
+  $access = explode(",", $member->access);
+  $access = array_intersect($access, $roles[$account->uid]);
+  if (!$access && $user->uid!=1) {
+    return NULL;
+  }
+
+  $content = members_page($member->mid, "block");
+  // $content = "test";
+  if ($content) {
+    $block['content'] = $content;
+    $block['subject'] = filter_xss_admin($member->block_title);
+    return $block;
+  }
+  else {
+    return NULL;
+  }
+}
+
+/**
+ * Display the members page
+ */
+function members_page($mid = "", $type = "page") {
+
+  if(empty($mid)) return;
+  
+  $member = members_load_settings($mid);
+  
+    $roles = $member->roles;
+
+    if ($roles) {
+      $fields = array();
+      $enabled_fields = $member->fields;
+      $all_fields = _members_fields();
+      foreach($member->fields as $field) {
+        $fields[$field] = $all_fields[$field];
+      }
+      foreach ($fields as $field => $data) {
+        if (substr($field, 0, 8) == 'profile.') {
+          $field = 'p.value';
+        } elseif ($field == 'rid') {
+          $field = '';
+        }
+        $header[] = array("data" => $data, "field" => $field);
+      }
+      
+      if(in_array("2",$roles)) {
+        $allusers = 1;
+        $query = "SELECT DISTINCT(u.uid) FROM {users} u";
+      } else {
+        $allusers = 0;
+        foreach ($roles as $rid) {
+          $list[] = "'" . db_escape_string($rid) ."'";
+        }
+        $list = implode(',', $list);
+        $query = "SELECT DISTINCT(u.uid) FROM {users} u INNER JOIN {users_roles} r ON u.uid=r.uid";
+      }
+      $sort = tablesort_get_order($header);
+      if ($sort['sql'] == 'p.value') {
+        $fieldid = db_result(db_query("SELECT fid FROM {profile_fields} WHERE name='%s'",substr(array_search($sort['name'], $fields), 8)));
+        $query.= " LEFT JOIN {profile_values} p ON u.uid=p.uid WHERE (p.fid = '". db_escape_string($fieldid). "' OR p.fid IS NULL) AND";
+      }
+      else {
+        $query.= " WHERE";
+      }
+      if ($allusers == 0) {
+        $query.= " r.rid IN ($list) AND u.status=1" . tablesort_sql($header);
+      } else {
+        $query.= " u.status=1" . tablesort_sql($header);
+      }
+      
+      if($type=="block") {
+        $query.= " LIMIT " . $member->users_per_block;
+        $result = db_query($query);        
+      }
+      elseif($type=="page" && $member->use_pager) {
+        $result = pager_query($query, $member->users_per_page);
+      }
+      elseif($type=="page") {
+      	if(!empty($member->users_per_page)) $query.=" LIMIT " . $member->users_per_page;
+        $result = db_query($query);	
+      }   
+
+      $rows = array();
+      $profile_fields = array();
+      while ($userid = db_fetch_object($result)) {
+        $account = user_load(array('uid' => $userid->uid));
+        $row = array();
+        foreach ($fields as $field => $title) {
+          $data = NULL;
+          if (substr($field, 0, 8) == 'profile.') {
+            $field = substr($field, 8);
+            if (!$profile_fields[$field]) {
+              $profile_fields[$field] = db_fetch_object(db_query("SELECT * FROM {profile_fields} WHERE name='%s'", $field));
+            }
+            $data = profile_view_field($account, $profile_fields[$field]);
+            $length = $member->field_length;
+            if ($length && is_numeric($length)) {
+              $data  = truncate_utf8($data, $length, TRUE);
+            }
+          }
+          elseif ($field == 'rid') {
+            $data = array();
+            foreach ($account->roles as $rid => $role) {
+              if (in_array($rid, $roles)) {
+                $data[] = $role;
+              }
+            }
+            $data = implode (', ', $data);
+          }
+          elseif ($field == 'picture') {
+            $data = theme_user_picture($account);
+          }
+          elseif ($field == 'created') {
+            $data = date('F dS Y h:i:s', $account->created);
+          }                    
+          elseif ($field == 'access') {
+            $data = ($account->access) ? format_interval(time() - $account->access) : t('Never');
+          }
+          elseif ($field == 'status') {
+            $data = ($account->status) ? t('Active') : t('Blocked');
+          }
+          elseif ($field == 'count') {
+            $data = db_result(db_query("SELECT count(nid) FROM {node} WHERE uid=%d", $account->uid));
+          }
+          elseif ($field == 'mail') {
+            if ($member->encode_mailto) {
+              $data = _members_encode_mailto($account->mail);
+            }
+            else {
+              $data = $account->mail;
+            }
+          }
+          else {
+            $data = $account->$field;
+          }
+          if (stristr($field, 'name')) {
+            $data = l($data, 'user/'.$account->uid);
+          }
+          $row[] = array('data' => $data);
+        }
+        $rows[] = $row;
+      }
+
+      if ($type=="page" && $member->use_pager && $pager = theme("pager", NULL, $member->users_per_page, 0)) {
+        $rows[] = array(array("data" => $pager, "colspan" => count($header)));
+      }
+
+      $output = "";
+      
+      // Render header
+
+      if(!empty($member->page_header) && ($type=="page" || ($type=="block" && $member->block_use_page_header))) {
+      	$output .= check_markup($member->page_header, $member->page_header_format, FALSE);
+      }
+      elseif($type=="block" && !empty($member->block_header)) {
+      	$output .= check_markup($member->block_header, $member->block_header_format, FALSE);
+      }
+      // Render main content
+      
+      $output .= '<div id="members-main">'. theme("table", $header, $rows) .'</div>';
+      
+      // Render 'more' link
+
+//    if ($type == 'block' && $member->block_more && $member->users_per_page >= $member->users_per_block) {
+      if ($type == 'block' && $member->block_more) {	
+        $output .= "<div class='read-more'>" . l(t('read more'), $member->url) . "</div>";
+      }
+
+      // Render footer
+
+      if(!empty($member->page_footer) && ($type=="page" || ($type=="block" && $member->block_use_page_footer))) {
+        $output .= check_markup($member->page_footer, $member->page_footer_format, FALSE);
+      }
+      elseif($type=="block" && !empty($member->block_footer)) {
+        $output .= check_markup($member->block_footer, $member->block_footer_format, FALSE);
+      }
+
+      return $output;
+    }
+    else {
+
+      if(!empty($member->block_page) && ($type=="page" || ($type=="block" && $member->block_use_page_header))) {
+      	return check_markup($member->block_page, $member->block_page_format, FALSE);
+      }
+      elseif($type=="block" && !empty($member->block_page)) {
+        return check_markup($member->block_page, $member->block_page_format, FALSE);
+      }
+      else {
+        return t("Warning: there aren't any users to be shown here.");
+      }
+
+    }
+
+}
+
+/**
+ * Arrange fields in correct order (keys in following order)
+ */
+function _members_arrange_fields(&$oldfields) {
+  $fields = array();
+  foreach($oldfields as $field) {
+    $fields[] = $field;
+  }
+  $oldfields = $fields;
+  unset($fields);	
+}
+
+/**
+ * Add an operation button
+ */
+function _members_add_op($key, $op, $count) {
+  $module_path = base_path() . drupal_get_path('module', 'members');
+  $image = "go-" . $op . ".png";
+  $button = array(
+    '#type' => 'members_imagebutton',
+    '#image' => $module_path . '/' . $image,
+    '#title' => ucfirst($op),
+    '#default_value' => 'go-'.$key.'-'.$op,
+  );
+  return $button;
+}
+
+
+/**
+ * Render an operation button
+ */
+function _members_render_op($key, $op, $count, &$field) {
+  if($key==0 && ($op=="up" || $op=="top")) {
+  	unset($field[$key][$op]);
+    return '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+  }
+  if($key==$count && ($op=="down" || $op=="bottom")) {
+  	unset($field[$key][$op]);
+    return '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+  }
+  return drupal_render($field[$key][$op]);
+}
+
+/**
+ * Custom form element to do our nice images.
+ */
+function members_elements() {
+  $type['members_imagebutton'] = array(
+    '#input' => TRUE,
+    '#button_type' => 'submit',
+  );
+  return $type;
+}
+
+/**
+ * Theme the operation button
+ */
+function theme_members_imagebutton($element) {
+  return '<input type="image" class="form-'. $element['#button_type'] .'" name="'. $element['#name'] .'" value="'. check_plain($element['#default_value']) .'" '. drupal_attributes($element['#attributes']) . ' src="' . $element['#image'] . '" alt="' . $element['#title'] . '" title="' . $element['#title'] . "\" />\n";
+}
+
+/**
+ * Theme the settings page
+ */
+function theme_members_edit_page($form) {
+	
+  $output = drupal_render($form['basic-info'], FALSE);
+  $output .= drupal_render($form['page-info'], FALSE);
+  $output .= drupal_render($form['block-info'], FALSE);
+
+  $fields = _members_fields();
+  $tempfields = unserialize($form['tempfields']['#value']);
+  
+  if (!empty($tempfields)) {
+  	$count = count($tempfields) - 1;
+  	foreach($tempfields as $key => $field) {
+      $buttons = _members_render_op($key, 'top', $count, $form['fields']);  		
+      $buttons.= _members_render_op($key, 'up', $count, $form['fields']);
+      $buttons.= _members_render_op($key, 'down', $count, $form['fields']);
+      $buttons.= _members_render_op($key, 'bottom', $count, $form['fields']);
+      $buttons.= _members_render_op($key, 'trash', $count, $form['fields']);
+      $list[] = array(
+        'data' => array($fields[$field], $buttons),
+      );
+    }
+  }
+  else {
+    $list[] = array(
+      'data' => array('You have not selected any fields yet.', ''),
+      'colspan' => '2',
+    );
+  }
+
+  $header = array(t('Field'), t('Ops'));
+  $table = theme('table', $header, $list, array('width' => '100%', 'id' => 'nodequeue-table'));
+  
+  $row[]  = drupal_render($form['field']['select'], FALSE);
+  $row[]  = drupal_render($form['field']['button'], FALSE);  
+  $rows[] = $row;
+
+  $header = array(array('data' => 'Add Field', 'colspan' => count($items)));
+  $table.= theme('table', $header, $rows) . "<br />" . t('Add all fields you want to display in the members list.');
+
+  $output .= theme('fieldset', array(
+    '#title' => t('Fields'),
+    '#children' => $table,
+    '#collapsible' => TRUE,
+    '#collapsed' => $collapsed,
+  ));
+  
+  $output.= drupal_render($form);
+  return $output;
+}

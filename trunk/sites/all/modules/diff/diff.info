@@ -1,0 +1,9 @@
+; $Id: diff.info,v 1.2 2007/06/13 19:43:20 dww Exp $
+name = Diff
+description = Show difference between node revisions.
+
+; Information added by drupal.org packaging script on 2008-03-15
+version = "5.x-2.0"
+project = "diff"
+datestamp = "1205545805"
+

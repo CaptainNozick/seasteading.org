@@ -1,0 +1,773 @@
+/*
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Title : Main CSS
+Author : Helldesign
+URL : http://www.helldesign.net
+
+Description : This is the main stylesheet
+
+Created : 09-04-2008
+Modified :
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+*/
+
+/****************************************************************
+	BASIC
+****************************************************************/
+body {
+	background:#0592c6 url('images/bg.gif') 0 0 repeat-x;
+	margin: 0;
+	min-width:776px;
+	padding: 0 4px;
+	text-align:center;
+}
+body,input,textarea,select,td,th {
+	color:#4d4d4d;
+	font: 12px Arial, Verdana, Tahoma, sans-serif;
+}
+a,
+a:active,
+a.active,
+a:link, a:visited {
+	color:#0079b1;
+	text-decoration:none;
+}
+a:hover {
+	text-decoration:underline;
+}
+input {
+	font: 11px/100% Arial;
+	color: #797979;
+}
+textarea, select {
+	font: 11px/160% Arial;
+	color: #797979;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 0;
+	font-weight: normal;
+	font-family: Helvetica, Arial, sans-serif;
+}
+h2 {
+	color:#00435b;
+	font-size:14px;
+	margin:0 0 4px;
+
+}
+#content-wrapper h2 {
+	border-bottom:1px solid #c6e2ed;
+	margin:0 0 4px;
+	padding:0 0 4px;
+
+}
+ul, quote, code, fieldset {
+	margin: .5em 0;
+}
+p {
+	margin: 0.6em 0 1.2em;
+	padding: 0;
+}
+hr {
+	margin: 0;
+	padding: 0;
+	border: none;
+	height: 1px;
+	background: #5294c1;
+}
+ul {
+	margin: 0.5em 0 1em;
+	padding: 0;
+}
+ul li {
+	margin: 0.4em 0 0.4em .5em;
+}
+dl {
+	margin: 0.5em 0 1em 1.5em;
+}
+
+dl dt {
+}
+
+dl dd {
+	margin: 0 0 .5em 1.5em;
+}
+
+img, a img {
+	border: none;
+}
+
+table {
+	margin: 23px 0;
+	width: 100%;
+}
+
+thead th {
+	background:#00435b;
+	border-bottom:1px solid #fff;
+	color:#fff;
+	font-weight: bold;
+}
+td, th {
+	padding: 9px 12px;
+}
+tbody th, tbody td {
+	background: #e8eef0 url('images/bg_td.gif') 0 100% repeat-x;
+	border:none;
+	line-height: 130%;
+}
+tbody a, tbody a:active, tbody a.active, tbody  a:link, tbody a:visited {
+	color:#0592c6;
+	font-weight:bold;
+}
+tbody td.region, tbody td.module, tbody td.container {
+	background:#0592c6 !important;
+	border:none !important;
+	color:#fff;
+	font-weight:bold;
+}
+td.region .name a,td.module .name a,td.container .name a {
+	color:#fffdd4;
+	font-size:14px;
+}
+td.container .description {
+	color: #fff;
+	line-height: 110%;
+	font-weight:bold;
+	margin-bottom: 0;
+}
+td.forum div {
+	margin:0 !important;
+}
+td.topics, td.posts, td.last-reply {
+	text-align:center;
+}
+tr.even, tr.odd {
+	background:none;
+	border:none;
+}
+span.form-required {
+	color: #ffae00;
+}
+span.submitted, .description {
+	color: #4d4d4d;
+	font-size: 12px;
+}
+.description {
+	line-height: 120%;
+	margin-bottom: 0.75em;
+	color: #4d4d4d;
+}
+.messages, .preview {
+	margin: .75em 0 .75em;
+	padding: .5em 1em;
+}
+.messages ul {
+	margin: 0;
+}
+.form-checkboxes, .form-radios, .form-checkboxes .form-item, .form-radios .form-item {
+	margin: 0.25em 0;
+}
+form {
+	margin-bottom: 2em;
+}
+.form-button, .form-submit {
+	margin: 2em 0.5em 1em 0;
+}
+#watchdog-form-overview .form-submit,
+.confirmation .form-submit,
+.search-form .form-submit,
+.poll .form-submit,
+fieldset .form-button, fieldset .form-submit,
+.sidebar .form-button, .sidebar .form-submit,
+table .form-button, table .form-submit {
+	margin: 0;
+}
+
+
+
+.node {
+	border-bottom:1px solid #c6e2ed;
+	margin:0 0 8px;
+	padding:0 0 8px;
+}
+#root .links,
+.more-link a {
+	font-size:11px;
+	font-weight:bold;
+	text-align:right;
+}
+.more-link {
+	margin-top:-3px;
+	position:relative;
+}
+ul.links li {
+	padding:0 0 0 1em;
+}
+ul.menu,.item-list ul {
+	margin:.35em 0 0 0;
+	padding:0;
+}
+
+ul.menu ul,.item-list ul ul {
+	margin-left:0;
+}
+
+ul li,ul.menu li,.item-list ul li,li.leaf {
+	background: url('images/arrow_2.gif') 5px 6px no-repeat;
+	margin:0 0 3px;
+	padding:0 0 0 23px;
+}
+.clr:after{
+	content: "."; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+
+/****************************************************************
+	GRID
+****************************************************************/
+#root {
+	line-height:1.65em;
+	margin:0 auto;
+	padding:0 0 10px;
+	text-align:left;
+	width:776px;
+	/*width:100%;*/
+}
+.scalable #root {
+	width:100%;
+}
+#wrapper-1 {
+	background:#00435b;
+	padding:3px;
+}
+/****************************************************************
+	Header
+****************************************************************/
+#header {
+	height:82px;
+	position:relative;
+	overflow:hidden;
+}
+	#header h1#logo {
+		background: url('images/logo.gif') 0 0 no-repeat;
+		height:47px;
+		left:3px;
+		margin:0;
+		padding:0;
+		position:absolute;
+		top:17px;
+		width:316px;
+	}
+		#header h1#logo a {
+			display:block;
+			height:47px;
+		}
+		#header h1#logo span {
+			display:none;
+		}
+	/* #block-user-0 */
+	#block-user-0 {
+		float:right;
+		width:304px
+	}
+	#block-user-0 .content {
+		margin:0;
+		padding:0;
+	}
+		#block-user-0 form {
+			margin:0;
+			padding:31px 0 0;
+		}
+			#block-user-0 .logged-in {
+				color:#fff;
+				margin:0;
+				padding:37px 20px 0 0;
+				text-align:right;
+			}
+			#block-user-0 .logged-in a {
+				color:#fff;
+				text-decoration:underline;
+			}
+			#block-user-0 .logged-in a:hover {
+				text-decoration:none;
+			}
+			#block-user-0 form a.register {
+				background: url('images/bg_button_register_l.gif') 0 0 no-repeat;
+				color:#0079b1;
+				display:block;
+				float:left;
+				font-size:11px;
+				font-weight:bold;
+				margin:0 5px 0 0;
+				padding:0 0 0 6px;
+			}
+			#block-user-0 form a.register:hover {
+				color:#e6632b;
+				text-decoration:none;
+			}
+				#block-user-0 form a.register span {
+					background: url('images/bg_button_register_r.gif') 100% 0 no-repeat;
+					cursor:hand;
+					display:block;
+					height:21px;
+					heigh\t:20px;
+					padding:1px 6px 0 0;
+				}
+		#block-user-0 form span.or {
+			color:#fff;
+			float:left;
+			font-size:11px;
+			margin:0 5px 0 0;
+		}
+		#block-user-0 form .form-item {
+			margin:0;
+		}
+			#block-user-0 form input.form-text {
+				background:#fff;
+				border:none;
+				border-left:1px solid #8dc7e0;
+				border-top:1px solid #8dc7e0;
+				float:left;
+				height:21px;
+				heigh\t:18px;
+				margin:0 3px 0 0;
+				padding:2px 0 0 5px;
+				width:99px;
+				widt\h:93px;
+			}
+			#block-user-0 form input.form-submit {
+				float:left;
+				margin:1px 0 0;
+			}
+		#block-user-0 form p.forgot {
+			clear:left;
+			margin:0;
+			padding:0;
+			text-align:right;
+		}
+			#block-user-0 form p.forgot a {
+				background: url('images/underline_1.gif') 0 100% repeat-x;
+				color:#b3deed;
+				font-size:9px;
+				font-weight:bold;
+			}
+			#block-user-0 form p.forgot a:hover {
+				background:none;
+				text-decoration:none;
+			}
+/****************************************************************
+	block-menu-2
+****************************************************************/
+#block-menu-2 .content,
+#block-menu-2 ul.menu,
+#block-menu-2 ul.menu li {
+	margin:0;
+	padding:0;
+}
+#block-menu-2 .content {
+	background: url('images/bg_menu.gif') 0 0 repeat-x;
+}
+#block-menu-2 .content:after{
+	content: "."; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+#block-menu-2 ul.menu {
+	background: url('images/bg_menu_ul.gif') 0 0 repeat-x;
+	height:28px;
+	float:left;
+	margin:0 0 3px;
+}
+	#block-menu-2 ul.menu li {
+		float:left;
+		list-style:none;
+		background-position: 50% 0;
+		background-repeat:no-repeat;
+		height:28px;
+		margin:0 1px 0 0;
+		position: relative;
+		text-indent:-10000px;
+	}
+	#block-menu-2 ul.menu li:hover ul {
+		display: block;
+	}
+	
+	#block-menu-2 ul.menu li.menu-new,
+	#block-menu-2 ul.menu li.menu-new a {
+		background-image: url("images/bg_menu-new.gif");
+		width:164px;
+	}
+	
+	#block-menu-2 ul.menu li.menu-learn-more,
+	#block-menu-2 ul.menu li.menu-learn-more a {
+		background-image: url("images/bg_menu-learn-more.gif");
+		width:118px;
+	}
+	
+	#block-menu-2 ul.menu li.menu-interact,
+	#block-menu-2 ul.menu li.menu-interact a {
+		background-image: url("images/bg_menu-interact.gif");
+		width:104px;
+	}
+	
+	#block-menu-2 ul.menu li.menu-stay-in-touch,
+	#block-menu-2 ul.menu li.menu-stay-in-touch a {
+		background-image: url("images/bg_menu-stay-in-touch.gif");
+		width:128px;
+	}
+	
+	#block-menu-2 ul.menu li.menu-contribute,
+	#block-menu-2 ul.menu li.menu-contribute a {
+		background-image: url("images/bg_menu-contribute.gif");
+		width:117px;
+	}
+	
+	#block-menu-2 ul.menu li.menu-strategic-areas,
+	#block-menu-2 ul.menu li.menu-strategic-areas a {
+		background-image: url("images/bg_menu-strategic-areas.gif");
+		width:134px;
+		margin:0;
+	}
+	#block-menu-2 ul.menu li a {
+		background-position: 50% 0;
+		display: block;
+		height:28px;
+	}
+	#block-menu-2 ul.menu li.expanded, 
+	#block-menu-2 ul.menu li.expanded a {
+		background-position:50% 0;
+	}
+	#block-menu-2 ul.menu li a:hover,
+	#block-menu-2 ul.menu li.active,
+	#block-menu-2 ul.menu li.active a{
+		background-position: 50% -128px;
+	}
+		#block-menu-2 ul.menu li a span {
+			display: none;
+		}
+		/* level II */
+		#block-menu-2 ul.menu li ul {
+			background:none !important;
+			display: none;
+			left: -1px;
+			position: absolute;
+			padding: 0 0 0 1px;
+			top: 28px;
+		}
+			#block-menu-2 ul.menu li.menu-contribute ul li a {
+				width:190px;
+			}
+		
+		#block-menu-2 ul.menu li ul li {
+			background:#00435b !important;
+			border: 0;
+			border-bottom:1px solid #255e73;
+			display: block;
+			float: none;
+			height:auto;
+			margin:0;
+			padding:0;
+			width:100% !important;
+			text-indent:0;
+		}
+			#block-menu-2 ul.menu li ul li a {
+				color:#e4e4e4;
+				background:none !important;
+				font-size:11px;
+				height:auto;
+				padding:2px 0 0;
+				text-indent:16px;
+			}
+			#block-menu-2 ul.menu li ul li a:hover {
+				color:#e4e4e4;
+				background:#0592c6 !important;
+				text-decoration:none;
+			}
+/****************************************************************
+	Footer
+****************************************************************/
+#footer #mission {
+	background: url('images/bg_mission.gif') 0 10px no-repeat;
+	border:none;
+	float:left;
+	height:35px;
+	margin:0;
+	padding:0;
+	width:478px;
+	text-indent:-10000px;
+}
+
+#footer .design-info{
+	color:#60badb;
+	float:right;
+	font-size:11px;
+	padding:5px 2px 0 0;
+}
+	#footer .design-info a {
+		color:#60badb;
+	}
+		#footer .copy {
+			float:left;
+			text-align:right;
+			padding:0 3px 0 0;
+		}
+		#footer h1.design{
+			float:left;
+			font-size:11px;
+			font-weight:normal;
+			margin:0;
+			padding:0;
+			text-align:right;
+		}
+			#footer h1.design a {
+				background: url('images/logo_helldesign.gif') 100% 4px no-repeat;
+				padding:6px 12px 2px 0;
+				z-index:100;
+			}
+			#footer h1.design a span {
+				display:none;
+			}
+/****************************************************************
+	banner
+****************************************************************/
+#banner {
+	background: #005a97 url('images/banner_home.jpg') 0 0 no-repeat;
+	height:264px;
+	margin:0 0 3px;
+}
+	#banner h2 {
+		display:none;
+	}
+/****************************************************************
+	banner-sub
+****************************************************************/
+#banner-sub {
+	background-color: #00435b;
+	background-position:100% 0;
+	background-repeat:no-repeat;
+	height:87px;
+	margin:0 0 3px;
+}
+	#banner-sub h2 {
+		display:none;
+	}
+	.banner-interact {
+		background-image:url('images/banner_interact.jpg');
+	}
+/****************************************************************
+	content-home
+****************************************************************/
+#content-home:after{
+	content: "."; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+#content-home {
+	background: #fff url('images/bg_content-home.gif') 0 0 no-repeat;
+	padding:18px 3px 0;
+}
+/****************************************************************
+	key_areas
+****************************************************************/
+#key_areas {
+	float:left;
+	padding: 0 20px;
+	width:204px;
+	widt\h:164px;
+}
+	#block-menu-83 .content,
+	#block-menu-83 ul.menu,
+	#block-menu-83 ul.menu li {
+		margin:0;
+		padding:0;
+	}
+		#block-menu-83 ul.menu li {
+			background: url('images/line_1.gif') 32px 100% no-repeat;
+		}
+		#block-menu-83 ul.menu li.menu-about-tsi {
+			background:none;
+		}
+		#block-menu-83 ul.menu li a {
+			background: url('images/arrow_1.gif') 0 7px no-repeat;
+			color:#0079b1;
+			font-weight:bold;
+			padding:4px 0 4px 32px;
+		}
+		#block-menu-83 ul.menu li a:hover,
+		#block-menu-83 ul.menu li.active a{
+			background: url('images/arrow_1.gif') 0 -109px no-repeat;
+			color:#828282;
+			text-decoration:none;
+		}
+/****************************************************************
+	press_releases
+****************************************************************/
+#press_releases {
+	float:left;
+	padding: 0 19px 0 22px;
+	width:356px;
+	widt\h:315px;
+}
+	/* #press_releases .header */
+	#press_releases .header {
+		position:relative;
+		padding:0 100px 0 0;
+	}
+	#press_releases .header .feed-icon {
+		color:#3399cc;
+		font-size:9px;
+		padding:0;
+		position:absolute;
+		right:5px;
+		top:0;
+	}
+	#press_releases .header .feed-icon:hover {
+		color:#ffa400;
+		text-decoration:none;
+	}
+		#press_releases .header .feed-icon img{
+			margin:0 0 0 3px;
+			vertical-align:middle;
+		}
+	/* #press_releases #block-views-press_releases */
+	#block-views-press_releases .content {
+		margin:0;
+		padding:0;
+	}
+	#block-views-press_releases .node h2 {
+		color:#0079b1;
+		font-size:12px;
+		font-weight:normal;
+		margin:-3px 0 4px;
+		padding:0;
+		position:relative;
+	}
+/****************************************************************
+	forum_blogs
+****************************************************************/
+#forum_blogs {
+	float:right;
+	padding: 0 16px 0 22px;
+	width:204px;
+	widt\h:166px;
+}
+	/* block-views-active_topics */
+	#block-views-active_topics {
+		border-bottom:1px solid #c6e2ed;
+		margin:0 0 8px;
+		padding:0;
+		position:relative;
+	}
+		#block-views-active_topics h2 {
+			padding-right:15px;
+		}
+		#block-views-active_topics .view-header p {
+			margin:0;
+			padding:0;
+		}
+		#block-views-active_topics .view-header a {
+			background: url('../../../../misc/feed.png') 0 0 no-repeat;
+			display:block;
+			height:16px;
+			position:absolute;
+			right:-5px;
+			top:2px;
+			width:16px;
+			z-index:100;
+		}
+		#block-views-active_topics .view-header span {
+			display:none;
+		}
+/* block-views-recent_blog_posts */
+	#block-views-recent_blog_posts {
+		position:relative;
+	}
+		#block-views-recent_blog_posts h2 {
+			padding-right:15px;
+		}
+		#block-views-recent_blog_posts .view-header p {
+			margin:0;
+			padding:0;
+		}
+		#block-views-recent_blog_posts .view-header a {
+			background: url('../../../../misc/feed.png') 0 0 no-repeat;
+			display:block;
+			height:16px;
+			position:absolute;
+			right:-5px;
+			top:2px;
+			width:16px;
+			z-index:100;
+		}
+		#block-views-recent_blog_posts .view-header span {
+			display:none;
+		}
+/****************************************************************
+	content-forum - forum
+****************************************************************/
+#content-1:after{
+	content: "."; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+/****************************************************************
+	sidebar
+****************************************************************/
+#sidebar {
+	background: #fff url('images/bg_submenu.gif') 0 0 no-repeat;
+	float:left;
+	padding: 16px 20px 13px;
+	width:204px;
+	widt\h:164px;
+}
+	#sidebar h2 {
+		margin:0 0 8px;
+	}
+	#sidebar #block-menu-83 ul.menu li{
+		font-size:11px;
+	}
+#sidebar #block-menu-83 ul.menu li.menu-wiki {
+	background:none;
+}
+/****************************************************************
+	content-wrapper
+****************************************************************/
+#content-wrapper {
+	background:#fff url('images/bg_content-wrapper.gif') 0 0 no-repeat;
+	margin: 0 0 0 207px;
+}
+#content-wrapper-1 {
+	background:url('images/bg_content-wrapper-1.gif') 100% 0 no-repeat;
+	padding:16px 23px 1px 22px;
+}
+/****************************************************************
+	forum
+****************************************************************/
+#forum ul li {
+	background: url('images/arrow_1.gif') 0 7px no-repeat;
+	margin:0;
+	padding:4px 0 4px 29px;
+}
+	#forum ul li a {
+		color:#0079b1;
+		font-weight:bold;
+	}
+	#forum ul li a:hover {
+		color:#828282;
+		text-decoration:none;
+	}
+#forum table{
+	margin-top:0;
+}

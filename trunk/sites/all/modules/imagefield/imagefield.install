@@ -1,0 +1,78 @@
+<?php
+// $Id: imagefield.install,v 1.2.2.1 2007/04/18 20:59:08 quicksketch Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function imagefield_install() {
+}
+
+
+/**
+ * Data is now stored in per-field tables.
+ */
+function imagefield_update_1() {
+  $ret = array();
+  
+  include_once(drupal_get_path('module', 'content') .'/content.module');
+  include_once(drupal_get_path('module', 'content') .'/content_admin.inc');
+
+  
+
+  $fields = content_fields();
+
+  foreach ($fields as $field) {
+    switch ($field['type']) {
+      case 'file':
+        $columns = array(
+          'list' => array('type' => 'int', 'not null' => TRUE, 'default' => '0'),
+        );
+        content_alter_db_field(array(), array(), $field, $columns);
+        break;
+    }
+  }
+  db_query('DELETE FROM {cache}');
+  return $ret;
+}
+
+
+
+
+
+/**
+ * Schema change to enable alt and title tags.
+ */
+
+function imagefield_update_2() {
+  $ret = array();
+
+  include_once(drupal_get_path('module', 'content') .'/content.module');
+  include_once(drupal_get_path('module', 'content') .'/content_admin.inc');
+
+  $fields = content_fields();
+
+  foreach ($fields as $field) {
+    switch ($field['type']) {
+      case 'image':
+        $oldcolumns = array(
+          'fid' => array('type' => 'int', 'not null' => TRUE, 'default' => '0'),
+        );
+        $newcolumns = array(
+          'fid' => array('type' => 'int', 'not null' => TRUE, 'default' => '0'),
+          'title' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => "''", 'sortable' => TRUE),
+          'alt' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => "''", 'sortable' => TRUE),
+        );
+        content_alter_db_field($field, $oldcolumns, $field, $newcolumns);
+        break;
+    }
+    drupal_set_message('altered: <br /><pre>'. print_r($field, true) .'</pre>');
+  }
+
+
+  db_query('DELETE FROM {cache}');
+  return $ret;
+}
+
+
+
+

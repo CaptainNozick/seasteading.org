@@ -1,0 +1,153 @@
+<?php
+/* $Id$ */
+
+/**
+* Display help and module information
+* @param section which section of the site we're displaying help
+* @return help text for section
+*/
+function icalnews_help($section='') {
+
+	$output = '';
+
+	switch ($section) {
+		case "admin/help/icalnews":
+		$output = '<p>'. t("Parses iCal feed and displays latest x items in a block."). '</p>';
+		break;
+	}
+
+	return $output;
+} 
+
+
+/**
+* Valid permissions for this module
+* @return array An array of valid permissions for the onthisdate module
+*/
+function icalnews_perm() {
+	return array('access content');
+} // function cmsignup_perm()
+
+/**
+* Generate HTML for the iCalNews block
+* @param op the operation from the URL
+* @param delta offset
+* @returns block HTML
+*/
+function icalnews_block($op='list', $delta=0) {
+	// listing of blocks, such as on the admin/block page
+	if ($op == "list") {
+		$block[0]["info"] = t('iCal News');
+		return $block;
+	} else if ($op == 'view') {
+		$block_content = '<div class="news"><ul>';
+		// Getting iCal parsing library
+		require_once('parse_ics.php');
+		$ical_url = variable_get('icalnews_url', 'http://movement.meetup.com/72/calendar/ical/Bay+Area+Seasteading+Socials');
+		$ical_count = variable_get('icalnews_items', 3);
+		$ical_zone_offset = variable_get('icalnews_tz_offset', 0);
+		$ical_more = variable_get('icalnews_more', '');
+		$ical_trim = variable_get('icalnews_trim', 15);
+		$ical = parse_ical($ical_url);
+		for ($i=1;($i<count($ical) && $i<=$ical_count);$i++) {
+			$desc = explode(' ',strip_tags( str_replace(array('<br>','<br/>','<br />'),array(' ',' ',' '),htmlspecialchars_decode($ical[$i]['description'], ENT_NOQUOTES)) ));
+			$desc = array_slice($desc,9);
+			$desc_temp = array_slice($desc, 0, $ical_trim);
+			$desc = implode(' ',$desc_temp);
+			$block_content .= '<li>';
+			$block_content .= '<h4 class="date">'.date(variable_get('icalnews_date_ptrn', 'M d, Y g:i A'), ( (int) $ical[$i]['start_unix'] + (int) $ical_zone_offset)).'</h4>';
+			
+			
+			$block_content .= '<h3 class="title"><a href="'.$ical[$i]['url'].'">'.$ical[$i]['summary'].'</a></h3>';
+			$block_content .= '<p>'.$desc.'&hellip;</p>';
+			$block_content .= '</li>';
+		}
+		$block_content .= '</ul>';
+		if ($ical_more != '') {
+			$block_content .= '<p class="more"><a href="'.$ical_more.'">'.t('More').'</a></p>';
+		}
+		$block_content .= '</div>';
+		
+		// set up the block
+		$block['subject'] = 'iCalendar';
+		$block['content'] = $block_content;
+		return $block;
+	}
+
+} // end icalnews_block
+
+function icalnews_menu() {
+
+	$items = array();
+
+	$items[] = array(
+		'path' => 'admin/settings/icalnews',
+		'title' => t('iCal News Module'),
+		'callback' => 'drupal_get_form',
+		'callback arguments' => 'icalnews_admin',
+		'access' => user_access('access administration pages'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+	return $items;
+	
+}
+
+function icalnews_admin() {
+	
+	
+	$form['icalnews_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('URL of the iCal'),
+    '#default_value' => variable_get('icalnews_url', ''),
+    '#size' => 40,
+    '#maxlength' => 99,
+    '#description' => t("Full, valid HTTP link to the iCal file (ie. 'http://movement.meetup.com/72/calendar/ical/Bay+Area+Seasteading+Socials')")
+  );
+	
+	$form['icalnews_items'] = array(
+    '#type' => 'textfield',
+    '#title' => t('How many items to show'),
+    '#default_value' => variable_get('icalnews_items', 3),
+    '#size' => 2,
+    '#maxlength' => 2,
+    '#description' => t("How many items should be shown in the block.")
+  );
+	
+	$form['icalnews_date_ptrn'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Date pattern'),
+    '#default_value' => variable_get('icalnews_date_ptrn', 'M d, Y g:i A'),
+    '#size' => 40,
+    '#maxlength' => 99,
+    '#description' => t("Date pattern to format event dates (for more details see http://php.net/manual/en/function.date.php)")
+  );
+	
+	$form['icalnews_tz_offset'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Time Zone Offset'),
+    '#default_value' => variable_get('icalnews_tz_offset', -25200),
+    '#size' => 40,
+    '#maxlength' => 99,
+    '#description' => t("Time zone offset, in seconds. Sign matters.")
+  );
+	
+	$form['icalnews_trim'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Trim descriptions to x words'),
+    '#default_value' => variable_get('icalnews_trim', 15),
+    '#size' => 2,
+    '#maxlength' => 4,
+    '#description' => t("Amount of words that should be displayed in an item's descriptoin. The rest will be trimmed.")
+  );
+	
+	$form['icalnews_more'] = array(
+    '#type' => 'textfield',
+    '#title' => t('"More" link URL'),
+    '#default_value' => variable_get('icalnews_more', ''),
+    '#size' => 40,
+    '#maxlength' => 99,
+    '#description' => t("URL of the 'More' link in the block. If empty, the link won't be shown.")
+  );
+	
+  return system_settings_form($form);
+}

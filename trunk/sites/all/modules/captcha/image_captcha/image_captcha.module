@@ -1,0 +1,632 @@
+<?php
+// $Id: image_captcha.module,v 1.1.4.25 2007/11/27 23:47:02 soxofaan Exp $
+
+/**
+ * Implementation of image CAPTCHA for use with the CAPTCHA module
+ *
+ * Loosely Based on MyCaptcha by Heine Deelstra
+ * (http://heine.familiedeelstra.com/mycaptcha-download)
+ *
+ */
+
+define('IMAGE_CAPTCHA_ALLOWED_CHARACTERS', 'aAbBCdEeFfGHhijKLMmNPQRrSTtWXYZ23456789%$#!@+?*');
+
+/**
+ * Implementation of hook_help().
+ */
+function image_captcha_help($section) {
+  switch ($section) {
+    case 'admin/user/captcha/image_captcha':
+      $output = '<p>'. t('The image CAPTCHA is a popular challenge where a random textual code is obfuscated in an image. The image is generated on the fly for each request, which is rather CPU intensive for the server. Be carefull with the size and computation related settings.') .'</p>';
+      if (in_array('Image', image_captcha_captcha('list'))) {
+        $result = image_captcha_captcha('generate', 'Image');
+        $img = $result['form']['captcha_image']['#value'];
+        $output .= t('<p>Example image, generated with the current settings:</p>!img', array('!img' => $img));
+      }
+      return $output;
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function image_captcha_menu($may_cache) {
+  $items = array();
+  if ($may_cache) {
+    // add an administration tab for image_captcha
+    $items[] = array(
+      'path' => 'admin/user/captcha/image_captcha',
+      'title' => t('Image CAPTCHA'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('image_captcha_settings_form'),
+      'type' => MENU_LOCAL_TASK,
+    );
+    // callback for generating an image
+    $items[] = array(
+      'path' => 'image_captcha',
+      'type' => MENU_CALLBACK,
+      'access' => TRUE,
+      'callback' => 'image_captcha_image',
+    );
+  }
+  return $items;
+}
+
+
+/*
+ * Implementation of hook_requirements()
+ * @todo these checks should be for the install phase,
+ * but this is not possible now for contributed modules (modules outside the
+ * drupal/modules directory)
+ */
+function image_captcha_requirements($phase) {
+  $requirements = array();
+  $t = get_t();
+  if ($phase == 'runtime') {
+   if (function_exists('imagegd2')) {
+      $gd_info = gd_info();
+      if (!$gd_info['FreeType Support']) {
+        $requirements['image_captcha_ft'] = array(
+          'title' => $t('Image CAPTCHA'),
+          'value' => $t('No FreeType support'),
+          'description' => $t('FreeType support is required for working with TrueType fonts (.ttf), but the GD library for PHP does not support it.'),
+          'severity' => REQUIREMENT_ERROR,
+        );
+      }
+    }
+    else {
+      $requirements['image_captcha_gd'] = array(
+        'title' => $t('Image CAPTCHA'),
+        'value' => $t('No GD library'),
+        'description' => $t('The GD library for PHP is missing or outdated. Please check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/en/ref.image.php')),
+        'severity' => REQUIREMENT_ERROR,
+      );
+    }
+  }
+  return $requirements;
+}
+
+
+/**
+ * Returns:
+ *  - the path to the image CAPTCHA font or FALSE when an error occured
+ *  - error message
+ */
+
+function _image_captcha_get_font() {
+  $font = variable_get('image_captcha_font', 'BUILTIN');
+  $errmsg = FALSE;
+  if ($font != 'BUILTIN' && (!is_file($font) || !is_readable($font))) {
+    $errmsg = t('Could not find or read the configured font "%font" for the image captcha.', array('%font' => $font));
+    $font = FALSE;
+  }
+  return array($font, $errmsg);
+}
+
+/**
+ * function to get a list of available fonts
+ */
+function _image_captcha_available_fonts() {
+  $available_fonts = array('BUILTIN' => t('Built-in font'));
+  $fontsdirectories = array(
+    drupal_get_path('module', 'image_captcha') .'/fonts',
+    file_directory_path(),
+  );
+  foreach ($fontsdirectories as $fontsdirectory) {
+    foreach (file_scan_directory($fontsdirectory, '\.[tT][tT][fF]$') as $filename => $font) {
+      $available_fonts[$filename] = "{$font->basename} ($filename)";
+    }
+  }
+  return $available_fonts;
+}
+
+/**
+ * Configuration form for image_captcha
+ */
+function image_captcha_settings_form() {
+  if (!function_exists('imagejpeg')) {
+    drupal_set_message(t('Images cannot be generated, because your PHP installation\'s GD library has no JPEG support.'), 'error');
+  }
+  $form = array();
+  $form['image_captcha_code_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Code settings'),
+  );
+  $form['image_captcha_code_settings']['image_captcha_image_allowed_chars'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Characters to use in the code'),
+    '#default_value' => variable_get('image_captcha_image_allowed_chars', IMAGE_CAPTCHA_ALLOWED_CHARACTERS),
+  );
+  $form['image_captcha_code_settings']['image_captcha_code_length'] = array(
+    '#type' => 'select',
+    '#title' => t('Code length'),
+    '#options' => array(2 => 2, 3, 4, 5, 6, 7, 8, 9, 10),
+    '#default_value' => (int) variable_get('image_captcha_code_length', 5),
+    '#description' => t('The code length influences the size of the image. Note that larger values make the image generation more CPU intensive.'),
+  );
+
+  // font related stuff
+  $form['image_captcha_font_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Font settings'),
+  );
+  $available_fonts = _image_captcha_available_fonts();
+  list($default_font, $errmsg) = _image_captcha_get_font();
+  $form['image_captcha_font_settings']['image_captcha_font'] = array(
+    '#type' => 'select',
+    '#title' => t('Font'),
+    '#default_value' => $default_font,
+    '#description' => t('The TrueType font (.ttf) to use for the text in the image CAPTCHA.'),
+    '#options' => $available_fonts,
+  );
+  // add a prerender procedure for checking that a font should be set.
+  $form['#pre_render'] = array('image_captcha_settings_form_pre_render');
+  // font size
+  if ($default_font != 'BUILTIN') {
+    $form['image_captcha_font_settings']['image_captcha_font_size'] = array(
+      '#type' => 'select',
+      '#title' => t('Font size'),
+      '#options' => array(
+        12 => t('tiny'),
+        20 => t('small'),
+        30 => t('normal'),
+        40 => t('large'),
+      ),
+      '#default_value' => (int) variable_get('image_captcha_font_size', 30),
+      '#description' => t('The font size influences the size of the image. Note that larger values make the image generation more CPU intensive.'),
+    );
+  }
+  // character spacing
+  $form['image_captcha_font_settings']['image_captcha_character_spacing'] = array(
+    '#type' => 'select',
+    '#title' => t('Character spacing'),
+    '#description' => t('Define the average spacing between characters. Note that larger values make the image generation more CPU intensive.'),
+    '#default_value' => variable_get('image_captcha_character_spacing', '1.2'),
+    '#options' => array(
+      '1' => t('small'),
+      '1.2' => t('normal'),
+      '1.5' => t('large'),
+    ),
+  );
+
+  // distortion and noise settings
+  $form['image_captcha_distortion_and_noise'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Distortion and noise'),
+    '#description' => t('With these settings you can control the degree of obfuscation by distortion and added noise. Do not exaggerate the obfuscation and assure that the code in the image is reasonably readable. For example, do not combine high levels of distortion and noise.'),
+  );
+  // distortion
+  $form['image_captcha_distortion_and_noise']['image_captcha_distortion_amplitude'] = array(
+    '#type' => 'select',
+    '#title' => t('Distortion level'),
+    '#options' => array(
+      0 => t('none'),
+      2 => t('low'),
+      4 => t('moderate'),
+      6 => t('normal'),
+      8 => t('high'),
+      10 => t('severe'),
+    ),
+    '#default_value' => (int) variable_get('image_captcha_distortion_amplitude', 6),
+    '#description' => t('Set the degree of wave distortion in the image.'),
+  );
+  $form['image_captcha_distortion_and_noise']['image_captcha_bilinair_interpolation'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Smooth distortion'),
+    '#default_value' => variable_get('image_captcha_bilinair_interpolation', FALSE),
+    '#description' => t('This option enables bilineair interpolation of the distortion which makes the image look smoother, but it is more CPU intensive.'),
+  );
+  //double vision
+  $form['image_captcha_distortion_and_noise']['image_captcha_double_vision'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Double vision'),
+    '#default_value' => variable_get('image_captcha_double_vision', 0),
+    '#description' => t('When enabled, characters appear twice in the image, overlayed onto each other.'),
+  );
+  // noise
+  $form['image_captcha_distortion_and_noise']['image_captcha_dot_noise'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add salt and peper noise'),
+    '#default_value' => variable_get('image_captcha_dot_noise', 0),
+    '#description' => t('This option adds randomly colored point noise.'),
+  );
+  $form['image_captcha_distortion_and_noise']['image_captcha_line_noise'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add line noise'),
+    '#default_value' => variable_get('image_captcha_line_noise', 0),
+    '#description' => t('This option enables lines randomly drawn on top of the text code.'),
+  );
+  $form['image_captcha_distortion_and_noise']['image_captcha_noise_level'] = array(
+    '#type' => 'select',
+    '#title' => t('Noise level'),
+    '#options' => array(
+      2 => t('low'),
+      5 => t('normal'),
+      7 => t('high'),
+      10 => t('severe'),
+    ),
+    '#default_value' => (int) variable_get('image_captcha_noise_level', 5),
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Pre render function for image_captcha_settings_form
+ */
+function image_captcha_settings_form_pre_render($form_id, $form) {
+  if (count($form['image_captcha_font_settings']['image_captcha_font']['#options']) == 1) {
+    drupal_set_message(t('The image captcha module works best with a TrueType font file (TTF) for generating the images, but because of licencing issues it is not allowed to package fonts with the module. A simple built-in bitmap font is provided as default instead. You can install TrueType fonts yourself by putting them in the fonts directory of the image captcha module (directory "%fontsdir") or by uploading them to your Drupal file system (directory "%filesdir") with for example the upload module.', array('%fontsdir' => drupal_get_path('module', 'image_captcha') .'/fonts', '%filesdir' => file_directory_path())), 'warning');
+  }
+  if ($form['image_captcha_font_settings']['image_captcha_font']['#default_value'] == 'BUILTIN') {
+    drupal_set_message(t('The usage of the built-in bitmap font it is not recommended because of its small size and missing UTF-8 support.'), 'warning');
+  }
+
+}
+
+
+/**
+ * Validation function for image_captcha configuration form
+ */
+function image_captcha_settings_form_validate($form_id, $form_values) {
+  if ($form_id == 'image_captcha_settings_form') {
+    // check image_captcha_image_allowed_chars for spaces
+    if (preg_match('/\s/', $form_values['image_captcha_image_allowed_chars'])) {
+      form_set_error('image_captcha_image_allowed_chars', t('The list of characters to use should not contain spaces.'));
+    }
+    // check font
+    $font = $form_values['image_captcha_font'];
+    if ($font == '0') {
+      form_set_error('image_captcha_font', t('You need to select a font'));
+    }
+    elseif ($font != 'BUILTIN' && (!is_file($font) || !is_readable($font))) {
+      form_set_error('image_captcha_font', t('Font does not exist or is not readable.'));
+    }
+  }
+}
+
+/**
+ * Helper function for splitting an utf8 string correctly in characters.
+ * Assumes the given utf8 string is well formed.
+ * See http://en.wikipedia.org/wiki/Utf8 for more info
+ */
+function _image_captcha_utf8_split($str) {
+  $characters = array();
+  $len = strlen($str);
+  for ($i=0; $i < $len; ) {
+    $chr = ord($str[$i]);
+    if (($chr & 0x80) == 0x00) { // one byte character (0zzzzzzz)
+      $width = 1;
+    }
+    else {
+      if (($chr & 0xE0) == 0xC0) { // two byte character (first byte: 110yyyyy)
+        $width = 2;
+      }
+      elseif (($chr & 0xF0) == 0xE0) { // three byte character (first byte: 1110xxxx)
+        $width = 3;
+      }
+      elseif (($chr & 0xF8) == 0xF0) { // four byte character (first byte: 11110www)
+        $width = 4;
+      }
+      else {
+        watchdog('CAPTCHA', t('Encountered an illegal byte while splitting an utf8 string in characters.'), WATCHDOG_ERROR);
+        return $characters;
+      }
+    }
+    $characters[] = substr($str, $i, $width);
+    $i += $width;
+  }
+  return $characters;
+}
+
+/**
+ * Implementation of hook_captcha
+ */
+function image_captcha_captcha($op, $captcha_type='') {
+  switch ($op) {
+    case 'list':
+      // only offer image CAPTCHA if possible to generate an image CAPTCHA
+      list($font, $errmsg) = _image_captcha_get_font();
+      if (function_exists('imagejpeg') && $font) {
+        return array('Image');
+      }
+      else {
+        return array();
+      }
+    case 'generate':
+      if ($captcha_type == 'Image') {
+        // In offline mode, the image CAPTCHA does not work because the request
+        // for the image itself won't succeed (only ?q=user is permitted for
+        // unauthenticated users). We fall back to the Math CAPTCHA in that case.
+        global $user;
+        if (variable_get('site_offline', FALSE) && $user->uid == 0) {
+          return captcha_captcha('generate', 'Math');
+        }
+        // generate a CAPTCHA code
+        $allowed_chars = _image_captcha_utf8_split(variable_get('image_captcha_image_allowed_chars', IMAGE_CAPTCHA_ALLOWED_CHARACTERS));
+        $code_length = (int)variable_get('image_captcha_code_length', 5);
+        $code = '';
+        for ($i = 0; $i < $code_length; $i++) {
+          $code .= $allowed_chars[array_rand($allowed_chars)];
+        }
+        // store the answer in $_SESSION for the image generator function (which happens in another http request)
+        $seed = mt_rand();
+        $_SESSION['image_captcha'][$seed] = $code;
+        // build the result to return
+        $result = array();
+        $result['solution'] = $code;
+        // Create the image CAPTCHA form elements
+        // The img markup isn't done with theme('image', ...) because that
+        // function needs a path to a real file (not applicable)
+        // or a full absolute URL (which requires to add protocol and domain)
+        $result['form']['captcha_image'] = array(
+          '#type' => 'markup',
+          '#value' => '<img src="'. check_url(url("image_captcha/$seed")) .'" alt="'. t('Image CAPTCHA') .'" title="'. t('Image CAPTCHA') .'" />',
+          '#weight' => -2,
+        );
+        $result['form']['captcha_response'] = array(
+          '#type' => 'textfield',
+          '#title' => t('What code is in the image?'),
+          '#description' => t('Copy the characters (respecting upper/lower case) from the image.'),
+          '#weight' => 0,
+          '#required' => TRUE,
+          '#size' => 15,
+        );
+        return $result;
+      }
+    break;
+  }
+}
+
+/**
+ * menu callback function that generates the CAPTCHA image
+ */
+function image_captcha_image($seed=NULL) {
+  if (!$seed) {
+    return;
+  }
+  // get the code to draw from $_SESSION
+  $code = $_SESSION['image_captcha'][$seed];
+  // unset the code from $_SESSION to prevent rerendering the CAPTCHA
+  unset($_SESSION['image_captcha'][$seed]);
+  // only generate an image if there is an code
+  if ($code) {
+    // generate the image
+    $image = @_image_captcha_generate_image($code);
+    // check of generation was successful
+    if (!$image) {
+      watchdog('CAPTCHA', t('Generation of image CAPTCHA failed. Check your image CAPTCHA configuration and especially the used font.'), WATCHDOG_ERROR);
+      exit();
+    }
+    // Send the image resource as an image to the client
+    drupal_set_header("Content-type: image/jpeg");
+    // Following header is needed for Konqueror, which would re-request the image
+    // on a mouseover event, which failes because the image can only be generated
+    // once. This cache directive forces Konqueror to use cache instead of
+    // re-requesting
+    drupal_set_header("Cache-Control: max-age=3600, must-revalidate");
+    // print the image as jpg to the client
+    imagejpeg($image);
+    // Clean up
+    imagedestroy($image);
+    exit();
+  }
+}
+
+
+/**
+ * base function for generating a image CAPTCHA
+ */
+function _image_captcha_generate_image($code) {
+  // get font
+  list($font, $errmsg) = _image_captcha_get_font();
+  if (!$font) {
+    watchdog('CAPTCHA', $errmsg, WATCHDOG_ERROR);
+    exit();
+  }
+  // get other settings
+  $font_size = (int) variable_get('image_captcha_font_size', 30);
+  $character_spacing = (float) variable_get('image_captcha_character_spacing', '1.2');
+  $characters = _image_captcha_utf8_split($code);
+  $character_quantity = count($characters);
+  $width = $character_spacing * $font_size * $character_quantity;
+  $height = 2 * $font_size;
+
+  // create image resource
+  $image = imagecreatetruecolor($width, $height);
+  if (!$image) {
+    return FALSE;
+  }
+
+  // background
+  $background_color = imagecolorallocate($image, 255, 255, 255);
+  imagefilledrectangle($image, 0, 0, $width, $height, $background_color);
+
+  // draw text
+  if (variable_get('image_captcha_double_vision', 0)) {
+    $result = _image_captcha_image_generator_print_string($image, $width, $height, $font, $font_size, $code, TRUE);
+    if (!$result) {
+      return FALSE;
+    }
+  }
+  $result = _image_captcha_image_generator_print_string($image, $width, $height, $font, $font_size, $code, FALSE);
+  if (!$result) {
+    return FALSE;
+  }
+
+  // add noise
+  $noise_colors = array();
+  for ($i = 0; $i < 20; $i++) {
+    $noise_colors[] = imagecolorallocate($image, mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
+  }
+  // Add additional noise.
+  if (variable_get('image_captcha_dot_noise', 0)) {
+    _image_captcha_image_generator_add_dots($image, $width, $height, $noise_colors);
+  }
+  if (variable_get('image_captcha_line_noise', 0)) {
+    _image_captcha_image_generator_add_lines($image, $width, $height, $noise_colors);
+  }
+
+  // Distort the image.
+  $distortion_amplitude = .25 * $font_size * variable_get('image_captcha_distortion_amplitude', 6) / 10.0;
+  if ($distortion_amplitude > 1) {
+    // distortion parameters
+    $wavelength_xr = (2+3*lcg_value())*$font_size;
+    $wavelength_yr = (2+3*lcg_value())*$font_size;
+    $freq_xr = 2 * 3.141592 / $wavelength_xr;
+    $freq_yr = 2 * 3.141592 / $wavelength_yr;
+    $wavelength_xt = (2+3*lcg_value())*$font_size;
+    $wavelength_yt = (2+3*lcg_value())*$font_size;
+    $freq_xt = 2 * 3.141592 / $wavelength_xt;
+    $freq_yt = 2 * 3.141592 / $wavelength_yt;
+
+    $distorted_image = imagecreatetruecolor($width, $height);
+    if (!$distorted_image) {
+      return FALSE;
+    }
+
+    if (variable_get('image_captcha_bilinair_interpolation', FALSE)) {
+      // distortion with bilineair interpolation
+      for ($x = 0; $x < $width; $x++) {
+        for ($y = 0; $y < $height; $y++) {
+          // get distorted sample point in source image
+          $r = $distortion_amplitude * sin($x * $freq_xr + $y * $freq_yr);
+          $theta = $x * $freq_xt + $y * $freq_yt;
+          $sx = $x + $r * cos($theta);
+          $sy = $y + $r * sin($theta);
+          $sxf = (int)floor($sx);
+          $syf = (int)floor($sy);
+          if ($sxf < 0 || $syf < 0 || $sxf >= $width - 1 || $syf >= $height - 1) {
+            $color = $background_color;
+          }
+          else {
+            // bilineair interpolation: sample at four corners
+            $color_00 = imagecolorat($image, $sxf  , $syf  );
+            $color_00_r = ($color_00 >> 16) & 0xFF;
+            $color_00_g = ($color_00 >> 8) & 0xFF;
+            $color_00_b = $color_00 & 0xFF;
+            $color_10 = imagecolorat($image, $sxf+1, $syf  );
+            $color_10_r = ($color_10 >> 16) & 0xFF;
+            $color_10_g = ($color_10 >> 8) & 0xFF;
+            $color_10_b = $color_10 & 0xFF;
+            $color_01 = imagecolorat($image, $sxf  , $syf+1);
+            $color_01_r = ($color_01 >> 16) & 0xFF;
+            $color_01_g = ($color_01 >> 8) & 0xFF;
+            $color_01_b = $color_01 & 0xFF;
+            $color_11 = imagecolorat($image, $sxf+1, $syf+1);
+            $color_11_r = ($color_11 >> 16) & 0xFF;
+            $color_11_g = ($color_11 >> 8) & 0xFF;
+            $color_11_b = $color_11 & 0xFF;
+            // interpolation factors
+            $u  = $sx - $sxf;
+            $v  = $sy - $syf;
+            // interpolate
+            $r = (int)((1-$v)*((1-$u)*$color_00_r + $u*$color_10_r) + $v*((1-$u)*$color_01_r + $u*$color_11_r));
+            $g = (int)((1-$v)*((1-$u)*$color_00_g + $u*$color_10_g) + $v*((1-$u)*$color_01_g + $u*$color_11_g));
+            $b = (int)((1-$v)*((1-$u)*$color_00_b + $u*$color_10_b) + $v*((1-$u)*$color_01_b + $u*$color_11_b));
+            // build color
+            $color = ($r<<16) + ($g<<8) + $b;
+          }
+          imagesetpixel($distorted_image, $x, $y, $color);
+        }
+      }
+    }
+    else {
+      // distortion with nearest neighbor interpolation
+      for ($x = 0; $x < $width; $x++) {
+        for ($y = 0; $y < $height; $y++) {
+          // get distorted sample point in source image
+          $r = $distortion_amplitude * sin($x * $freq_xr + $y * $freq_yr);
+          $theta = $x * $freq_xt + $y * $freq_yt;
+          $sx = $x + $r * cos($theta);
+          $sy = $y + $r * sin($theta);
+          $sxf = (int)floor($sx);
+          $syf = (int)floor($sy);
+          if ($sxf < 0 || $syf < 0 || $sxf >= $width - 1 || $syf >= $height - 1) {
+            $color = $background_color;
+          }
+          else {
+            $color = imagecolorat($image, $sxf, $syf);
+          }
+          imagesetpixel($distorted_image, $x, $y, $color);
+        }
+      }
+    }
+    // release undistorted image
+    imagedestroy($image);
+    // return distorted image
+    return $distorted_image;
+  }
+  else {
+    return $image;
+  }
+}
+
+function _image_captcha_image_generator_add_lines(&$image, $width, $height, $colors) {
+  $line_quantity = $width * $height/200.0 * ((int) variable_get('image_captcha_noise_level', 5)) / 10.0;
+  for ($i = 0; $i <  $line_quantity; $i++) {
+    imageline($image, mt_rand(0, $width), mt_rand(0, $height), mt_rand(0, $width), mt_rand(0, $height), $colors[array_rand($colors)]);
+  }
+}
+
+function _image_captcha_image_generator_add_dots(&$image, $width, $height, $colors) {
+  $noise_quantity = ($width * $height)/2.0 * ((int) variable_get('image_captcha_noise_level', 5)) / 10.0;
+  for ($i = 0; $i < $noise_quantity; $i++ ) {
+    imagesetpixel($image, mt_rand(0, $width), mt_rand(0, $height), $colors[array_rand($colors)]);
+  }
+}
+
+function _image_captcha_image_generator_print_string(&$image, $width, $height, $font, $font_size, $text, $light_colors=FALSE) {
+  // get characters
+  $characters = _image_captcha_utf8_split($text);
+  $character_quantity = count($characters);
+  // get total width
+  if ($font == 'BUILTIN') {
+    $character_width = imagefontwidth(5);
+    $character_height = imagefontheight(5);
+    $textwidth = $character_quantity * $character_width;
+  }
+  else {
+    $bbox = imagettfbbox($font_size, 0, realpath($font), $text);
+    if (!$bbox) {
+      return FALSE;
+    }
+    $textwidth = $bbox[2] - $bbox[0];
+  }
+  // calculate spacing
+  $spacing = ($width - $textwidth) / ($character_quantity + 1);
+  // character jittering
+  $jittering_x = .3 * $font_size;
+  $jittering_y = .3 * $font_size;
+  // start cursor
+  $x = $spacing;
+  foreach ($characters as $character) {
+    // get character dimensions
+    if ($font != 'BUILTIN') {
+      $bbox = imagettfbbox($font_size, 0, realpath($font), $character);
+      $character_width = $bbox[2] - $bbox[0];
+      $character_height = $bbox[5] - $bbox[3];
+    }
+    // calculate y position
+    $y = .5 * ($height - $character_height);
+    // generate random color
+    if ($light_colors) {
+      $color = imagecolorallocate($image, mt_rand(128, 255), mt_rand(128, 255), mt_rand(128, 255));
+    }
+    else {
+      $color = imagecolorallocate($image, mt_rand(0, 127), mt_rand(0, 127), mt_rand(0, 127));
+    }
+    // add jitter to position
+    $pos_x = $x + mt_rand(-$jittering_x, $jittering_x);
+    $pos_y = $y + mt_rand(-$jittering_y, $jittering_y);
+    // draw character
+    if ($font == 'BUILTIN') {
+      imagestring($image, 5, $pos_x, $pos_y, $character, $color);
+    } else {
+      imagettftext($image, $font_size, 0, $pos_x, $pos_y, $color, realpath($font), $character);
+    }
+    // shift cursor
+    $x += $character_width + $spacing;
+  }
+  // return a sign of success
+  return TRUE;
+}

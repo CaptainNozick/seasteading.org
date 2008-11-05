@@ -1,0 +1,28 @@
+CHANGELOG for Forum Access for Drupal 5
+
+Forum Access 5.x-1.10:
+  Bugs fixed:
+    - #219778: Remove grants when roles are deleted, purge orphaned grants.
+    - Update moderator(s) when changing forum.
+    - #230123: Newest pgsql refuses to do automatic type conversions.
+    - Provide a message for uninitialized forums when newly installed, rather than the incorrect 'default' setting of grant_all for 1 & 2.
+    - #221095: Fix caching in forum_access_access(), by Josh Benner.
+
+Forum Access 5.x-1.9:
+  Bugs fixed:
+    - #175957: Don't disturb the _taxonomy_term_select structure (incompatibility with og_forum!), adapted from Paul Kishimoto.
+  Enhancements:
+    - Implement new hook_node_access_explain().
+    - Remove deprecated db_num_rows() call; see http://drupal.org/node/163191.
+
+
+Forum Access 5.x-1.8:
+  Bugs fixed:
+    - Add caching to forum_access_node_access_records() to improve Rebuild Permissions performance.
+    - Minor coding style fixes.
+    - #166497: Add forum_access_uninstall(), by VeryMisunderstood.
+    - #120161: Allow post access to containers, so they appear in the forums combobox.
+    - #137575: Fix PostgreSQL incompatible queries, by a_m_c.
+    - #146622: Make moderators string translatable, by deelight.
+
+

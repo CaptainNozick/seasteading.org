@@ -1,0 +1,15 @@
+Installation
+------------
+
+1. Copy the members.module to the Drupal modules/ directory.
+
+2. Go to "modules" under "site configuration" in the administration pages and
+   enable the module.
+
+3. Check the "settings" page and set the fields and roles to be displayed
+
+
+Maintainer
+----------
+James Walker <walkah@walkah.net>
+Wim Mostrey <wim@mostrey.be>

@@ -1,0 +1,188 @@
+<?php
+// $Id: nodegoto.module,v 1.2 2007/12/26 02:31:15 introfini Exp $
+/*
+ * Drupal Module: nodegoto
+ * Allows to set a destination page for nodes after: * 
+ *-insert
+ *-update
+ *-delete     
+ * 
+ *
+ * @author: introfini <introfini@gmail.com>
+ */
+function nodegoto_help($section) {
+  switch ($section) {
+     case 'admin/settings/nodegoto':
+      return t("<p>This module allows you to <strong>define any page or URL as the target</strong>, after you:</p>
+<ul>
+  <li>create a node</li>
+  <li>update a node</li>
+  <li>delete a node</li>
+</ul>
+<p>If you have the <a href='@token'>Token module</a> installed you can use dynamic placeholder tokens in your paths.</p>
+<p>It also has the option to send the target page a variable informing from  where it came.</p>", array('@token' => 'http://www.drupal.org/project/token'));
+  }
+}
+/**
+ * Implementation of hook_form_alter().
+ */
+function nodegoto_form_alter($form_id, &$form) {  
+  if (isset($form['type']) && $form['type']['#value'].'_node_form' == $form_id) {
+    $form['#submit']['nodegoto_node_form_submit'] = array(); 
+  }
+  if ($form_id == 'node_delete_confirm') {
+    $form['#submit']['nodegoto_node_delete_confirm'] = array(); 
+  }      
+}
+/**
+ * Additional submit handlers
+ */
+function nodegoto_node_form_submit($form_id, $form_values) {
+  //insert
+  if (empty($form_values['nid'])) {
+    $nodeto = module_exists('token') ? token_replace(variable_get('nodegoto_insert_'. $form_values['type'], ''), 'node', $node) : variable_get('nodegoto_insert_'. $form_values['type'], '');
+  }
+  //update
+  else {
+    $nodeto = module_exists('token') ? token_replace(variable_get('nodegoto_update_'. $form_values['type'], ''), 'node', $node) : variable_get('nodegoto_update_'. $form_values['type'], '');
+  }
+  if (variable_get('nodegoto_camefrom', 0) == 1) {
+    if($form_values['nid']) {
+      $nid = $form_values['nid']; 
+    }
+    else {
+      $name = db_prefix_tables('{node}_nid');
+      $nid = db_result(db_query("SELECT id FROM {sequences} WHERE name = '%s'", $name));
+    }
+    $camefrom = 'nid='. $nid;
+    return array($nodeto, $camefrom);
+  }
+  else {
+    return $nodeto;
+  }
+}
+
+function nodegoto_node_delete_confirm ($form_id, $form_values) {
+  $node = node_load($form_values['nid']);
+  $nodeto = module_exists('token') ? token_replace(variable_get('nodegoto_delete_'. $node->type, ''), 'node', $node) : variable_get('nodegoto_delete_'. $node->type, '');
+  return $nodeto;
+}
+ 
+function nodegoto_menu($may_cache) {
+  $items = array();
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/settings/nodegoto',
+      'title' => t('Node Go To'),
+      'description' => t('Administer where to send the nodes to.'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('nodegoto_admin_settings'),
+      'access' => user_access('administer site configuration'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+  }
+  return $items;
+}
+function nodegoto_admin_settings() {
+    $nodetypes = node_get_types();
+  
+  $form['nodesinsert'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Set the path to redirect for, when INSERTING'),
+        '#collapsible' => TRUE,
+        '#description' => module_exists('token') ? t('You can set a static path like \'node/1\', a full URL like \'http://www.example.com\', or a dynamic path like \'user/1/track\'. See placeholder token instructions below for more details.'): t('You can set a static path like \'node/1\' or full URL like \'http://www.example.com\''),
+        '#collapsed' => true,
+      );
+  
+  foreach ($nodetypes as $ntype) {      
+  	$form['nodesinsert']['nodegoto_insert_'.$ntype->type] = array(
+      '#type' => 'textfield',
+      '#title' => "Insert the path for $ntype->name",
+      '#default_value' => variable_get('nodegoto_insert_'.$ntype->type,''),
+      '#size' => 75,
+      '#maxlength' => 200,
+      '#required' => FALSE,
+                );    
+   }
+    
+     $form['nodesupdate'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Set the path to redirect for, when UPDATING'),
+      '#description' => module_exists('token') ? t('You can set a static path like \'node/1\', a full URL like \'http://www.example.com\', or a dynamic path like \'user/1/track\'. See placeholder token instructions below for more details.'): t('You can set a static path like \'node/1\' or full URL like \'http://www.example.com\''),
+      '#collapsed' => true,
+      '#collapsible' => TRUE,
+      );
+  
+  foreach ($nodetypes as $ntype) {      
+  	$form['nodesupdate']['nodegoto_update_'.$ntype->type] = array(
+      '#type' => 'textfield',
+      '#title' => "Insert the path for $ntype->name",
+      '#default_value' => variable_get('nodegoto_update_'.$ntype->type,''),
+      '#size' => 75,
+      '#maxlength' => 200,
+      '#required' => FALSE,
+     );    
+   }
+   
+   $form['nodesdelete'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Set the path to redirect for, when DELETING'),
+      '#description' => module_exists('token') ? t('You can set a static path like \'node/1\', a full URL like \'http://www.example.com\', or a dynamic path like \'user/1/track\'. See placeholder token instructions below for more details.'): t('You can set a static path like \'node/1\' or full URL like \'http://www.example.com\''),
+      '#collapsed' => true,
+      '#collapsible' => TRUE,
+      );
+  
+  foreach ($nodetypes as $ntype) {      
+  	$form['nodesdelete']['nodegoto_delete_'.$ntype->type] = array(
+      '#type' => 'textfield',
+      '#title' => "Insert the path for $ntype->name",
+      '#default_value' => variable_get('nodegoto_delete_'.$ntype->type,''),
+      '#size' => 75,
+      '#maxlength' => 200,
+      '#required' => FALSE,
+     );    
+   }
+   
+  $form['help'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Placeholder tokens'),
+    '#description' => t("The following placeholder tokens can be used in paths. They will be replaced with the appropriate values."),
+  );
+  
+  if (module_exists('token')) {
+    $form['help']['tokens'] = array(
+      '#value' => theme('token_help', 'node'),
+    );
+  }
+  else {
+    $form['help']['#description'] = t("To use dynamic placeholder tokens in your paths download and install the <a href='@token'>Token module</a> from Drupal.org.", array('@token' => 'http://www.drupal.org/project/token'));
+    $form['help']['#collapsible'] = FALSE;
+    $form['help']['#collapsed'] = FALSE;
+  }
+
+  $form['nodescamefrom'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Advanced options'),
+      '#description' => t('
+    To put a link in the target page so the user can go to the  node created or updated, just insert this code where you want the link and choose the input  type &lsquo;PHP code&rsquo;.</p>
+<pre>&lt;?php
+if (isset($_REQUEST[\'nid\'])) {
+  print l(\'The node you created/updated\',\'node/\'.$_REQUEST[\'nid\']);
+} 
+?&gt;'
+      ),
+      '#collapsed' => true,
+      '#collapsible' => TRUE,
+      );
+      
+  	$form['nodescamefrom']['nodegoto_camefrom'] = array(
+      '#type' => 'checkbox',
+      '#title' => "Check to append the information from witch node it came.",
+      '#default_value' => variable_get('nodegoto_camefrom',0),
+      '#return_value' => 1,
+     );  
+    
+ return system_settings_form($form);
+}

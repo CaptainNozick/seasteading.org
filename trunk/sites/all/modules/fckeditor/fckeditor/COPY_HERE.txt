@@ -1,0 +1,10 @@
+Go to http://www.fckeditor.net and download the latest version. Then
+uncompress the contents of the "fckeditor" directory of the download file to
+this folder (modules/fckeditor/fckeditor).
+
+The contents of this directory should include the following files among others:
+  editor (a directory)
+  fckeditor.js
+  fckconfig.js
+  fckstyles.xml
+  fcktemplates.xml

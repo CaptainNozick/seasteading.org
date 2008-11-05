@@ -1,0 +1,6 @@
+To install this module, simply put it the entire forum_access directory into
+your modules directory or sites/all/modules directory and activate it.
+
+This module requires the ACL module API and will not activate without it.
+
+As of version 1.4 of this module, ACL v1.3 or higher is required!

@@ -1,0 +1,171 @@
+<?php
+// $Id: acl.install,v 1.1.2.7 2008/03/12 21:47:59 salvis Exp $
+
+function acl_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("create table if not exists {acl} (
+        acl_id int(10) NOT NULL default 0,
+        module varchar(255),
+        name varchar(255),
+        PRIMARY KEY (acl_id)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+
+      db_query("create table if not exists {acl_user} (
+        acl_id int(10) NOT NULL default 0,
+        uid int(10) NOT NULL default 0,
+        PRIMARY KEY (acl_id, uid),
+        KEY uid (uid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+
+      db_query("create table if not exists {acl_node} (
+        acl_id int(10) NOT NULL default 0,
+        nid int(10) NOT NULL default 0,
+        grant_view tinyint(1) unsigned NOT NULL default '0',
+        grant_update tinyint(1) unsigned NOT NULL default '0',
+        grant_delete tinyint(1) unsigned NOT NULL default '0',
+        PRIMARY KEY (acl_id, nid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      break;
+
+    case 'pgsql':
+      db_query("CREATE TABLE {acl} (
+        acl_id integer NOT NULL DEFAULT 0,
+        module varchar(255),
+        name varchar(255),
+        PRIMARY KEY (acl_id)
+      );");
+      db_query("CREATE SEQUENCE {acl}_acl_id_seq;");
+
+      db_query("CREATE TABLE {acl_user} (
+        acl_id integer NOT NULL DEFAULT 0,
+        uid int NOT NULL DEFAULT 0,
+        PRIMARY KEY (acl_id, uid)
+      );");
+      db_query("CREATE INDEX {acl_user}_uid_index ON {acl_user} (uid)");
+
+      db_query("CREATE TABLE {acl_node} (
+        acl_id integer NOT NULL DEFAULT 0,
+        nid int NOT NULL DEFAULT 0,
+        grant_view smallint NOT NULL default 0,
+        grant_update smallint NOT NULL default 0,
+        grant_delete smallint NOT NULL default 0,
+        PRIMARY KEY (acl_id, nid)
+      );");
+      break;
+  }
+}
+
+/*
+ * Implementation of hook_uninstall
+ */
+function acl_uninstall() {
+  if ($GLOBALS['db_type'] == 'pgsql') {
+    db_query('DROP INDEX {acl_user}_uid_index');
+  }
+  db_query('DROP TABLE {acl}');
+  db_query('DROP TABLE {acl_user}');
+  db_query('DROP TABLE {acl_node}'); 
+}
+
+/**
+ * Fixes table prefix
+ */
+function acl_update_1() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysqli':
+    case 'mysql':
+      db_query('LOCK TABLES {sequences} WRITE');
+      $ret[] = update_sql("UPDATE {sequences} SET name = '". db_prefix_tables('{acl}_acl_id') ."' WHERE name = 'acl_id'");
+      db_query('UNLOCK TABLES');
+      break;
+    case 'pgsql':
+      db_query('START TRANSACTION;');
+      $ret[] = update_sql("CREATE SEQUENCE {acl}_acl_id_seq START ". db_next_id('acl_id'));
+      db_query('COMMIT;');
+      break;
+  }
+  return $ret;
+}
+
+/**
+ * Fixes primary keys
+ */
+function acl_update_2() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysqli':
+    case 'mysql':
+      // drop the previously created indexes (except for acl_user.uid)
+      $ret[] = update_sql('ALTER TABLE {acl} DROP INDEX acl_id');
+      $ret[] = update_sql('ALTER TABLE {acl_user} DROP INDEX acl_id');
+      $ret[] = update_sql('ALTER TABLE {acl_node} DROP INDEX acl_id');
+      $ret[] = update_sql('ALTER TABLE {acl_node} DROP INDEX nid');
+      // create new indexes (as primary keys this time)
+      $ret[] = update_sql('ALTER TABLE {acl} ADD PRIMARY KEY (acl_id)');
+      $ret[] = update_sql('ALTER TABLE {acl_user} ADD PRIMARY KEY (acl_id, uid)');
+      $ret[] = update_sql('ALTER TABLE {acl_node} ADD PRIMARY KEY (acl_id, nid)');
+      break;
+
+    case 'pgsql':
+      $ret[] = update_sql('ALTER TABLE {acl} DROP PRIMARY KEY , ADD PRIMARY KEY (acl_id)');
+      $ret[] = update_sql('ALTER TABLE {acl_user} DROP PRIMARY KEY , ADD PRIMARY KEY (acl_id, uid)');
+      $ret[] = update_sql('ALTER TABLE {acl_node} DROP PRIMARY KEY , ADD PRIMARY KEY (acl_id, nid)');
+      $ret[] = update_sql('CREATE INDEX {acl_user}_uid_index ON {acl_user} (uid)');
+      break;
+  }
+  return $ret;
+}
+
+/*
+ * Updates tables to use utf8 for mysql
+ */
+function acl_update_3() {
+  $ret = array();
+  // Only for MySQL 4.1+
+  switch ($GLOBALS['db_type']) {
+      case 'mysqli':
+        break;
+      case 'mysql':
+        if (version_compare(mysql_get_server_info($GLOBALS['active_db']), '4.1.0', '<')) {
+          return array();
+        }
+        break;
+      case 'pgsql':
+        return array();
+  }
+  $ret = update_convert_table_utf8('acl');
+  $ret = array_merge($ret, update_convert_table_utf8('acl_node'));
+  $ret = array_merge($ret, update_convert_table_utf8('acl_user'));
+  return $ret;
+}
+
+/**
+ * Put back acl_node(nid) index for deleting nodes and clean up {acl_node}.
+ */
+function acl_update_4() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysqli':
+    case 'mysql':
+      $ret[] = update_sql("ALTER TABLE {acl_node} ADD INDEX (nid)");
+      break;
+
+    case 'pgsql':
+      $ret[] = update_sql('CREATE INDEX {acl_node}_nid_index ON {acl_node} (nid)');
+      break;
+  }
+  db_query("DELETE FROM {acl_node} WHERE nid NOT IN (SELECT nid FROM {node})");
+  return $ret;
+}
+
+/**
+ * Clean up {acl_user}.
+ */
+function acl_update_5() {
+  $ret = array();
+  db_query("DELETE FROM {acl_user} WHERE uid NOT IN (SELECT uid FROM {users})");
+  return $ret;
+}

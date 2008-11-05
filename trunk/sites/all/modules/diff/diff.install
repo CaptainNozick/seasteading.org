@@ -1,0 +1,25 @@
+<?php
+// $Id: diff.install,v 1.1 2007/01/31 17:45:25 dww Exp $
+
+/**
+ * Implementation of hook_install().
+ *
+ * Makes sure that diff.module has a higher weight than node.module
+ * immediately, without requiring that the administrator vist /admin.
+ */
+function diff_install() {
+  $ret = array();
+  $ret[] = diff_set_weight();
+  return $ret;
+}
+
+/**
+ * Set the {system} weight to 1 higher than node.module to make sure
+ * that diff_menu() can override the menu callback for the revisions tab.
+ */
+function diff_set_weight() {
+  $node_module_weight = db_result(db_query("SELECT weight FROM {system} WHERE name='node'"));
+  $rval = db_query("UPDATE {system} SET weight=%d WHERE name='diff'", $node_module_weight + 1);
+  drupal_set_message(t('Weight of %diff module set to %weight. You can now see a diff of different node revisions using the %revisions tab when viewing a node.', array('%diff' => t('Diff'), '%weight' => $node_module_weight + 1, '%revisions' => t('Revisions'))));
+  return $rval;
+}

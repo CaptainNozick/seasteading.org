@@ -1,0 +1,69 @@
+# LANGUAGE translation of Drupal (members.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: members.module,v 1.36 2004/11/24 22:03:32 dries
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2005-07-06 14:43+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: members.module:7
+msgid "Enables users to list all members."
+msgstr ""
+
+#: members.module:13
+msgid "Roles to show"
+msgstr ""
+
+#: members.module:13
+msgid "Select roles to show in the members listing."
+msgstr ""
+
+#: members.module:14
+msgid "Columns to show"
+msgstr ""
+
+#: members.module:14
+msgid "Select the fields which should be displayed on your members overview page. Note that some fields require certain modules to be active."
+msgstr ""
+
+#: members.module:24;0
+msgid "members"
+msgstr ""
+
+#: members.module:134
+msgid "Warning: there aren't any users with roles configured to be shown here."
+msgstr ""
+
+#: members.module:142
+msgid "Roles"
+msgstr ""
+
+#: members.module:143
+msgid "Username"
+msgstr ""
+
+#: members.module:153
+msgid "Email"
+msgstr ""
+
+#: members.module:154
+msgid "Last Seen"
+msgstr ""
+
+#: members.module:155
+msgid "Picture"
+msgstr ""
+
+#: members.module:35
+msgid "access members list"
+msgstr ""
+
