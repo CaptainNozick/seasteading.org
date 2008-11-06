@@ -1,0 +1,269 @@
+# Slovak translation of Google Analytics (all releases)
+# Copyright (c) 2008 by the Slovak translation team
+# Generated from files:
+#  googleanalytics.admin.inc,v 1.2.2.12 2008/02/15 19:20:40 hass
+#  googleanalytics.module,v 1.14.2.13 2007/08/27 21:21:25 budda
+#  googleanalytics.info,v 1.5.2.3 2007/12/30 20:42:58 hass
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Google Analytics (all releases)\n"
+"POT-Creation-Date: 2008-02-22 15:06+0100\n"
+"PO-Revision-Date: 2008-02-22 14:55+0100\n"
+"Language-Team: Slovak\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((n==1)?(0):(((n>=2)&&(n<=4))?(1):2));\n"
+
+#: googleanalytics.admin.inc:88; googleanalytics.module:245
+msgid "Track"
+msgstr "Sledovať"
+
+#: googleanalytics.admin.inc:124; googleanalytics.module:281
+msgid " (<span class=\"admin-disabled\">disabled</span>)"
+msgstr "(<span class=\"admin-disabled\">vypnuté</span>)"
+
+#: googleanalytics.admin.inc:124; googleanalytics.module:281
+msgid " (<span class=\"admin-enabled\">enabled</span>)"
+msgstr " (<span class=\"admin-enabled\">povolené</span>)"
+
+#: googleanalytics.admin.inc:124; googleanalytics.module:281
+msgid "Depends on: !dependencies"
+msgstr "Závisí na: !dependencies"
+
+#: googleanalytics.admin.inc:78; googleanalytics.module:235
+msgid "Username"
+msgstr "Používateľské meno"
+
+#: googleanalytics.admin.inc:14; googleanalytics.module:171
+msgid "Analytics Account Settings"
+msgstr "Nastavenia účtu Google Analytics"
+
+#: googleanalytics.admin.inc:20,77; googleanalytics.module:177,234
+msgid "User ID"
+msgstr "ID používateľa"
+
+#: googleanalytics.admin.inc:25
+msgid ""
+"The user account is unique to the websites domain. You can obtain an "
+"user account from the <a href=\"@url\">Google Analytics</a> website."
+msgstr ""
+"Používateľské konto je pre každú doménu iné. Používateľské "
+"konto môžete získať na web stránke <a href=\"@url\">Google "
+"Analytics</a>."
+
+#: googleanalytics.admin.inc:30; googleanalytics.module:187
+msgid "Legacy Google Analytics"
+msgstr "Staršie Google Analytics "
+
+#: googleanalytics.admin.inc:32; googleanalytics.module:189
+msgid ""
+"This will enable Legacy Google Analytics instead of most recent.<br /> "
+"Please note that Legacy Google Analytics will not receive feature "
+"updates and is not compatible with new features."
+msgstr ""
+"Toto povolí staršie Google Analytics miesto najnovšieho. <br /> "
+"Všimnite si, že \"Legacy Google Analytics\" už nebudú podporované "
+"a nie sú kompatibilné s novými funkciami."
+
+#: googleanalytics.admin.inc:40; googleanalytics.module:197
+msgid "User Role Tracking"
+msgstr "Sledovanie kategórii používateľov"
+
+#: googleanalytics.admin.inc:42; googleanalytics.module:199
+msgid ""
+"Define what user roles should be tracked by Google Analytics. "
+"<strong>Note:</strong> Drupal Admin pages are never tracked."
+msgstr ""
+"Určte, ktoré kategórie používateľov by mali byť sledované "
+"pomocou Google Analytics. <strong>Poznámka:</strong> Stránky "
+"administrácie Drupalu nebudú nikdy sledované."
+
+#: googleanalytics.admin.inc:47; googleanalytics.module:204
+msgid "Admin (user 1)"
+msgstr "Administrátor (používateľ 1)"
+
+#: googleanalytics.admin.inc:61; googleanalytics.module:218
+msgid "User Segmentation"
+msgstr "Členenie používateľov"
+
+#: googleanalytics.admin.inc:63; googleanalytics.module:220
+msgid ""
+"If your users have profile fields completed, you can track your logged "
+"in users based on a defined profile field."
+msgstr ""
+"Ak používatelia vašich stránok vyplnia polia vo svojom profile, "
+"budete môcť sledovať prihlásených používateľov na základe "
+"vyplnených polí. "
+
+#: googleanalytics.admin.inc:69; googleanalytics.module:226
+msgid "You need to activate the !profile to use this feature."
+msgstr "Pre používanie tejto funkcie musíte mať aktivovaný  !profile."
+
+#: googleanalytics.admin.inc:69; googleanalytics.module:226
+msgid "Profile module"
+msgstr "Modul Profile"
+
+#: googleanalytics.admin.inc:79; googleanalytics.module:236
+msgid "User Roles"
+msgstr "Kategórie používateľov"
+
+#: googleanalytics.admin.inc:89; googleanalytics.module:246
+msgid ""
+"Selecting one or more values allows you to track users by profile "
+"values rather than simply an IP address. To select multiple items, "
+"hold down CTRL whilst selecting fields."
+msgstr ""
+"Vybraním jednej alebo viacerých hodnôt umožníte sledovať "
+"používateľov podľa hodnôt z ich profilu, miesto ich IP adresy. Ak "
+"chcete vybrať viacero položiek, držte počas vyberania klávesu "
+"CTRL."
+
+#: googleanalytics.admin.inc:99; googleanalytics.module:256
+msgid "File Extensions To Track"
+msgstr "Prípony súborov pre sledovanie"
+
+#: googleanalytics.admin.inc:101; googleanalytics.module:258
+msgid ""
+"A pipe seperated list of file extensions that should be tracked when "
+"clicked. Example !extensions"
+msgstr ""
+"Zoznam koncoviek súborov oddelených znakom \"|\", ktoré budú "
+"sledované ak sa na ne klikne. Napríklad !extensions"
+
+#: googleanalytics.admin.inc:106; googleanalytics.module:263
+msgid "Advanced"
+msgstr "Pokročilé"
+
+#: googleanalytics.admin.inc:109; googleanalytics.module:266
+msgid "You can add custom Google Analytics code here."
+msgstr "Môžete sem pridať vlastný Google Analytics kód."
+
+#: googleanalytics.admin.inc:114; googleanalytics.module:271
+msgid "Cache tracking code file locally"
+msgstr "Súbor s dočasným sledovacím kódom ukladať lokálne"
+
+#: googleanalytics.admin.inc:115; googleanalytics.module:272
+msgid ""
+"If checked, the tracking code file is received from Google Analytics "
+"and cached locally. It is updated daily from Google's servers to "
+"ensure updates to tracking code are reflected in the local copy. Do "
+"not activate this until after Google Analytics has confirmed your "
+"tracker."
+msgstr ""
+"Ak pole označíte, súbor so sledovacím kódom sa získa z Google "
+"Analytics a dočasne sa uloží lokálne. Ak bude kód na serveroch "
+"Google aktualizovaný,  zmena sa automaticky prejaví i v lokálnej "
+"kópii. Túto možnosť nezapínajte ak už Google Analytics potvrdil "
+"spôsob sledovania."
+
+#: googleanalytics.admin.inc:120; googleanalytics.module:277
+msgid ""
+"<a href=\"!url\">Public file transfers</a> must be enabled to allow "
+"local caching."
+msgstr ""
+"Ak chcete povoliť dočasné lokálne ukladanie, musíte povoliť <a "
+"href=\"!url\">verejný prenos súborov</a> "
+
+#: googleanalytics.admin.inc:131; googleanalytics.module:288
+msgid "Do Track Internal Search"
+msgstr "Sledovať interné vyhľadávanie "
+
+#: googleanalytics.admin.inc:132; googleanalytics.module:289
+msgid ""
+"If checked, internal search keywords are tracked. You must configure "
+"your Google account to use the internal query parameter "
+"<em>search</em>. For more information see <a href=\"!url\">How do I "
+"set up Site Search for my profile</a>."
+msgstr ""
+"Ak pole označíte, bude sledované aj unterné vyhľadávanie "
+"kľúčových slov. Musíte však nastaviť konto Google aby "
+"používal interný parameter požiadavky <em>search</em>. Viac "
+"informácií sa dozviete na stránke <a href=\"!url\">How do I set up "
+"Site Search for my profile</a>."
+
+#: googleanalytics.admin.inc:139; googleanalytics.module:296
+msgid "JavaScript Code"
+msgstr "Kód JavaScriptu"
+
+#: googleanalytics.admin.inc:142
+msgid ""
+"Paste <a href=\"!snippets\">custom code snippets here</a>. These will "
+"be added to every page that Google Analytics appears on. For help with "
+"this feature see the <a href=\"!blog\">cutroni.com blog</a>. "
+"<strong>Do not include the &lt;script&gt; tags</strong>, and always "
+"end your code with a semicolon (;)."
+msgstr ""
+"Vložte sem<a href=\"@snippets\">vlastný kód</a>, ktorý sa pridá "
+"na každú stránku, na ktorej sa objaví kód Google Analytics. Pomoc "
+"k tejto funkcii získate na stránke <a href=\"@blog\">cutroni.com "
+"blog</a>. <strong>Nevkladajte do kódu značky &lt;script&gt; "
+"</strong>, a každý príkaz kódu ukončite bodkočiarkou (;)."
+
+#: googleanalytics.module:17,16
+msgid ""
+"Google Analytics is a free statistics package based on the excellent "
+"Urchin system."
+msgstr ""
+"Google Analytics sú voľne dostupné balíky štatistík založené "
+"na výbornom systéme Urchin."
+
+#: googleanalytics.module:183,315
+msgid "Google Analytics module"
+msgstr "Modul Google Analytics"
+
+#: googleanalytics.module:184,316
+msgid ""
+"Google Analytics module has not been configured yet. Please configure "
+"its settings from the <a href=\"@url\">Google Analytics settings "
+"page</a>."
+msgstr ""
+"Modul Google Analytics ešte nie je nastavený. Prosím nastavte ho na "
+"stránke <a href=\"@url\">nastavenia Google Analytics</a>.\n"
+
+#: googleanalytics.module:186,318
+msgid "Not configured"
+msgstr "Nenastavené"
+
+#: googleanalytics.module:24,25; googleanalytics.info:0
+msgid "Google Analytics"
+msgstr "Google Analytics"
+
+#: googleanalytics.module:25
+msgid ""
+"Configure the settings used to generate your Google Analytics site "
+"map."
+msgstr ""
+"Upraviť nastavenia používané na generovanie štatistík o stránke "
+"v Google Analytics."
+
+#: googleanalytics.module:0
+msgid "googleanalytics"
+msgstr "googleanalytics"
+
+#: googleanalytics.info:0
+msgid ""
+"Adds Google Analytics javascript tracking code to all your site's "
+"pages."
+msgstr ""
+"Pridá javascriptový Google Analytics kód na všetky vaše stránky "
+"webu."
+
+#: googleanalytics.module:26
+msgid ""
+"Configure the settings used to generate your Google Analytics tracking "
+"code."
+msgstr ""
+"Konfigurovať nastavenia, ktoré budú použité pre generovanie "
+"vášho Google Analytics sledovacieho kódu."
+
+#: googleanalytics.module:182
+msgid ""
+"The user account is unique to the websites domain. You can obtain a "
+"user account from the <a href=\"@url\">Google Analytics</a> website."
+msgstr ""
+"Používateľské konto je pre každú doménu iné. Používateľské "
+"konto môžete získať na web stránke <a href=\"@url\">Google "
+"Analytics</a>."
+

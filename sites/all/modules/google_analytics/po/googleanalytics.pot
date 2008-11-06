@@ -1,0 +1,309 @@
+# $Id: googleanalytics.pot,v 1.1.2.12 2008/05/31 08:42:49 hass Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  googleanalytics.module,v 1.14.2.69 2008/05/31 08:14:22 hass
+#  googleanalytics.info,v 1.2.2.3 2007/06/18 23:06:44 dww
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-05-31 10:41+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: googleanalytics.module:17
+msgid "<a href=\"@ga_url\">Google Analytics</a> is a free statistics package based on the excellent Urchin system. This module provides services to better integrate Drupal with Google Analytics."
+msgstr ""
+
+#: googleanalytics.module:30 googleanalytics.info:0
+msgid "Google Analytics"
+msgstr ""
+
+#: googleanalytics.module:31
+msgid "Configure the settings used to generate your Google Analytics tracking code."
+msgstr ""
+
+#: googleanalytics.module:189
+msgid "Google Analytics configuration"
+msgstr ""
+
+#: googleanalytics.module:196
+msgid "User tracking"
+msgstr ""
+
+#: googleanalytics.module:213
+msgid "General settings"
+msgstr ""
+
+#: googleanalytics.module:219
+msgid "Google Analytics account number"
+msgstr ""
+
+#: googleanalytics.module:224
+msgid "The account number is unique to the websites domain. Click the <strong>Edit</strong> link in your Google Analytics account next to the appropriate profile on the <strong>Analytics Settings</strong> page, then select <strong>Check Status</strong> at the top-right of the table to find the account number (UA-xxxx-x) of your site. You can obtain a user account from the <a href=\"@url\">Google Analytics</a> website."
+msgstr ""
+
+#: googleanalytics.module:230
+msgid "User specific tracking settings"
+msgstr ""
+
+#: googleanalytics.module:235
+msgid "Custom tracking settings"
+msgstr ""
+
+#: googleanalytics.module:237
+msgid "Users cannot control whether they are tracked or not."
+msgstr ""
+
+#: googleanalytics.module:238
+msgid "Track users by default, but let individual users to opt out."
+msgstr ""
+
+#: googleanalytics.module:239
+msgid "Do not track users by default, but let individual users to opt in."
+msgstr ""
+
+#: googleanalytics.module:241
+msgid "Allow individual users to customize the visibility of tracking in their account settings. Only users with %permission permission are allowed to set their own preference."
+msgstr ""
+
+#: googleanalytics.module:241;22
+msgid "opt-in or out of tracking"
+msgstr ""
+
+#: googleanalytics.module:248
+msgid "Role specific tracking settings"
+msgstr ""
+
+#: googleanalytics.module:266
+msgid "Add tracking for specific roles"
+msgstr ""
+
+#: googleanalytics.module:269
+msgid "Add tracking only for the selected role(s). If none of the roles are selected, all users will be tracked. If a user has any of the roles checked, that user will be tracked."
+msgstr ""
+
+#: googleanalytics.module:275
+msgid "Page specific tracking settings"
+msgstr ""
+
+#: googleanalytics.module:290
+msgid "Add to every page except the listed pages."
+msgstr ""
+
+#: googleanalytics.module:290
+msgid "Add to the listed pages only."
+msgstr ""
+
+#: googleanalytics.module:291
+msgid "Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page."
+msgstr ""
+
+#: googleanalytics.module:294
+msgid "Add if the following PHP code returns <code>TRUE</code> (PHP-mode, experts only)."
+msgstr ""
+
+#: googleanalytics.module:295
+msgid "If the PHP-mode is chosen, enter PHP code between %php. Note that executing incorrect PHP-code can break your Drupal site."
+msgstr ""
+
+#: googleanalytics.module:299
+msgid "Add tracking to specific pages"
+msgstr ""
+
+#: googleanalytics.module:305
+msgid "Pages"
+msgstr ""
+
+#: googleanalytics.module:314
+msgid "User segmentation settings"
+msgstr ""
+
+#: googleanalytics.module:320
+msgid "User identifier"
+msgstr ""
+
+#: googleanalytics.module:321
+msgid "User name"
+msgstr ""
+
+#: googleanalytics.module:322
+msgid "User roles"
+msgstr ""
+
+#: googleanalytics.module:333
+msgid "Add segmentation information to tracking code"
+msgstr ""
+
+#: googleanalytics.module:334
+msgid "Segment users based on different properties, additionally to the basic IP address based tracking provided by Google Analytics."
+msgstr ""
+
+#: googleanalytics.module:334
+msgid "<a href=\"@module_list\">Enable the profile module</a> to be able to use profile fields for more granular tracking."
+msgstr ""
+
+#: googleanalytics.module:334
+msgid "Selecting one or more values is supported. To select multiple items, hold down CTRL while selecting fields."
+msgstr ""
+
+#: googleanalytics.module:344
+msgid "Link tracking settings"
+msgstr ""
+
+#: googleanalytics.module:350
+msgid "Track outgoing links"
+msgstr ""
+
+#: googleanalytics.module:352
+msgid "Enables tracking of clicks on outgoing links."
+msgstr ""
+
+#: googleanalytics.module:356
+msgid "Track mailto links"
+msgstr ""
+
+#: googleanalytics.module:358
+msgid "Enables tracking of clicks on mailto links."
+msgstr ""
+
+#: googleanalytics.module:362
+msgid "Track download links"
+msgstr ""
+
+#: googleanalytics.module:364
+msgid "Enables tracking of clicks on links to files based on the file extensions list below."
+msgstr ""
+
+#: googleanalytics.module:368
+msgid "File extensions to track"
+msgstr ""
+
+#: googleanalytics.module:370
+msgid "A pipe separated list of file extensions that should be tracked when clicked with regular expression support. Example: !extensions"
+msgstr ""
+
+#: googleanalytics.module:376
+msgid "Advanced settings"
+msgstr ""
+
+#: googleanalytics.module:383
+msgid "Google Analytics version used"
+msgstr ""
+
+#: googleanalytics.module:386
+msgid "Latest (ga.js) tracking code"
+msgstr ""
+
+#: googleanalytics.module:387
+msgid "Legacy (urchin.js) tracking code"
+msgstr ""
+
+#: googleanalytics.module:389
+msgid "<a href=\"@ga_js_url\">On December 13, 2007, Google rolled out a new API</a> for its tracking code, and suggests all new sites to use this code. You should only use the older legacy code, if you have custom tracking code tied to that API. Otherwise it is suggested you use the latest API, as the legacy code will not receive feature updates and is not compatible with new features."
+msgstr ""
+
+#: googleanalytics.module:394
+msgid "Cache tracking code file locally"
+msgstr ""
+
+#: googleanalytics.module:395
+msgid "If checked, the tracking code file is retrieved from Google Analytics and cached locally. It is updated daily from Google's servers to ensure updates to tracking code are reflected in the local copy. Do not activate this until after Google Analytics has confirmed your tracker!"
+msgstr ""
+
+#: googleanalytics.module:400
+msgid "<a href=\"!url\">Public file transfers</a> must be enabled to allow local caching."
+msgstr ""
+
+#: googleanalytics.module:404
+msgid "Depends on: !dependencies"
+msgstr ""
+
+#: googleanalytics.module:404
+msgid " (<span class=\"admin-enabled\">enabled</span>)"
+msgstr ""
+
+#: googleanalytics.module:404
+msgid " (<span class=\"admin-disabled\">disabled</span>)"
+msgstr ""
+
+#: googleanalytics.module:411
+msgid "Track internal search"
+msgstr ""
+
+#: googleanalytics.module:412
+msgid "If checked, internal search keywords are tracked. You must configure your Google account to use the internal query parameter <strong>search</strong>. For more information see <a href=\"!url\">How do I set up Site Search for my profile</a>."
+msgstr ""
+
+#: googleanalytics.module:419
+msgid "Custom JavaScript code"
+msgstr ""
+
+#: googleanalytics.module:422
+msgid "You can add custom Google Analytics <a href=\"!snippets\">code snippets</a> here. These will be added to every page that Google Analytics appears on. <strong>Do not include the &lt;script&gt; tags</strong>, and always end your code with a semicolon (;)."
+msgstr ""
+
+#: googleanalytics.module:427
+msgid "JavaScript scope"
+msgstr ""
+
+#: googleanalytics.module:428
+msgid "<strong>Warning:</strong> Google recommends adding the external JavaScript files to footer for performance reasons."
+msgstr ""
+
+#: googleanalytics.module:430
+msgid "Footer"
+msgstr ""
+
+#: googleanalytics.module:431
+msgid "Header"
+msgstr ""
+
+#: googleanalytics.module:441
+msgid "A valid Google Analytics account number is case sensitive and formatted like UA-xxxxxx-x."
+msgstr ""
+
+#: googleanalytics.module:446
+msgid "Do not add the tracker code provided by Google into this field! This module already builds the tracker code based on your Google Analytics account number and settings."
+msgstr ""
+
+#: googleanalytics.module:449
+msgid "Do not include the &lt;script&gt; tags in this field."
+msgstr ""
+
+#: googleanalytics.module:470
+msgid "Google Analytics module"
+msgstr ""
+
+#: googleanalytics.module:471
+msgid "Google Analytics module has not been configured yet. Please configure its settings from the <a href=\"@url\">Google Analytics settings page</a>."
+msgstr ""
+
+#: googleanalytics.module:473
+msgid "Not configured"
+msgstr ""
+
+#: googleanalytics.module:22
+msgid "administer google analytics"
+msgstr ""
+
+#: googleanalytics.module:22
+msgid "use PHP for tracking visibility"
+msgstr ""
+
+#: googleanalytics.module:0
+msgid "googleanalytics"
+msgstr ""
+
+#: googleanalytics.info:0
+msgid "Adds Google Analytics javascript tracking code to all your site's pages."
+msgstr ""
+

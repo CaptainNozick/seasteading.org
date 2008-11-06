@@ -1,0 +1,31 @@
+// $Id: UPGRADE.txt,v 1.1.2.1 2008/05/24 20:19:24 hass Exp $
+
+UPGRADING
+---------
+
+WARNING: If you upgraded from Google Analytics 1.3 or before you must
+check your "Role specific tracking settings" settings at
+admin/settings/googleanalytics. If not set properly Google Analytics
+may begin tracking different pages than you intended after upgrading.
+
+Beginning with Google Analytics 1.4 the logic for when to include the
+Google Analytics code on a page has been reversed. In 1.3 and before,
+roles were checked in checkboxes to exclude Google Analytics from
+counting pages when users with those roles were logged in. Beginning
+with 1.4 those same checkboxes are used to include the tracking code
+only on pages for the roles checked.
+
+Beginning with 1.5, if no boxes are checked, the code will be placed on
+all pages. With version 1.5 the visibility settings have designed to
+mirror Drupal's block visibility settings.
+
+
+Note that with Google Analytics 1.4 you are not able to track pages for
+authenticated users who have no specific role set and also exclude
+other authenticated users who do have a specific role. Clicking on the
+"authenticated user" role checkbox will automatically cause the tracking
+code to be written for all logged in users.
+
+Beginning with Google Analytics 1.5 admins with permission can include
+custom php to get the precise tracking they desire that might not be
+possible with the available configuration settings.
