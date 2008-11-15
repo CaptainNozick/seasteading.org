@@ -1,5 +1,5 @@
 <?php
-// $Id: database.pgsql.inc,v 1.43.2.1 2007/10/19 21:49:26 drumm Exp $
+// $Id: database.pgsql.inc,v 1.43.2.3 2008/09/15 06:14:52 drumm Exp $
 
 /**
  * @file
@@ -54,6 +54,7 @@ function db_connect($url) {
    // Check if MySQL support is present in PHP
   if (!function_exists('pg_connect')) {
     drupal_maintenance_theme();
+    drupal_set_header('HTTP/1.1 503 Service Unavailable');
     drupal_set_title('PHP PostgreSQL support not enabled');
     print theme('maintenance_page', '<p>We were unable to use the PostgreSQL database because the PostgreSQL extension for PHP is not installed. Check your <code>PHP.ini</code> to see how you can enable it.</p>
 <p>For more help, see the <a href="http://drupal.org/node/258">Installation and upgrading handbook</a>. If you are unsure what these terms mean you should probably contact your hosting provider.</p>');
@@ -418,10 +419,14 @@ function db_check_setup() {
  * @return SQL query with the DISTINCT wrapper surrounding the given table.field.
  */
 function db_distinct_field($table, $field, $query) {
-  $field_to_select = 'DISTINCT ON ('. $table .'.'. $field .") $table.$field";
-  // (?<!text) is a negative look-behind (no need to rewrite queries that already use DISTINCT).
-  $query = preg_replace('/(SELECT.*)(?:'. $table .'\.|\s)(?<!DISTINCT\()(?<!DISTINCT\('. $table .'\.)'. $field .'(.*FROM )/AUsi', '\1 '. $field_to_select .'\2', $query);
-  $query = preg_replace('/(ORDER BY )(?!'.$table.'\.'.$field.')/', '\1'."$table.$field, ", $query);
+  if (!preg_match('/FROM\s+\S+\s+AS/si', $query)
+    && !preg_match('/DISTINCT\s+ON\s*\(\s*(' . $table . '\s*\.\s*)?' . $field . '\s*\)/si', $query)
+    && !preg_match('/DISTINCT[ (]' . $field . '/si', $query)
+    && preg_match('/(.*FROM\s+)(.*?\s)(\s*(WHERE|GROUP|HAVING|ORDER|LIMIT|FOR).*)/Asi', $query, $m)) {
+      $query = $m[1];
+      $query .= preg_replace('/([\{\w+\}]+)\s+(' . $table . ')\s/Usi', '(SELECT DISTINCT ON (' . $field . ') * FROM \1) \2 ', $m[2]);
+      $query .= $m[3];
+  }
   return $query;
 }
 

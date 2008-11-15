@@ -1,5 +1,5 @@
 <?php
-// $Id: node.module,v 1.776.2.22 2008/01/07 01:31:26 drumm Exp $
+// $Id: node.module,v 1.776.2.31 2008/10/08 20:10:26 drumm Exp $
 
 /**
  * @file
@@ -139,7 +139,20 @@ function node_mark($nid, $timestamp) {
 }
 
 /**
- * Automatically generate a teaser for a node body in a given format.
+ * Automatically generate a teaser for a node body.
+ *
+ * If the end of the teaser is not indicated using the <!--break--> delimiter
+ * then we try to end it at a sensible place, such as the end of a paragraph,
+ * a line break, or the end of a sentence (in that order of preference).
+ *
+ * @param $body
+ *   The content for which a teaser will be generated.
+ * @param $format
+ *   The format of the content. If the content contains PHP code, we do not
+ *   split it up to prevent parse errors. If the line break filter is present
+ *   then we treat newlines embedded in $body as line breaks.
+ * @return
+ *   The generated teaser.
  */
 function node_teaser($body, $format = NULL) {
 
@@ -169,40 +182,67 @@ function node_teaser($body, $format = NULL) {
   }
 
   // If we have a short body, the entire body is the teaser.
-  if (strlen($body) < $size) {
+  if (strlen($body) <= $size) {
     return $body;
   }
 
+  // If the delimiter has not been specified, try to split at paragraph or
+  // sentence boundaries.
+
   // The teaser may not be longer than maximum length specified. Initial slice.
   $teaser = truncate_utf8($body, $size);
-  $position = 0;
-  // Cache the reverse of the teaser.
+
+  // Store the actual length of the UTF8 string -- which might not be the same
+  // as $size.
+  $max_rpos = strlen($teaser);
+
+  // How much to cut off the end of the teaser so that it doesn't end in the
+  // middle of a paragraph, sentence, or word.
+  // Initialize it to maximum in order to find the minimum.
+  $min_rpos = $max_rpos;
+
+  // Store the reverse of the teaser.  We use strpos on the reversed needle and
+  // haystack for speed and convenience.
   $reversed = strrev($teaser);
 
-  // In some cases, no delimiter has been specified. In this case, we try to
-  // split at paragraph boundaries.
-  $breakpoints = array('</p>' => 0, '<br />' => 6, '<br>' => 4, "\n" => 1);
-  // We use strpos on the reversed needle and haystack for speed.
-  foreach ($breakpoints as $point => $offset) {
-    $length = strpos($reversed, strrev($point));
-    if ($length !== FALSE) {
-      $position = - $length - $offset;
-      return ($position == 0) ? $teaser : substr($teaser, 0, $position);
+  // Build an array of arrays of break points grouped by preference.
+  $break_points = array();
+
+  // A paragraph near the end of sliced teaser is most preferable.
+  $break_points[] = array('</p>' => 0);
+
+  // If no complete paragraph then treat line breaks as paragraphs.
+  $line_breaks = array('<br />' => 6, '<br>' => 4);
+  // Newline only indicates a line break if line break converter
+  // filter is present.
+  if (isset($filters['filter/2'])) {
+    $line_breaks["\n"] = 1;
+  }
+  $break_points[] = $line_breaks;
+
+  // If the first paragraph is too long, split at the end of a sentence.
+  $break_points[] = array('. ' => 1, '! ' => 1, '? ' => 1, '。' => 0, '؟ ' => 1);
+
+  // Iterate over the groups of break points until a break point is found.
+  foreach ($break_points as $points) {
+    // Look for each break point, starting at the end of the teaser.
+    foreach ($points as $point => $offset) {
+      // The teaser is already reversed, but the break point isn't.
+      $rpos = strpos($reversed, strrev($point));
+      if ($rpos !== FALSE) {
+        $min_rpos = min($rpos + $offset, $min_rpos);
+      }
+    }
+
+    // If a break point was found in this group, slice and return the teaser.
+    if ($min_rpos !== $max_rpos) {
+      // Don't slice with length 0.  Length must be <0 to slice from RHS.
+      return ($min_rpos === 0) ? $teaser : substr($teaser, 0, 0 - $min_rpos);
     }
   }
 
-  // When even the first paragraph is too long, we try to split at the end of
-  // the last full sentence.
-  $breakpoints = array('. ' => 1, '! ' => 1, '? ' => 1, '。' => 0, '؟ ' => 1);
-  $min_length = strlen($reversed);
-  foreach ($breakpoints as $point => $offset) {
-    $length = strpos($reversed, strrev($point));
-    if ($length !== FALSE) {
-      $min_length = min($length, $min_length);
-      $position = 0 - $length - $offset;
-    }
-  }
-  return ($position == 0) ? $teaser : substr($teaser, 0, $position);
+  // If a break point was not found, still return a teaser.
+  return $teaser;
 }
 
 /**
@@ -519,7 +559,7 @@ function node_load($param = array(), $revision = NULL, $reset = NULL) {
   else {
     // Turn the conditions into a query.
     foreach ($param as $key => $value) {
-      $cond[] = 'n.'. db_escape_string($key) ." = '%s'";
+      $cond[] = 'n.'. db_escape_table($key) ." = '%s'";
       $arguments[] = $value;
     }
     $cond = implode(' AND ', $cond);
@@ -920,12 +960,22 @@ function node_search($op = 'search', $keys = NULL) {
         $join2 .= ' LEFT JOIN {node_counter} nc ON nc.nid = i.sid';
         $total += $weight;
       }
-      $select2 = (count($ranking) ? implode(' + ', $ranking) : 'i.relevance') .' AS score';
 
-      // Do search
+      // When all search factors are disabled (ie they have a weight of zero),
+      // the default score is based only on keyword relevance and there is no need to
+      // adjust the score of each item.
+      if ($total == 0) {
+        $select2 = 'i.relevance AS score';
+        $total = 1;
+      }
+      else {
+        $select2 = implode(' + ', $ranking) . ' AS score';
+      }
+
+      // Do search.
       $find = do_search($keys, 'node', 'INNER JOIN {node} n ON n.nid = i.sid '. $join1 .' INNER JOIN {users} u ON n.uid = u.uid', $conditions1 . (empty($where1) ? '' : ' AND '. $where1), $arguments1, $select2, $join2, $arguments2);
 
-      // Load results
+      // Load results.
       $results = array();
       foreach ($find as $item) {
         // Build the node body.
@@ -933,9 +983,9 @@ function node_search($op = 'search', $keys = NULL) {
         $node = node_build_content($node, FALSE, FALSE);
         $node->body = drupal_render($node->content);
 
-        // Fetch comments for snippet
+        // Fetch comments for snippet.
         $node->body .= module_invoke('comment', 'nodeapi', $node, 'update index');
-        // Fetch terms for snippet
+        // Fetch terms for snippet.
         $node->body .= module_invoke('taxonomy', 'nodeapi', $node, 'update index');
 
         $extra = node_invoke_nodeapi($node, 'search result');
@@ -1747,7 +1797,7 @@ function node_revision_revert_confirm_submit($form_id, $form_values) {
   node_save($node);
 
   drupal_set_message(t('%title has been reverted back to the revision from %revision-date', array('%revision-date' => format_date($node->revision_timestamp), '%title' => $node->title)));
-  watchdog('content', t('@type: reverted %title revision %revision.', array('@type' => t($node->type), '%title' => $node->title, '%revision' => $revision)));
+  watchdog('content', t('@type: reverted %title revision %revision.', array('@type' => t($node->type), '%title' => $node->title, '%revision' => $node->vid)));
 
   return 'node/'. $node->nid .'/revisions';
 }
@@ -1882,7 +1932,7 @@ function node_feed($nodes = 0, $channel = array()) {
 
     // Allow modules to add additional item fields and/or modify $item
     $extra = node_invoke_nodeapi($item, 'rss item');
-    $extra = array_merge($extra, array(array('key' => 'pubDate', 'value' =>  date('r', $item->created)), array('key' => 'dc:creator', 'value' => $item->name), array('key' => 'guid', 'value' => $item->nid .' at '. $base_url, 'attributes' => array('isPermaLink' => 'false'))));
+    $extra = array_merge($extra, array(array('key' => 'pubDate', 'value' => gmdate('r', $item->created)), array('key' => 'dc:creator', 'value' => $item->name), array('key' => 'guid', 'value' => $item->nid .' at '. $base_url, 'attributes' => array('isPermaLink' => 'false'))));
     foreach ($extra as $element) {
       if ($element['namespace']) {
         $namespaces = array_merge($namespaces, $element['namespace']);
@@ -1949,9 +1999,9 @@ function node_submit($node) {
     else {
       $node->uid = 0;
     }
-
-    $node->created = $node->date ? strtotime($node->date) : NULL;
   }
+
+  $node->created = !empty($node->date) ? strtotime($node->date) : time();
 
   // Do node-type-specific validation checks.
   node_invoke($node, 'submit');
@@ -2005,16 +2055,14 @@ function node_form_validate($form_id, $form_values, $form) {
 }
 
 function node_object_prepare(&$node) {
-  if (user_access('administer nodes')) {
-    // Set up default values, if required.
-    if (!isset($node->created)) {
-      $node->created = time();
-    }
-
-    if (!isset($node->date)) {
-      $node->date = format_date($node->created, 'custom', 'Y-m-d H:i:s O');
-    }
+  // Set up default values, if required.
+  if (!isset($node->created)) {
+    $node->created = time();
   }
+  if (!isset($node->date)) {
+    $node->date = format_date($node->created, 'custom', 'Y-m-d H:i:s O');
+  }
+
   node_invoke($node, 'prepare');
   node_invoke_nodeapi($node, 'prepare');
 }
@@ -2086,9 +2134,9 @@ function node_form($node, $form_values = NULL) {
     '#weight' => 20,
   );
   $form['author']['name'] = array('#type' => 'textfield', '#title' => t('Authored by'), '#maxlength' => 60, '#autocomplete_path' => 'user/autocomplete', '#default_value' => $node->name ? $node->name : '', '#weight' => -1, '#description' => t('Leave blank for %anonymous.', array('%anonymous' => variable_get('anonymous', t('Anonymous')))));
-  $form['author']['date'] = array('#type' => 'textfield', '#title' => t('Authored on'), '#maxlength' => 25, '#description' => t('Format: %time. Leave blank to use the time of form submission.', array('%time' => $node->date)));
+  $form['author']['date'] = array('#type' => 'textfield', '#title' => t('Authored on'), '#maxlength' => 25, '#description' => t('Format: %time. Leave blank to use the time of form submission.', array('%time' => !empty($node->date) ? $node->date : format_date($node->created, 'custom', 'Y-m-d H:i:s O'))));
 
-  if (isset($node->nid)) {
+  if (isset($node->date)) {
     $form['author']['date']['#default_value'] = $node->date;
   }
 
@@ -2117,6 +2165,14 @@ function node_form($node, $form_values = NULL) {
     $form['delete'] = array('#type' => 'button', '#value' => t('Delete'), '#weight' => 50);
   }
   $form['#after_build'] = array('node_form_add_preview');
+  // Ensure that node_validate() will always get called.
+  $form['#validate']['node_form_validate'] = array();
+  // Also, if the module defines its own _validate() routine based on the
+  // form_id, include that in the #validate array, as well.
+  $node_validate = $node->type .'_node_form_validate';
+  if (function_exists($node_validate)) {
+    $form['#validate'][$node_validate] = array();
+  }
   $form['#base'] = 'node_form';
   return $form;
 }
@@ -2213,7 +2269,7 @@ function node_add($type = NULL) {
         $title = t('Add a new @s.', array('@s' => $type->name));
         $out = '<dt>'. l(drupal_ucfirst($type->name), "node/add/$type_url_str", array('title' => $title)) .'</dt>';
         $out .= '<dd>'. filter_xss_admin($type->description) .'</dd>';
-        $item[$type->type] = $out;
+        $item[$type->name] = $out;
       }
     }
 
@@ -2252,10 +2308,6 @@ function node_preview($node) {
       $node->picture = $user->picture;
     }
 
-    // Set the timestamps when needed:
-    if ($node->date) {
-      $node->created = strtotime($node->date);
-    }
     $node->changed = time();
 
     // Extract a teaser, if it hasn't been set (e.g. by a module-provided

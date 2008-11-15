@@ -1,5 +1,5 @@
 <?php
-// $Id: database.mysqli.inc,v 1.32.2.1 2007/10/19 21:49:26 drumm Exp $
+// $Id: database.mysqli.inc,v 1.32.2.5 2008/09/15 06:14:52 drumm Exp $
 
 /**
  * @file
@@ -56,6 +56,7 @@ function db_connect($url) {
   // Check if MySQLi support is present in PHP
   if (!function_exists('mysqli_init') && !extension_loaded('mysqli')) {
     drupal_maintenance_theme();
+    drupal_set_header('HTTP/1.1 503 Service Unavailable');
     drupal_set_title('PHP MySQLi support not enabled');
     print theme('maintenance_page', '<p>We were unable to use the MySQLi database because the MySQLi extension for PHP is not installed. Check your <code>PHP.ini</code> to see how you can enable it.</p>
 <p>For more help, see the <a href="http://drupal.org/node/258">Installation and upgrading handbook</a>. If you are unsure what these terms mean you should probably contact your hosting provider.</p>');
@@ -75,6 +76,9 @@ function db_connect($url) {
   }
   $url['host'] = urldecode($url['host']);
   $url['path'] = urldecode($url['path']);
+  if (!isset($url['port'])) {
+    $url['port'] = NULL;
+  }
 
   $connection = mysqli_init();
   @mysqli_real_connect($connection, $url['host'], $url['user'], $url['pass'], substr($url['path'], 1), $url['port'], NULL, MYSQLI_CLIENT_FOUND_ROWS);
@@ -86,7 +90,7 @@ function db_connect($url) {
     drupal_set_title('Unable to connect to database server');
     print theme('maintenance_page', '<p>If you still have to install Drupal, proceed to the <a href="'. base_path() .'install.php">installation page</a>.</p>
 <p>If you have already finished installing Drupal, this either means that the username and password information in your <code>settings.php</code> file is incorrect or that we can\'t connect to the MySQL database server. This could mean your hosting provider\'s database server is down.</p>
-<p>The MySQL error was: '. theme('placeholder', mysqli_error($connection)) .'.</p>
+<p>The MySQL error was: '. theme('placeholder', mysqli_connect_error($connection)) .'.</p>
 <p>Currently, the username is '. theme('placeholder', $url['user']) .' and the database server is '. theme('placeholder', $url['host']) .'.</p>
 <ul>
   <li>Are you sure you have the correct username and password?</li>
@@ -99,9 +103,10 @@ function db_connect($url) {
   }
   else if (mysqli_connect_errno() > 0) {
     drupal_maintenance_theme();
+    drupal_set_header('HTTP/1.1 503 Service Unavailable');
     drupal_set_title('Unable to select database');
     print theme('maintenance_page', '<p>We were able to connect to the MySQL database server (which means your username and password are okay) but not able to select the database.</p>
-<p>The MySQL error was: '. theme('placeholder', mysqli_error($connection)) .'.</p>
+<p>The MySQL error was: '. theme('placeholder', mysqli_connect_error($connection)) .'.</p>
 <p>Currently, the database is '. theme('placeholder', substr($url['path'], 1)) .'. The username is '. theme('placeholder', $url['user']) .' and the database server is '. theme('placeholder', $url['host']) .'.</p>
 <ul>
   <li>Are you sure you have the correct database name?</li>
@@ -199,18 +204,18 @@ function db_num_rows($result) {
 }
 
 /**
-* Return an individual result field from the previous query.
-*
-* Only use this function if exactly one field is being selected; otherwise,
-* use db_fetch_object() or db_fetch_array().
-*
-* @param $result
-*   A database query result resource, as returned from db_query().
-* @param $row
-*   The index of the row whose result is needed.
-* @return
-*   The resulting field or FALSE.
-*/
+ * Return an individual result field from the previous query.
+ *
+ * Only use this function if exactly one field is being selected; otherwise,
+ * use db_fetch_object() or db_fetch_array().
+ *
+ * @param $result
+ *   A database query result resource, as returned from db_query().
+ * @param $row
+ *   The index of the row whose result is needed.
+ * @return
+ *   The resulting field or FALSE.
+ */
 function db_result($result, $row = 0) {
   if ($result && mysqli_num_rows($result) > $row) {
     $array = mysqli_fetch_array($result, MYSQLI_NUM);

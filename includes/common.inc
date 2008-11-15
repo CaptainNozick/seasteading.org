@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.611.2.15 2008/01/22 09:36:49 drumm Exp $
+// $Id: common.inc,v 1.611.2.20 2008/07/09 19:34:30 drumm Exp $
 
 /**
  * @file
@@ -352,8 +352,10 @@ function drupal_not_found() {
     menu_set_active_item('');
   }
 
-  if (empty($return)) {
+  if (empty($return) || $return == MENU_NOT_FOUND || $return == MENU_ACCESS_DENIED) {
     drupal_set_title(t('Page not found'));
+    menu_set_active_item('');
+    $return = '';
   }
   // To conserve CPU and bandwidth, omit the blocks
   print theme('page', $return, FALSE);
@@ -366,7 +368,7 @@ function drupal_access_denied() {
   drupal_set_header('HTTP/1.1 403 Forbidden');
   watchdog('access denied', check_plain($_GET['q']), WATCHDOG_WARNING);
 
-// Keep old path for reference
+  // Keep old path for reference
   if (!isset($_REQUEST['destination'])) {
     $_REQUEST['destination'] = $_GET['q'];
   }
@@ -381,8 +383,9 @@ function drupal_access_denied() {
     menu_set_active_item('');
   }
 
-  if (empty($return)) {
+  if (empty($return) || $return == MENU_NOT_FOUND || $return == MENU_ACCESS_DENIED) {
     drupal_set_title(t('Access denied'));
+    menu_set_active_item('');
     $return = t('You are not authorized to access this page.');
   }
   print theme('page', $return);
@@ -1557,6 +1560,8 @@ function drupal_build_css_cache($types, $filename) {
  */
 function drupal_clear_css_cache() {
   file_scan_directory(file_create_path('css'), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE);
+  // Clear the page cache, so cached pages do not reference nonexistent CSS.
+  cache_clear_all();
 }
 
 /**
@@ -1656,10 +1661,10 @@ function _drupal_add_js($data, $type, $scope, $defer, $cache) {
  * are added to the page. Then, all settings are output, followed by 'inline'
  * JavaScript code.
  *
- * @parameter $scope
+ * @param $scope
  *   (optional) The scope for which the JavaScript rules should be returned.
  *   Defaults to 'header'.
- * @parameter $javascript
+ * @param $javascript
  *   (optional) An array with all JavaScript code. Defaults to the default
  *   JavaScript array for the given scope.
  * @return
