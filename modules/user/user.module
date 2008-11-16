@@ -1,5 +1,5 @@
 <?php
-// $Id: user.module,v 1.745.2.26 2008/01/07 02:30:35 drumm Exp $
+// $Id: user.module,v 1.745.2.35 2008/10/08 20:10:26 drumm Exp $
 
 /**
  * @file
@@ -895,7 +895,7 @@ function user_auth_help_links() {
 
 
 
-function user_login($msg = '') {
+function user_login() {
   global $user;
 
   // If we are already logged on, go to the user page instead.
@@ -904,9 +904,6 @@ function user_login($msg = '') {
   }
 
   // Display login form:
-  if ($msg) {
-    $form['message'] = array('#value' => '<p>'. check_plain($msg) .'</p>');
-  }
   $form['name'] = array('#type' => 'textfield',
     '#title' => t('Username'),
     '#size' => 60,
@@ -968,9 +965,11 @@ function user_login_submit($form_id, $form_values) {
     // Update the user table timestamp noting user has logged in.
     db_query("UPDATE {users} SET login = %d WHERE uid = %d", time(), $user->uid);
 
+    // Regenerate the session ID to prevent against session fixation attacks.
+    sess_regenerate();
+
     user_module_invoke('login', $form_values, $user);
 
-    sess_regenerate();
     return 'user/'. $user->uid;
   }
 }
@@ -980,11 +979,21 @@ function user_authenticate($name, $pass) {
 
   // Try to log in the user locally. Don't set $user unless successful.
   if ($account = user_load(array('name' => $name, 'pass' => $pass, 'status' => 1))) {
-    $user = $account;
-    return $user;
+    // Check if the e-mail is denied by an access rule.
+    // Doing this check here saves us a user_load() in user_login_validate()
+    // and introduces less code change for a security fix.
+    if (drupal_is_denied('mail', $account->mail)) {
+      form_set_error('name', t('The name %name is registered using a reserved e-mail address and therefore could not be logged in.', array('%name' => $account->name)));
+      return;
+    }
+    else {
+      $user = $account;
+      return $user;
+    }
   }
 
   // Strip name and server from ID:
+  $fullname = $name;
   if ($server = strrchr($name, '@')) {
     $name = substr($name, 0, strlen($name) - strlen($server));
     $server = substr($server, 1);
@@ -992,10 +1001,10 @@ function user_authenticate($name, $pass) {
 
   // When possible, determine corresponding external auth source. Invoke
   // source, and log in user if successful:
-  if ($server && ($result = user_get_authmaps("$name@$server"))) {
+  if ($result = user_get_authmaps($fullname)) {
     if (module_invoke(key($result), 'auth', $name, $pass, $server)) {
-      $user = user_external_load("$name@$server");
-      watchdog('user', t('External load by %user using module %module.', array('%user' => $name .'@'. $server, '%module' => key($result))));
+      $user = user_external_load($fullname);
+      watchdog('user', t('External load by %user using module %module.', array('%user' => $fullname, '%module' => key($result))));
     }
   }
 
@@ -1004,17 +1013,18 @@ function user_authenticate($name, $pass) {
   else {
     foreach (module_implements('auth') as $module) {
       if (module_invoke($module, 'auth', $name, $pass, $server)) {
-        if ($server) {
-          $name .= '@'. $server;
-        }
-        $user = user_load(array('name' => $name));
-        if (!$user->uid) { // Register this new user.
-          $userinfo = array('name' => $name, 'pass' => user_password(), 'init' => $name, 'status' => 1);
-          if ($server) {
-            $userinfo["authname_$module"] = $name;
-          }
+        $registered_user = user_load(array('name' => $fullname));
+        if (!$registered_user->uid) { // Register this new user.
+          $userinfo = array(
+            'name' => $fullname,
+            'pass' => user_password(), 
+            'init' => $fullname,
+            'status' => 1, 
+            'access' => time(),
+          );
+          $userinfo["authname_$module"] = $fullname;
           $user = user_save('', $userinfo);
-          watchdog('user', t('New external user: %user using module %module.', array('%user' => $name, '%module' => $module)), WATCHDOG_NOTICE, l(t('edit'), 'user/'. $user->uid .'/edit'));
+          watchdog('user', t('New external user: %user using module %module.', array('%user' => $fullname, '%module' => $module)), WATCHDOG_NOTICE, l(t('edit'), 'user/'. $user->uid .'/edit'));
           break;
         }
       }
@@ -1059,6 +1069,13 @@ function user_pass() {
 
 function user_pass_validate($form_id, $form_values) {
   $name = $form_values['name'];
+
+  // Blocked accounts cannot request a new password,
+  // check provided username and email against access rules.
+  if (drupal_is_denied('user', $name) || drupal_is_denied('mail', $name)) {
+    form_set_error('name', t('%name is not allowed to request a new password.', array('%name' => $name)));
+  }
+
   $account = user_load(array('mail' => $name, 'status' => 1));
   if (!$account) {
     $account = user_load(array('name' => $name, 'status' => 1));
@@ -1078,7 +1095,7 @@ function user_pass_submit($form_id, $form_values) {
   $from = variable_get('site_mail', ini_get('sendmail_from'));
 
   // Mail one time login URL and instructions.
-  $variables = array('!username' => $account->name, '!site' => variable_get('site_name', 'Drupal'), '!login_url' => user_pass_reset_url($account), '!uri' => $base_url, '!uri_brief' => substr($base_url, strlen('http://')), '!mailto' => $account->mail, '!date' => format_date(time()), '!login_uri' => url('user', NULL, NULL, TRUE), '!edit_uri' => url('user/'. $account->uid .'/edit', NULL, NULL, TRUE));
+  $variables = array('!username' => $account->name, '!site' => variable_get('site_name', 'Drupal'), '!login_url' => user_pass_reset_url($account), '!uri' => $base_url, '!uri_brief' => preg_replace('!^https?://!', '', $base_url), '!mailto' => $account->mail, '!date' => format_date(time()), '!login_uri' => url('user', NULL, NULL, TRUE), '!edit_uri' => url('user/'. $account->uid .'/edit', NULL, NULL, TRUE));
   $subject = _user_mail_text('pass_subject', $variables);
   $body = _user_mail_text('pass_body', $variables);
   $mail_success = drupal_mail('user-pass', $account->mail, $subject, $body, $from);
@@ -1111,6 +1128,11 @@ function user_pass_reset($uid, $timestamp, $hashed_pass, $action = NULL) {
     $current = time();
     // Some redundant checks for extra security ?
     if ($timestamp < $current && $account = user_load(array('uid' => $uid, 'status' => 1)) ) {
+      // Deny one-time login to blocked accounts.
+      if (drupal_is_denied('user', $account->name) || drupal_is_denied('mail', $account->mail)) {
+        drupal_set_message(t('You have tried to use a one-time login for an account which has been blocked.'), 'error');
+        drupal_goto();
+      }
       // No time out for first time login.
       if ($account->login && $current - $timestamp > $timeout) {
         drupal_set_message(t('You have tried to use a one-time login link that has expired. Please request a new one using the form below.'));
@@ -1653,21 +1675,10 @@ function user_admin_access_check_submit($form_id, $form_values) {
  * Menu callback: add an access rule
  */
 function user_admin_access_add($mask = NULL, $type = NULL) {
-  if ($edit = $_POST) {
-    if (!$edit['mask']) {
-      form_set_error('mask', t('You must enter a mask.'));
-    }
-    else {
-      $aid = db_next_id('{access}_aid');
-      db_query("INSERT INTO {access} (aid, mask, type, status) VALUES ('%s', '%s', '%s', %d)", $aid, $edit['mask'], $edit['type'], $edit['status']);
-      drupal_set_message(t('The access rule has been added.'));
-      drupal_goto('admin/user/rules');
-    }
-  }
-  else {
-    $edit['mask'] = $mask;
-    $edit['type'] = $type;
-  }
+  $edit = array();
+  $edit['aid'] = 0;
+  $edit['mask'] = $mask;
+  $edit['type'] = $type;
   return drupal_get_form('user_admin_access_add_form', $edit, t('Add rule'));
 }
 
@@ -1699,23 +1710,16 @@ function user_admin_access_delete_confirm_submit($form_id, $form_values) {
  * Menu callback: edit an access rule
  */
 function user_admin_access_edit($aid = 0) {
-  if ($edit = $_POST) {
-    if (!$edit['mask']) {
-      form_set_error('mask', t('You must enter a mask.'));
-    }
-    else {
-      db_query("UPDATE {access} SET mask = '%s', type = '%s', status = '%s' WHERE aid = %d", $edit['mask'], $edit['type'], $edit['status'], $aid);
-      drupal_set_message(t('The access rule has been saved.'));
-      drupal_goto('admin/user/rules');
-    }
-  }
-  else {
-    $edit = db_fetch_array(db_query('SELECT aid, type, status, mask FROM {access} WHERE aid = %d', $aid));
-  }
+  $edit = db_fetch_array(db_query('SELECT aid, type, status, mask FROM {access} WHERE aid = %d', $aid));
   return drupal_get_form('user_admin_access_edit_form', $edit, t('Save rule'));
 }
 
 function user_admin_access_form($edit, $submit) {
+  $form = array();
+  $form['aid'] = array(
+    '#type' => 'value',
+    '#value' => $edit['aid'],
+  );
   $form['status'] = array(
     '#type' => 'radios',
     '#title' => t('Access type'),
@@ -1739,8 +1743,24 @@ function user_admin_access_form($edit, $submit) {
     '#required' => TRUE,
   );
   $form['submit'] = array('#type' => 'submit', '#value' => $submit);
+  $form['#base'] = 'user_admin_access_form';
 
   return $form;
+}
+
+/**
+ * Submit callback for user_admin_access_form().
+ */
+function user_admin_access_form_submit($form_id, $form_values) {
+  if ($form_values['aid']) {
+    db_query("UPDATE {access} SET mask = '%s', type = '%s', status = '%s' WHERE aid = %d", $form_values['mask'], $form_values['type'], $form_values['status'], $form_values['aid']);
+    drupal_set_message(t('The access rule has been saved.'));
+  }
+  else {
+    db_query("INSERT INTO {access} (mask, type, status) VALUES ('%s', '%s', %d)", $form_values['mask'], $form_values['type'], $form_values['status']);
+    drupal_set_message(t('The access rule has been added.'));
+  }
+  return 'admin/user/rules'; 
 }
 
 /**

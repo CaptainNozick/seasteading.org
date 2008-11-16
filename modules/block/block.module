@@ -1,5 +1,5 @@
 <?php
-// $Id: block.module,v 1.246.2.6 2007/09/12 07:49:35 drumm Exp $
+// $Id: block.module,v 1.246.2.10 2008/07/16 19:09:39 drumm Exp $
 
 /**
  * @file
@@ -320,12 +320,12 @@ function theme_block_admin_display($form) {
       // Output region header
       if ($status && $region != $last_region) {
         $region_title = t('@region', array('@region' => drupal_ucfirst($block_regions[$region])));
-        $rows[] = array(array('data' => $region_title, 'class' => 'region', 'colspan' => ($throttle ? 7 : 6)));
+        $rows[] = array(array('data' => $region_title, 'class' => 'region', 'colspan' => ($throttle ? 6 : 5)));
         $last_region = $region;
       }
       // Output disabled header
       elseif ($status != $last_status) {
-        $rows[] = array(array('data' => t('Disabled'), 'class' => 'region', 'colspan' => ($throttle ? 7 : 6)));
+        $rows[] = array(array('data' => t('Disabled'), 'class' => 'region', 'colspan' => ($throttle ? 6 : 5)));
         $last_status = $status;
       }
 
@@ -359,7 +359,7 @@ function theme_block_admin_display($form) {
 }
 
 function block_box_get($bid) {
-  return db_fetch_array(db_query("SELECT bx.*, bl.title FROM {boxes} bx INNER JOIN {blocks} bl ON bx.bid = bl.delta WHERE bl.module = 'block' AND bx.bid = %d", $bid));
+  return db_fetch_array(db_query("SELECT * FROM {boxes} WHERE bid = %d", $bid));
 }
 
 /**
@@ -524,7 +524,7 @@ function block_box_form_submit($form_id, $form_values) {
  */
 function block_box_delete($bid = 0) {
   $box = block_box_get($bid);
-  $form['info'] = array('#type' => 'hidden', '#value' => $box['info'] ? $box['info'] : $box['title']);
+  $form['info'] = array('#type' => 'hidden', '#value' => $box['info']);
   $form['bid'] = array('#type' => 'hidden', '#value' => $bid);
 
   return confirm_form($form, t('Are you sure you want to delete the block %name?', array('%name' => $box['info'])), 'admin/build/block', '', t('Delete'), t('Cancel'));
@@ -589,12 +589,11 @@ function block_box_save($edit, $delta = NULL) {
  * Allow users to decide which custom blocks to display when they visit
  * the site.
  */
-function block_user($type, $edit, &$user, $category = NULL) {
-  global $user;
+function block_user($type, $edit, &$account, $category = NULL) {
   switch ($type) {
     case 'form':
       if ($category == 'account') {
-        $rids = array_keys($user->roles);
+        $rids = array_keys($account->roles);
         $placeholders = implode(',', array_fill(0, count($rids), '%d'));
         $result = db_query("SELECT DISTINCT b.* FROM {blocks} b LEFT JOIN {blocks_roles} r ON b.module = r.module AND b.delta = r.delta WHERE b.status = 1 AND b.custom != 0 AND (r.rid IN ($placeholders) OR r.rid IS NULL) ORDER BY b.weight, b.module", $rids);
         $form['block'] = array('#type' => 'fieldset', '#title' => t('Block configuration'), '#weight' => 3, '#collapsible' => TRUE, '#tree' => TRUE);
@@ -602,7 +601,7 @@ function block_user($type, $edit, &$user, $category = NULL) {
           $data = module_invoke($block->module, 'block', 'list');
           if ($data[$block->delta]['info']) {
             $return = TRUE;
-            $form['block'][$block->module][$block->delta] = array('#type' => 'checkbox', '#title' => check_plain($data[$block->delta]['info']), '#default_value' => isset($user->block[$block->module][$block->delta]) ? $user->block[$block->module][$block->delta] : ($block->custom == 1));
+            $form['block'][$block->module][$block->delta] = array('#type' => 'checkbox', '#title' => check_plain($data[$block->delta]['info']), '#default_value' => isset($account->block[$block->module][$block->delta]) ? $account->block[$block->module][$block->delta] : ($block->custom == 1));
           }
         }
 
@@ -685,8 +684,23 @@ function block_list($region) {
       else {
         $page_match = TRUE;
       }
+      $block->enabled = $enabled;
+      $block->page_match = $page_match;
+      $blocks[$block->region]["{$block->module}_{$block->delta}"] = $block;
+    }
+  }
 
-      if ($enabled && $page_match) {
+  // Create an empty array if there were no entries
+  if (!isset($blocks[$region])) {
+    $blocks[$region] = array();
+  }
+
+  foreach ($blocks[$region] as $key => $block) {
+    // Render the block content if it has not been created already.
+    if (!isset($block->content)) {
+      // Erase the block from the static array - we'll put it back if it has content.
+      unset($blocks[$region][$key]);
+      if ($block->enabled && $block->page_match) {
         // Check the current throttle status and see if block should be displayed
         // based on server load.
         if (!($block->throttle && (module_invoke('throttle', 'status') > 0))) {
@@ -707,10 +721,6 @@ function block_list($region) {
         }
       }
     }
-  }
-  // Create an empty array if there were no entries
-  if (!isset($blocks[$region])) {
-    $blocks[$region] = array();
   }
   return $blocks[$region];
 }
