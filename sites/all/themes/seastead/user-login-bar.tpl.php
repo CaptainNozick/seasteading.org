@@ -26,5 +26,6 @@
 				</div>
 			</form>
 		<?php endif; ?>
+		<?php if ($search_box): ?><div class="block block-theme"><?php print $search_box ?></div><?php endif; ?>
 	</div>
 </div>
