@@ -1,0 +1,10 @@
+; $Id: notifications_lite.info,v 1.1.2.1 2008/04/29 09:50:12 jareyero Exp $
+name = "Notifications Lite"
+description = "Extra Simple Notifications API. Enable only when required by other modules."
+package = Notifications
+
+; Information added by drupal.org packaging script on 2008-11-14
+version = "5.x-1.2"
+project = "notifications"
+datestamp = "1226662817"
+

@@ -1,0 +1,172 @@
+<?php
+// $Id: messaging.install,v 1.2.2.6 2008/10/08 11:16:51 jareyero Exp $
+
+function messaging_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {messaging_message_parts} (
+          type varchar(100) NOT NULL,
+          method varchar(50) NOT NULL,
+          msgkey varchar(100) NOT NULL,
+          module varchar(255) NOT NULL,
+          message TEXT,
+          INDEX (type),
+          INDEX (method),
+          INDEX (msgkey)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */");
+      db_query("CREATE TABLE {messaging_store} (
+          mqid int unsigned NOT NULL auto_increment,
+          uid int unsigned NOT NULL,
+          sender int unsigned NOT NULL default '0',
+          method varchar(255) default NULL,
+          destination varchar(255) default NULL,
+          subject varchar(255) default NULL,
+          body longtext NOT NULL,
+          params longtext NOT NULL,
+          created int NOT NULL default '0',
+          sent int NOT NULL default '0',
+          cron tinyint NOT NULL default '0',
+          queue tinyint NOT NULL default '0',
+          log tinyint NOT NULL default '0',
+          PRIMARY KEY  (mqid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */");
+      break;
+    case 'pgsql':
+      db_query("CREATE TABLE {messaging_message_parts} (
+          type varchar(100) NOT NULL,
+          method varchar(50) NOT NULL,
+          msgkey varchar(100) NOT NULL,
+          module varchar(255) NOT NULL,
+          message TEXT
+        )");
+      db_query("CREATE INDEX {messaging_message_parts}_type_idx ON {messaging_message_parts} (type)");
+      db_query("CREATE INDEX {messaging_message_parts}_method_idx ON {messaging_message_parts} (method)");
+      db_query("CREATE INDEX {messaging_message_parts}_msgkey_idx ON {messaging_message_parts} (msgkey)");
+
+      db_query("CREATE TABLE {messaging_store} (
+          mqid serial,
+          uid int_unsigned NOT NULL,
+          sender int_unsigned NOT NULL default '0',
+          method varchar(255) default NULL,
+          destination varchar(255) default NULL,
+          subject varchar(255) default NULL,
+          body text NOT NULL,
+          params text NOT NULL,
+          created int NOT NULL default '0',
+          sent int NOT NULL default '0',
+          cron smallint NOT NULL default '0',
+          queue smallint NOT NULL default '0',
+          log smallint NOT NULL default '0',
+          PRIMARY KEY  (mqid)
+        )");
+      break;
+  }
+  // Create default input filter
+  _messaging_install_create_filter();
+}
+
+function messaging_uninstall() {
+  db_query("DROP TABLE {messaging_message_parts}");
+  db_query("DROP TABLE {messaging_store}");
+}
+
+/**
+ * Implementation of hook_requirements().
+ */
+function messaging_requirements($phase) {
+  if ($phase == 'runtime') {
+    $list = messaging_method_list();
+    if (empty($list)) {
+      $t = get_t();
+      return array('messaging' => array(
+        'title' => $t('Messaging method'),
+        'value' => $t('At least one delivery module needs to be enabled for the messaging module to function.'),
+        'severity' => REQUIREMENT_WARNING
+      ));
+    }
+  }
+}
+
+/**
+ * Create a default plain text filter, just to have some reasonable default to get started
+ */
+function _messaging_install_create_filter() {
+  // Create default filter, plain text
+  db_query("INSERT INTO {filter_formats} (name, cache) VALUES('%s', 0)", t('Messaging plain text'));
+  $format = db_result(db_query("SELECT MAX(format) AS format FROM {filter_formats}"));
+  db_query("INSERT INTO {filters} (format, module, delta, weight) VALUES(%d, 'messaging', 0, 0)", $format);
+  variable_set('messaging_default_filter', $format);
+  drupal_set_message(t("A new Input format has been created: %name", array('%name' => t('Messaging plain text'))));
+}
+
+/**
+ * Update method settings
+ */
+function messaging_update_1() {
+  $ret = array();
+  if ($settings = variable_get('messaging_methods', array())) {
+    foreach ($settings as $key => $info){
+      $info['subject_filter'] = $info['filter'];
+      variable_set('messaging_method_'.$key, $info);
+    }
+    drupal_set_message('Your messaging settings have been updated. Please review them.');
+  }
+  return $ret;
+}
+
+/**
+ * Create queue storage
+ */
+function messaging_update_2() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("CREATE TABLE {messaging_store} (
+          mqid int unsigned NOT NULL auto_increment,
+          uid int unsigned NOT NULL,
+          sender int unsigned NOT NULL default '0',
+          method varchar(255) default NULL,
+          destination varchar(255) default NULL,
+          subject varchar(255) default NULL,
+          body longtext NOT NULL,
+          params longtext NOT NULL,
+          created int NOT NULL default '0',
+          sent int NOT NULL default '0',
+          cron tinyint NOT NULL default '0',
+          queue tinyint NOT NULL default '0',
+          log tinyint NOT NULL default '0',
+          PRIMARY KEY (mqid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */");
+      break; 
+    case 'pgsql':
+      $ret[] = update_sql("CREATE TABLE {messaging_store} (
+          mqid serial,
+          uid int_unsigned NOT NULL,
+          sender int_unsigned NOT NULL default '0',
+          method varchar(255) default NULL,
+          destination varchar(255) default NULL,
+          subject varchar(255) default NULL,
+          body text NOT NULL,
+          params text NOT NULL,
+          created int NOT NULL default '0',
+          sent int NOT NULL default '0',
+          cron smallint NOT NULL default '0',
+          queue smallint NOT NULL default '0',
+          log smallint NOT NULL default '0',
+          PRIMARY KEY  (mqid)
+        )");
+      break;
+  }
+  return $ret; 
+}
+
+/**
+ * Update method settings
+ */
+function messaging_update_3() {
+  $ret = array();
+  _messaging_install_create_filter();
+  return $ret;
+}

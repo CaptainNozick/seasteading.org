@@ -1,0 +1,9 @@
+; $Id: messaging.info,v 1.1.2.1 2008/07/28 16:47:21 jareyero Exp $
+name = Messaging
+description = Messaging system. This is the base module for the Messaging Framework
+package = "Messaging"
+; Information added by drupal.org packaging script on 2008-10-29
+version = "5.x-1.1"
+project = "messaging"
+datestamp = "1225279516"
+

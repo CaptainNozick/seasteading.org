@@ -1,0 +1,883 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Notifications\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-10-19 16:45+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Pieter Edelman <p.edelman@gmx.net>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Dutch\n"
+"X-Poedit-Country: NETHERLANDS\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-KeywordsList: t\n"
+
+#: notifications.module:31
+msgid "Messaging & Notifications"
+msgstr "Berichten en Meldingen"
+
+#: notifications.module:35
+msgid "Administration of messaging and notifications"
+msgstr "Beheer van berichten en meldingen"
+
+#: notifications.module:40
+msgid "Notifications settings"
+msgstr "Instellingen voor meldingen"
+
+#: notifications.module:41
+msgid "Site settings for user notifications."
+msgstr "Site-instellingen voor gebruikersmeldingen"
+
+#: notifications.module:48
+msgid "Settings"
+msgstr "Instellingen"
+
+#: notifications.module:54
+msgid "Intervals"
+msgstr "Intervallen"
+
+#: notifications.module:61
+msgid "Events"
+msgstr "Gebeurtenissen"
+
+#: notifications.module:68
+msgid "Notifications status"
+msgstr "Status van de meldingen"
+
+#: notifications.module:69
+msgid "Manage notifications status queue"
+msgstr "Beheer de meldingenwachtrij"
+
+#: notifications.module:74
+#: notifications.module:118
+msgid "Overview"
+msgstr "Overzicht"
+
+#: notifications.module:75
+msgid "Notifications queue overview."
+msgstr "Overzicht van de wachtrij voor meldingen."
+
+#: notifications.module:80
+msgid "Queue"
+msgstr "Wachtrij"
+
+#: notifications.module:81
+msgid "Manage notifications queue."
+msgstr "Beheer de wachtrij voor meldingen."
+
+#: notifications.module:111
+msgid "Notifications"
+msgstr "Meldingen"
+
+#: notifications.module:170
+msgid "Messaging and Notifications settings"
+msgstr "Instellingen voor Berichten en Meldingen"
+
+#: notifications.module:174
+#: notifications.admin.inc:43
+msgid "Default send interval"
+msgstr "Standaard verzendinterval"
+
+#: notifications.module:178
+msgid "Default send interval for subscriptions."
+msgstr "Standaard verzendinterval voor abonnementen"
+
+#: notifications.module:709
+msgid "Notifications event"
+msgstr "Meldinggebeurtenis"
+
+#: notifications.module:713
+msgid "Notifications digest"
+msgstr "Meldingenverzameling"
+
+#: notifications.module:722
+msgid "Subject for event notifications"
+msgstr "Onderwerp voor gebeurtenismeldingen"
+
+#: notifications.module:723
+msgid "Header for event notifications"
+msgstr "Kop voor gebeurtenismeldingen"
+
+#: notifications.module:724
+msgid "Content for event notifications"
+msgstr "Inhoud voor gebeurtenismeldingen"
+
+#: notifications.module:725
+msgid "Footer for event notifications"
+msgstr "Footer voor gebeurtenismeldingen"
+
+#: notifications.module:729
+msgid "Subject for digested notifications"
+msgstr "Onderwep voor verzamelde meldingen"
+
+#: notifications.module:730
+msgid "Header for digested notifications"
+msgstr "Kop voor verzamelde meldingen"
+
+#: notifications.module:731
+msgid "Line for digested events"
+msgstr "Regel voor verzamelde meldingen"
+
+#: notifications.module:732
+msgid "Footer for digested notifications"
+msgstr "Footer voor verzamelde meldingen"
+
+#: notifications.module:741
+msgid "Event notification for [user] from [site-name]"
+msgstr "Gebeurtenismelding voor [user] van [site-name]"
+
+#: notifications.module:742
+msgid "Greetings [user],"
+msgstr "Gegroet [user],"
+
+#: notifications.module:743
+msgid "A item to which you are subscribed has been updated"
+msgstr "Een onderdeel waarop je je geabonneerd hebt, is bijgewerkt"
+
+#: notifications.module:745
+#: notifications.module:758
+#: notifications_lite/notifications_lite.module:164
+msgid "This is an automatic message from [site-name]"
+msgstr "Dit is een automatisch bericht van [site-name]"
+
+#: notifications.module:746
+#: notifications.module:759
+#: notifications_lite/notifications_lite.module:165
+msgid "To manage your subscriptions, browse to [subscriptions-manage]"
+msgstr "Ga naar [subscriptions-manage] om je abonnementen te beheren"
+
+#: notifications.module:747
+msgid "You can unsubscribe at [unsubscribe-url]"
+msgstr "Uitschrijven kan via [unsubscribe-url]"
+
+#: notifications.module:754
+msgid "[site-name] subscription update for [user]"
+msgstr "[site-name]-abonnementupdate voor [user]"
+
+#: notifications.module:755
+msgid ""
+"Greetings, [user].\n"
+"\n"
+"These are your messages"
+msgstr ""
+"Gegroet, [user].\n"
+"\n"
+"Dit zijn uw berichten"
+
+#: notifications.module:756
+msgid ""
+"A [type] has been updated: [title]\n"
+"\n"
+"[event_list]"
+msgstr ""
+"Een [type] is bijgewerkt: [title]\n"
+"\n"
+"[event_list]"
+
+#: notifications.module:808
+msgid "The url for the current user to manage subscriptions."
+msgstr "De URL voor de huidige gebruiker om abonnementen bij te werken."
+
+#: notifications.module:811
+msgid "The url for disabling a specific subscription."
+msgstr "De URL om een specifiek abonnement stop te zetten."
+
+#: notifications.module:814
+msgid "List of events for message digests"
+msgstr "Lijst van gebeurtenissen voor berichtverzamelingen"
+
+#: notifications.module:815
+msgid "Detailed information for event"
+msgstr "Gedetailleerde informatie over de gebeurtenis"
+
+#: notifications.module:955
+msgid "Never"
+msgstr "Nooit"
+
+#: notifications.module:956
+msgid "Immediately"
+msgstr "Direct"
+
+#: notifications.module:957
+msgid "Every hour"
+msgstr "Elk uur"
+
+#: notifications.module:958
+msgid "Twice a day"
+msgstr "Twee keer per dag"
+
+#: notifications.module:959
+msgid "Daily"
+msgstr "Dagelijks"
+
+#: notifications.module:960
+msgid "Weekly"
+msgstr "Wekelijks"
+
+#: notifications_content/notifications_content.module:21
+msgid "Content Subscriptions"
+msgstr "Abonnementen op inhoud"
+
+#: notifications_content/notifications_content.module:34
+#: notifications_content/notifications_content.module:116
+msgid "Thread"
+msgstr "Thread"
+
+#: notifications_content/notifications_content.module:43
+#: notifications_content/notifications_content.module:123
+msgid "Content type"
+msgstr "Inhoudstype"
+
+#: notifications_content/notifications_content.module:52
+#: notifications_content/notifications_content.module:130
+#: notifications_content/notifications_content.module:515
+msgid "Author"
+msgstr "Auteur"
+
+#: notifications_content/notifications_content.module:76
+msgid "Content type subscriptions"
+msgstr "Abonnementen op inhoudstypes"
+
+#: notifications_content/notifications_content.module:83
+msgid "Allowed content types"
+msgstr "Toegestane inhoudstypes"
+
+#: notifications_content/notifications_content.module:86
+msgid "Select content types which should be <em>allowed</em> for subscriptions to content type."
+msgstr "Selecteer de inhoudstypes waarop een abonnement is <em>toegestaan</em>."
+
+#: notifications_content/notifications_content.module:101
+#: notifications_content/notifications_content.module:275
+#: notifications_feed/notifications_feed.module:157
+msgid "Content"
+msgstr "Inhoud"
+
+#: notifications_content/notifications_content.module:103
+msgid "Content type: %type"
+msgstr "Inhoudstype: %type"
+
+#: notifications_content/notifications_content.module:106
+msgid "Author: %name"
+msgstr "Auteur: %name"
+
+#: notifications_content/notifications_content.module:109
+msgid "Thread: %title"
+msgstr "Thread: %title"
+
+#: notifications_content/notifications_content.module:171
+msgid "New content of type [type-name] has been submitted"
+msgstr "Er is nieuwe inhoud van het type [type-name] verzonden"
+
+#: notifications_content/notifications_content.module:172
+msgid "[type-name] [title] by [author-name]"
+msgstr "[type-name] [title] door [author-name]"
+
+#: notifications_content/notifications_content.module:174
+msgid "Node creation"
+msgstr "Node-aanmaak"
+
+#: notifications_content/notifications_content.module:183
+#: notifications_content/notifications_content.module:191
+msgid "[type-name]: [title]"
+msgstr "[type-name]: [title]"
+
+#: notifications_content/notifications_content.module:184
+msgid "The [node-type] has been updated"
+msgstr "De [node-type] is bijgewerkt"
+
+#: notifications_content/notifications_content.module:186
+msgid "Node update"
+msgstr "Node-update"
+
+#: notifications_content/notifications_content.module:192
+msgid "New comment by [comment-author-name]: [comment-title]"
+msgstr "Nieuwe reactie van [comment-author-name]: [comment-title]"
+
+#: notifications_content/notifications_content.module:194
+msgid "Node comment"
+msgstr "Node-reactie"
+
+#: notifications_content/notifications_content.module:241
+msgid "The header and footer will be taken from Notification events"
+msgstr "De kop een footer worden gebruikt van Meldingen-gebeurtenissen"
+
+#: notifications_content/notifications_content.module:245
+msgid "Notifications for node events"
+msgstr "Meldingen voor node-gebeurtenissen"
+
+#: notifications_content/notifications_content.module:250
+msgid "Notifications for node creation"
+msgstr "Meldingen voor node-aanmaak"
+
+#: notifications_content/notifications_content.module:255
+msgid "Notifications for node updates"
+msgstr "Meldingen voor node-updates"
+
+#: notifications_content/notifications_content.module:260
+msgid "Notifications for node comments"
+msgstr "Meldingen voor reacties op nodes"
+
+#: notifications_content/notifications_content.module:274
+#: notifications_feed/notifications_feed.module:156
+msgid "Subject"
+msgstr "Onderwerp"
+
+#: notifications_content/notifications_content.module:287
+msgid "Update for [type-name]: [title]"
+msgstr "Update voor [type-name]: [title]"
+
+#: notifications_content/notifications_content.module:290
+#: notifications_content/notifications_content.module:298
+msgid "Read more [node-url]"
+msgstr "Lees meer [node-url]"
+
+#: notifications_content/notifications_content.module:295
+msgid "New [type-name]: [title]"
+msgstr "Nieuw(e) [type-name]: [title]"
+
+#: notifications_content/notifications_content.module:303
+msgid "Comment for [type-name]: [title]"
+msgstr "Reactie voor [type-name]: [title]"
+
+#: notifications_content/notifications_content.module:305
+msgid "Comment by [comment-author-name]: [comment-title]"
+msgstr "Reactie door [comment-author-name]: [comment-title]"
+
+#: notifications_content/notifications_content.module:307
+msgid "Read more [comment-url]"
+msgstr "Lees meer [comment-url]"
+
+#: notifications_content/notifications_content.module:332
+msgid "This post"
+msgstr "Deze post"
+
+#: notifications_content/notifications_content.module:338
+msgid "Posts of type %type"
+msgstr "Posts van type %type"
+
+#: notifications_content/notifications_content.module:344
+msgid "Posts by %name"
+msgstr "Post van %name"
+
+#: notifications_content/notifications_content.module:455
+msgid "You are not currently subscribed to any active threads"
+msgstr "Momenteel bent u niet geabonneerd op actieve threads"
+
+#: notifications_content/notifications_content.module:458
+msgid "You are currently subscribed to the following threads:"
+msgstr "Op het moment bent u geabonneerd op de volgende threads:"
+
+#: notifications_content/notifications_content.module:460
+msgid "Title"
+msgstr "Titel"
+
+#: notifications_content/notifications_content.module:480
+msgid "There are no active content types."
+msgstr "Er zijn geen actieve inhoudstypes."
+
+#: notifications_content/notifications_content.module:484
+#: notifications.admin.inc:254
+#: notifications.admin.inc:281
+msgid "Type"
+msgstr "Type"
+
+#: notifications_content/notifications_content.module:504
+msgid "There are no active author subscriptions."
+msgstr "Er zijn geen actieve abonnementen op een auteur."
+
+#: notifications_content/notifications_content.module:540
+#: notifications_tags/notifications_tags.module:172
+#: notifications.admin.inc:302
+#: notifications.admin.inc:430
+#: notifications.admin.inc:537
+msgid "Send interval"
+msgstr "Verzendinterval"
+
+#: notifications_content/notifications_content.module:540
+#: notifications_tags/notifications_tags.module:172
+#: notifications.admin.inc:437
+#: notifications.admin.inc:537
+msgid "Send method"
+msgstr "Verzendmethode"
+
+#: notifications_content/notifications_content.module:566
+#: notifications_tags/notifications_tags.module:206
+#: notifications.admin.inc:563
+msgid "Save"
+msgstr "Opslaan"
+
+#: notifications_content/notifications_content.module:605
+#: notifications_ui/notifications_ui.module:200
+msgid "Your subscriptions have been updated."
+msgstr "Uw abonnementen zijn bijgewerkt."
+
+#: notifications_content/notifications_content.module:643
+msgid "The node teaser."
+msgstr "Het node-voorproefje."
+
+#: notifications_content/notifications_content.module:644
+msgid "The node body."
+msgstr "De node-tekst."
+
+#: notifications_content/notifications_content.module:645
+msgid "The node view url for read more links."
+msgstr "De node-weergave-URL voor de meer-lezen-links."
+
+#: notifications_content/notifications_content.module:646
+msgid "Unfiltered node teaser. WARNING - raw user input."
+msgstr "Ongefilterd node-voorproefje. WAARSCHUWING - onbewerkte gebruikersinvoer."
+
+#: notifications_content/notifications_content.module:647
+msgid "Unfiltered node body. WARNING - raw user input."
+msgstr "Ongefilterde node-tekst. WAARSCHUWING - onbewerkte gebruikersinvoer."
+
+#: notifications_content/notifications_content.module:650
+msgid "The comment view url."
+msgstr "De URL om reacties weer te geven."
+
+#: notifications_content/notifications_content.module:651
+msgid "The comment reply url."
+msgstr "De URL om op reacties te reageren."
+
+#: notifications_autosubscribe/notifications_autosubscribe.module:46
+msgid "Autosubscribe"
+msgstr "Automatisch abonneren."
+
+#: notifications_autosubscribe/notifications_autosubscribe.module:48
+msgid "Checking this box allows you to automatically subscribe to any thread you create or post a comment to."
+msgstr "Met het aanvinken van deze optie kunt u zich automatisch abonneren op elke thread die u aanmaakt of waarin u post."
+
+#: notifications_autosubscribe/notifications_autosubscribe.module:55
+msgid "Set all users to \"autosubscribe\" by default"
+msgstr "Zet automatisch abonneren standaard aan voor alle gebruikers"
+
+#: notifications_autosubscribe/notifications_autosubscribe.module:57
+msgid "Sets each users \"autosubscribe\" profile option."
+msgstr "Stelt de automatisch-abonneren-profielopties voor alle gebruikers in"
+
+#: notifications_autosubscribe/notifications_autosubscribe.module:92
+msgid "You are currently set to receive notifications for replies to content which you create. To change this default, uncheck the autosubscribe option in your user account settings."
+msgstr "Op het moment ontvangt u meldingen over  reacties op inhoud die u aanmaakt. Vink de automatisch-abonneren-optie in uw accountinstellingen uit om dit standaard gedrag te veranderen,"
+
+#: notifications_feed/notifications_feed.module:41
+msgid "Feeds"
+msgstr "Feeds"
+
+#: notifications_feed/notifications_feed.module:68
+msgid "Feed: %name"
+msgstr "Feed: %name"
+
+#: notifications_feed/notifications_feed.module:75
+#: notifications_feed/notifications_feed.module:288
+msgid "Feed"
+msgstr "Feed"
+
+#: notifications_feed/notifications_feed.module:118
+msgid "To items in this feed"
+msgstr "Op items in deze feed"
+
+#: notifications_feed/notifications_feed.module:146
+msgid "Notifications for feed events"
+msgstr "Meldingen voor feed-gebeurtenissen"
+
+#: notifications_feed/notifications_feed.module:168
+msgid "Feed updated: [title]"
+msgstr "Feed-update: [title]"
+
+#: notifications_feed/notifications_feed.module:170
+msgid "Some feed items have been updated:"
+msgstr "Enkele feeds zijn bijgewerkt:"
+
+#: notifications_feed/notifications_feed.module:172
+msgid "Read more [feed-url]"
+msgstr "Lees meer [feed-url]"
+
+#: notifications_feed/notifications_feed.module:221
+msgid "The feed name"
+msgstr "De feed-name"
+
+#: notifications_feed/notifications_feed.module:222
+msgid "The feed teaser."
+msgstr "Het feed-voorproefje."
+
+#: notifications_feed/notifications_feed.module:223
+msgid "The URL for the feed"
+msgstr "De URL van de feed"
+
+#: notifications_feed/notifications_feed.module:224
+msgid "The list of refresed (new and updated) items."
+msgstr "De lijst van nieuwe en bijgewerkte onderwerpen."
+
+#: notifications_feed/notifications_feed.module:225
+msgid "The list of updated feed items."
+msgstr "De lijst van bijgewerkte feed-onderwerpen."
+
+#: notifications_feed/notifications_feed.module:226
+msgid "The list of new feed items"
+msgstr "De lijst van nieuwe feed-items"
+
+#: notifications_feed/notifications_feed.module:247
+msgid "New: !title"
+msgstr "Nieuw: !title"
+
+#: notifications_feed/notifications_feed.module:250
+msgid "Updated: !title"
+msgstr "Bijgewerkt: !title"
+
+#: notifications_feed/notifications_feed.module:252
+msgid "no updated items"
+msgstr "geen bijgewerkte onderwerpen"
+
+#: notifications_feed/notifications_feed.module:253
+msgid "no new items"
+msgstr "geen nieuwe onderwerpen"
+
+#: notifications_feed/notifications_feed.module:284
+msgid "There are no active feed subscriptions."
+msgstr "Er zijn geen actieve feed-abonnementen."
+
+#: notifications_lite/notifications_lite.module:140
+msgid "Simple notifications"
+msgstr "Eenvoudige meldingen"
+
+#: notifications_lite/notifications_lite.module:141
+msgid "The subject and main body will be provided by the event itself"
+msgstr "Het onderwerp en de hoofdtekst komen van de gebeurtenis zelf"
+
+#: notifications_lite/notifications_lite.module:150
+msgid "Header"
+msgstr "Kop"
+
+#: notifications_lite/notifications_lite.module:151
+msgid "Footer"
+msgstr "Footer"
+
+#: notifications_lite/notifications_lite.module:162
+msgid "Greetings, [user]."
+msgstr "Gegroet, [user],"
+
+#: notifications_tags/notifications_tags.module:22
+#: notifications_tags/notifications_tags.module:56
+msgid "Tags"
+msgstr "Labels"
+
+#: notifications_tags/notifications_tags.module:49
+msgid "Term: %name"
+msgstr "Term: %name"
+
+#: notifications_tags/notifications_tags.module:108
+msgid "Tag subscriptions"
+msgstr "Abonnementen op labels"
+
+#: notifications_tags/notifications_tags.module:114
+msgid "Allowed vocabularies"
+msgstr "Toegestane woordenboeken"
+
+#: notifications_tags/notifications_tags.module:117
+msgid "Select vocabularies to which subscriptions should be <em>allowed</em>."
+msgstr "Selecteer de woordenboeken waarop abonneren is <em>toegestaan</em>."
+
+#: notifications_tags/notifications_tags.module:172
+msgid "Term"
+msgstr "Term"
+
+#: notifications_ui/notifications_ui.module:14
+msgid "These are UI settings only. They will be combined with other settings and permissions to determine which subscription options will be finally available for each page."
+msgstr "Dit zijn alleen maar UI-instellingen. Deze worden gecombineerd met andere instellingen en rechten om te bepalen welke opties er uiteindelijk op elke pagina beschikbaar zijn voor abonnementen."
+
+#: notifications_ui/notifications_ui.module:16
+msgid "content types settings page"
+msgstr "instellingenpagina voor inhoudstypes"
+
+#: notifications_ui/notifications_ui.module:16
+msgid "To enable different subscription options for each content type visit the !content-type-settings"
+msgstr "Ga naar !content-type-settings om verschillende abonnementopties in te schakelen voor de inhoudstypes"
+
+#: notifications_ui/notifications_ui.module:30
+msgid "User Interface"
+msgstr "Gebruikersinterface"
+
+#: notifications_ui/notifications_ui.module:31
+msgid "Enables site settings for user subscriptions."
+msgstr "Schakelt site-instellingen in voor gebruikersabonnementen"
+
+#: notifications_ui/notifications_ui.module:73
+msgid "Enabled subscription types"
+msgstr "Ingeschakelde abonnementtypes"
+
+#: notifications_ui/notifications_ui.module:76
+msgid "Check the subscription types the UI module should show."
+msgstr "Controleer de abonnementtypes die de UI-module weer zou moeten geven."
+
+#: notifications_ui/notifications_ui.module:80
+msgid "Show subscribe link with teaser"
+msgstr "Toon de abonneerlink in het voorproefje"
+
+#: notifications_ui/notifications_ui.module:82
+msgid "Uncheck to show links only in full node view. This will work only for content types that have subscription links enabled."
+msgstr "Vink uit om links alleen in de volledige node-weergave te tonen. Dit werkt allen voor inhoudstypes waar de abonneerlinks aan staan."
+
+#: notifications_ui/notifications_ui.module:98
+msgid "Subscriptions UI"
+msgstr "Abonneer-UI"
+
+#: notifications_ui/notifications_ui.module:101
+msgid "Enable different display options for subscriptions to this content type"
+msgstr "Schakel verschillende weergaveopties in voor abonnementen op dit inhoudstype"
+
+#: notifications_ui/notifications_ui.module:158
+msgid "Subscriptions (%number)"
+msgstr "Abonnementen (%number)"
+
+#: notifications_ui/notifications_ui.module:176
+#: notifications.admin.inc:140
+msgid "Update"
+msgstr "Update"
+
+#: notifications_ui/notifications_ui.module:217
+msgid "Unsubscribe from: !name"
+msgstr "Beëindig abonnement op: !name"
+
+#: notifications_ui/notifications_ui.module:222
+msgid "Subscribe to: !name"
+msgstr "Abonneer op: !name"
+
+#: notifications_ui/notifications_ui.module:304
+#: notifications_ui/notifications_ui.module:309
+msgid "Subscriptions"
+msgstr "Abonnementen"
+
+#: notifications_ui/notifications_ui.module:351
+msgid "Display in node form"
+msgstr "Toon in het node-formulier"
+
+#: notifications_ui/notifications_ui.module:352
+msgid "Display in comment form"
+msgstr "Toon in het reactieformulier"
+
+#: notifications_ui/notifications_ui.module:353
+msgid "Display as node links"
+msgstr "Toon als node-links"
+
+#: notifications_ui/notifications_ui.module:354
+msgid "Display in block"
+msgstr "Toon in blok"
+
+#: notifications.admin.inc:10
+msgid "General settings"
+msgstr "Algemene instellingen"
+
+#: notifications.admin.inc:15
+msgid "Notify poster of own posts"
+msgstr "Licht de eigenaar van eigen posts in"
+
+#: notifications.admin.inc:17
+msgid "Notifies a node poster about their own posts.  Useful principally during testing.  Default is OFF."
+msgstr "Licht een node-poster in over zijn eigen posts. Vooral handig tijden testen. Standaard staat dit UIT."
+
+#: notifications.admin.inc:20
+msgid "Immediate sending"
+msgstr "Directe verzending"
+
+#: notifications.admin.inc:23
+msgid "Do not queue notifications for immediate sending. This will produce more timely notifications for sites with a small number of users."
+msgstr "Zet de meldingen niet in een wachtrij bij het direct verzenden. Dit levert snellere meldingen op bij sites met niet zo veel gebruikers."
+
+#: notifications.admin.inc:26
+msgid "Notifications Sender"
+msgstr "Afzender van meldingen"
+
+#: notifications.admin.inc:29
+msgid "No one (All notifications will appear as coming from the web site)"
+msgstr "Niemand (alle meldingen lijken van de website te komen)"
+
+#: notifications.admin.inc:30
+msgid "User name, site data (Only the user name will be used)"
+msgstr "Gebruikersnaam, site-gegevens (alleen de gebruikersnaam wordt gebruikt)"
+
+#: notifications.admin.inc:31
+msgid "Full user data (User name and available user information)"
+msgstr "Volledige gebruikersgegevens (Gebruikersnaam en beschikbare informatie)"
+
+#: notifications.admin.inc:34
+msgid "Use the site information as the sender for notification messages or use account data from the user causing the event. WARNING: Selecting the last option (Full user data) may undisclose private information to subscribers like the user e-mail address."
+msgstr "Gebruik de site-informatie als de afzender voor meldingen of gebruik account-gegevens van de gebruiker die de gebeurtenis veroorzaakt. WAARSCHUWING: Bij de laatste optie (Volledige gebruikersgegevens) kunnen privégegevens verzonden worden naar abonnees, zoals het e-mailadres van de gebruiker."
+
+#: notifications.admin.inc:39
+msgid "Default settings"
+msgstr "Standaard instellingen"
+
+#: notifications.admin.inc:52
+msgid "Limits for queue processing"
+msgstr "Limieten voor wachtrijverwerking"
+
+#: notifications.admin.inc:54
+msgid "These are the limits for each cron run on queue processing. The process will stop when it first meets any of them. Set to 0 for no limit."
+msgstr "Dit zijn de limieten voor elke cron-run bij wachtrijverwerking. De processen stoppen zodra een ervan is bereikt. Voer 0 in om de limieten uit te schakelen."
+
+#: notifications.admin.inc:57
+msgid "Number of rows"
+msgstr "Aantal rijen"
+
+#: notifications.admin.inc:63
+msgid "Number of messages sent"
+msgstr "Aantal verzonden berichten"
+
+#: notifications.admin.inc:69
+msgid "Time (seconds)"
+msgstr "Tijd (seconden)"
+
+#: notifications.admin.inc:75
+#, php-format
+msgid "Time (% of cron time)"
+msgstr "Tijd (percentage van cron-tijd)"
+
+#: notifications.admin.inc:79
+msgid "Maximum percentage of cron time the process may use."
+msgstr "Het maximale percentage van de cron-tijd dat een proces mag gebruiken."
+
+#: notifications.admin.inc:90
+msgid "Minutes"
+msgstr "Minuten"
+
+#: notifications.admin.inc:91
+msgid "Hours"
+msgstr "Uren"
+
+#: notifications.admin.inc:92
+msgid "Days"
+msgstr "Dagen"
+
+#: notifications.admin.inc:96
+msgid "Send intervals"
+msgstr "Verzendintervallen"
+
+#: notifications.admin.inc:99
+msgid "To delete an interval, set the time unit and the name empty."
+msgstr "Maak de tijd en de naam leeg om een interval te verwijderen."
+
+#: notifications.admin.inc:141
+#: notifications.admin.inc:149
+msgid "Reset to defaults"
+msgstr "Herstel de standaard waarden"
+
+#: notifications.admin.inc:163
+msgid "The time intervals for your subscriptions have been updated"
+msgstr "De tijdsintervallen voor uw abonnementen zijn bijgewerkt"
+
+#: notifications.admin.inc:171
+msgid "Time"
+msgstr "Tijd"
+
+#: notifications.admin.inc:171
+msgid "Display name"
+msgstr "Weergavenaam"
+
+#: notifications.admin.inc:196
+msgid "Enabled events"
+msgstr "Ingeschakelde gebeurtenissen"
+
+#: notifications.admin.inc:199
+msgid "Check the events for which notifications should be triggered."
+msgstr "Markeer de gebeurtenissen waarvoor meldingen getriggered moeten worden."
+
+#: notifications.admin.inc:212
+msgid "You need to enable some plug-ins to provide notifications events."
+msgstr "Er zijn enkele plug-ins nodig voor meldinggebeurtenissen."
+
+#: notifications.admin.inc:254
+#: notifications.admin.inc:281
+#: notifications.admin.inc:302
+msgid "Number"
+msgstr "Aantal"
+
+#: notifications.admin.inc:270
+msgid "No existing or allowed subscriptions"
+msgstr "Geen bestaande of toegestane abonnementen"
+
+#: notifications.admin.inc:289
+#: notifications.admin.inc:310
+msgid "Total: %number"
+msgstr "Totaal: %number"
+
+#: notifications.admin.inc:290
+msgid "Current subscriptions"
+msgstr "Huidige abonnementen"
+
+#: notifications.admin.inc:311
+msgid "Messages in queue"
+msgstr "Meldingen in de wachtrij"
+
+#: notifications.admin.inc:326
+msgid "Output"
+msgstr "Output"
+
+#: notifications.admin.inc:332
+msgid "The queue has been reset."
+msgstr "De wachtrij is gereset."
+
+#: notifications.admin.inc:338
+msgid "Run queue process"
+msgstr "Verwerk de wachtrij"
+
+#: notifications.admin.inc:339
+msgid "Process immediate sending"
+msgstr "Verwerk de directe verzending"
+
+#: notifications.admin.inc:340
+msgid "Reset queue. Delete all notifications."
+msgstr "Reset de wachtrij. Verwijder alle meldingen."
+
+#: notifications.admin.inc:342
+msgid "Operations"
+msgstr "Bewerkingen"
+
+#: notifications.admin.inc:395
+msgid "Confirm your subscription"
+msgstr "Bevestig uw abonnement"
+
+#: notifications.admin.inc:399
+msgid "Subscription type or parameters not allowed"
+msgstr "Abonnementstype of parameters niet toegestaan"
+
+#: notifications.admin.inc:423
+#: notifications.admin.inc:617
+msgid "!type subscription to"
+msgstr "!type-abonnement op"
+
+#: notifications.admin.inc:443
+#: notifications.admin.inc:454
+msgid "Subscribe"
+msgstr "Abonneer"
+
+#: notifications.admin.inc:444
+#: notifications.admin.inc:458
+#: notifications.admin.inc:622
+#: notifications.admin.inc:636
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: notifications.admin.inc:456
+msgid "Your subscription was activated."
+msgstr "Uw abonnement is geactiveerd."
+
+#: notifications.admin.inc:459
+msgid "Your subscription was cancelled"
+msgstr "Uw abonnement is geannuleerd"
+
+#: notifications.admin.inc:488
+#: notifications.admin.inc:621
+#: notifications.admin.inc:632
+msgid "Unsubscribe"
+msgstr "Abonnement beëindigen"
+
+#: notifications.admin.inc:634
+msgid "Your subscription has been removed."
+msgstr "Uw abonnement is verwijderd."
+
+#: notifications.cron.inc:191
+msgid "Reached processing limit on queue processing: %name = %value"
+msgstr "De limieten van de wachtrijverwerking zijn bereikt: %name = %value"
+

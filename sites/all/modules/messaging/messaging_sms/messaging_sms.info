@@ -1,0 +1,10 @@
+name = SMS Messaging
+description = Sending Method: SMS
+package = "Messaging"
+dependencies = messaging sms sms_user
+
+; Information added by drupal.org packaging script on 2008-10-29
+version = "5.x-1.1"
+project = "messaging"
+datestamp = "1225279516"
+

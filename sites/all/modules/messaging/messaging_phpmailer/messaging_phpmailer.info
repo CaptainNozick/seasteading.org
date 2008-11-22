@@ -1,0 +1,10 @@
+; $Id: messaging_phpmailer.info,v 1.1.2.1 2008/02/14 20:20:13 m3avrck Exp $
+name = Messaging PHPMailer
+description = Mail Sending Method: Integration with Drupal mail API for HMTL Mail
+package = "Messaging"
+dependencies = messaging
+; Information added by drupal.org packaging script on 2008-10-29
+version = "5.x-1.1"
+project = "messaging"
+datestamp = "1225279516"
+

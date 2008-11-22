@@ -1,0 +1,10 @@
+; $Id: messaging_simple.info,v 1.2 2008/02/13 22:21:56 jareyero Exp $
+name = Simple messaging
+description = Sending Method: Show messages on user's page
+package = "Messaging"
+dependencies = messaging
+; Information added by drupal.org packaging script on 2008-10-29
+version = "5.x-1.1"
+project = "messaging"
+datestamp = "1225279516"
+

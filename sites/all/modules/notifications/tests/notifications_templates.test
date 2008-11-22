@@ -1,0 +1,171 @@
+<?php
+// $Id: notifications_templates.test,v 1.1.2.2 2008/11/07 23:58:38 jareyero Exp $
+/**
+ * Class for testing notifications module.
+ * Tests basic API functions
+ */
+class Notifications_Templates_Tests extends DrupalTestCase {
+  
+  function get_info() {
+    return array('name' => 'Notifications Templates', 'group' => 'Notifications', 'desc' => 'Notifications templates and message composition' );
+  }
+
+  /**
+   * Play with creating, retrieving, deleting a pair subscriptions
+   */
+  function testNotificationsTemplateAPI() {
+    // Enable some modules and do not send out messages
+    $this->drupalModuleEnable('notifications_content');
+    $this->drupalModuleEnable('messaging_debug');
+    $this->drupalVariableSet('messaging_debug', 0);    
+    require_once drupal_get_path('module', 'notifications') .'/notifications.cron.inc';
+
+    // Set fake site name for comparison after token replacement
+    $this->drupalVariableSet('site_name', 'Test Site');
+    
+    // Build some fake objects
+    $node1 = (object)array('nid' => 1, 'uid' => 0, 'type' => 'story', 'title' => 'Title 1', 'body' => 'Body 1');
+    $node2 = (object)array('nid' => 2, 'uid' => 1, 'type' => 'page', 'title' => 'Title 2', 'body' => 'Body 2');
+    $event1 = (object)array('eid' => 1, 'type' => 'node', 'action' => 'insert', 'node' => $node1, 'params' => array('nid' => $node1->nid));
+    $event2 = (object)array('eid' => 2, 'type' => 'node', 'action' => 'update', 'node' => $node2, 'params' => array('nid' => $node2->nid));
+
+    // Do some fake event loading populating event objects
+    $event1->objects['node'] = $node1;
+    $event2->objects['node'] = $node2;
+        
+    // Basic api, text parts and info functions
+    $this->drupalVariableSet('notifications_digest_methods', array(1 => 'short', 2 => 'long'));  
+    $digest = notifications_digest_method(1);
+    $this->assertEqual($digest['type'], 'short', 'Get information about intervals and digest methods.');
+    
+    $info = notifications_event_types($event1->type, $event1->action);
+    $this->assertEqual($info['digest'], array('node', 'type'), 'Get event information about digest fields');
+    
+    $info = nofitications_digest_event_info($event1);
+    $this->assertEqual($info, array('type' => 'node', 'field' => 'type', 'value' => 'story', 'object' => $node1), 'Get digest information for first event.');
+    //$this->printObject('digest information', $info);
+    $info = nofitications_digest_event_info($event2);
+    $this->assertEqual($info, array('type' => 'node', 'field' => 'nid', 'value' => 2, 'object' => $node2), 'Get digest information for second event.');
+    //$this->printObject('digest information', $info);
+    
+    // Text parts, text replacement, etc...
+    $event1->text['test'] = 'Text part';
+    $part = notifications_message_part('event', 'test', 'test', $event1);
+    $this->assertEqual($part, 'Text part', 'Retrieved message part from event');
+    $part = notifications_message_part('type', 'key', 'test');
+    $this->assertEqual($part, 'type key [type-name] [title] [site-name]', 'Retrieved testing message part: ' . $part);
+    $text = notifications_text_replace('[title] [type-name]', array('node' => $node1));
+    $this->assertEqual($text, 'Title 1 Story', 'Text replacement for node object');
+    
+   
+    // Now lets get into the scary part, events and event digesting
+    $text = array(
+      'subject' => 'Subject [title]',
+      'header' => 'Update for [type-name] [title]',
+      'main' => 'The body is [node-body-raw]',
+      'footer' => 'My site is [site-name]',
+      'digest' => 'Digest line [title]',
+    );
+    
+    $target = array(
+      'subject' => 'Subject Title 1',
+      'body' => array(
+        'header' => 'Update for Story Title 1', 
+        'event' => 'The body is Body 1',
+        'footer' => 'My site is Test Site',
+        )
+    );
+    $event1->text = $event2->text = $text;
+    $message = notifications_process_message(NULL, $event1, array(), 'test');
+    $this->assertEqual($message, $target, 'Message composition for single event'. $this->compareTexts($message, $target));
+    
+    // Test digesting, prepare events abn build event list      
+    $node3 = drupal_clone($node1); 
+    $node3->nid = 3;
+    $node3->title = 'Title 3';
+    // This should be digested by node type with the first one
+    $event3 = drupal_clone($event1);
+    $event3->eid = 3; 
+    $event3->objects['node'] = $node3;
+    // This should be digested by node with the second one, it's the same node update
+    $event4 = drupal_clone($event2);
+    $event4->eid = 4; 
+    $event_list = array(1 => $event1, 2 => $event2, 3 => $event3, 4 => $event4);
+    
+    // This should produce a short digest, build the target to compare
+    $test_line = '[type-name] [title] Test Site';
+
+    $body_common = array(
+      'header' => 'digest header ' . $test_line,
+      'footer' => 'digest footer ' . $test_line,
+    );
+    $lines = array();
+    $lines['node']['story'] = array(
+      'group' => array(
+        'title' => 'digest title Story Title 1 Test Site',
+        'footer' => 'digest footer Story Title 1 Test Site'
+      ),
+      'line' => array(
+        1 => 'Digest line Title 1',
+        2 => 'Digest line Title 3',
+      ),
+    );
+    $lines['node'][2] = array(
+      'group' => array(
+        'title' => 'digest title Page Title 2 Test Site',
+        'footer' => 'digest footer Page Title 2 Test Site'
+      ),
+      'line' => array(
+        1 => 'Digest line Title 2',
+        2 => 'Digest line Title 2',
+      ),    
+    );
+    $target = array(
+      'subject' => 'digest subject ' . $test_line,
+      'body' => theme('notifications_digest_short_body', $body_common, $lines),
+    );
+       
+    $digest = notifications_process_send(NULL, $event_list, array(), 'test', 1);
+    $message = array('subject' => $digest[0]['subject'], 'body' => $digest[0]['body']);
+    $this->assertEqual($message, $target, 'Message composition for short digest.'. $this->compareTexts($message, $target));
+    //$this->printObject('Digest target', $target); 
+    //$this->printObject('Digest actual', $message);
+    
+    // This should be a long digest, interval 2, build target to compare
+    $event_list = array(1 => $event1, 2 => $event2);
+    $body = array(
+      'The body is Body 1',
+      'The body is Body 2',
+    );
+    $target = array(
+      'subject' => 'digest subject [type-name] [title] Test Site',
+      'body' => theme('notifications_digest_long_body', $body_common['header'], $body, $body_common['footer']),
+    );
+
+    $digest = notifications_process_send(NULL, $event_list, array(), 'test', 2);
+    $message = array('subject' => $digest[0]['subject'], 'body' => $digest[0]['body']);
+    $this->assertEqual($message, $target, 'Message composition for long digest.'. $this->compareTexts($message, $target));
+    //$this->printObject('Digest target', $target);
+    //$this->printObject('Digest actual', $message);
+  }
+  
+  // Helper function to diff two text arrays
+  function compareTexts($text1, $text2) {
+    $diff = '';
+    foreach ($text1 as $key => $value) {
+      if (!isset($text2[$key])) {
+        $diff .= "($key)";
+      } elseif (is_array($value)) {
+        $diff .= $this->compareTexts($text1[$key], $text2[$key]);
+      } elseif ($value != $text2[$key]) {
+        $diff .= "($key)$value=" .$text2[$key];
+      }
+    }
+    return $diff;
+  }
+  // Debug dump object
+  function printObject($title, $object) {
+    $this->assertTrue(TRUE, $title . '= ' .  print_r($object, TRUE));
+  }
+  
+}

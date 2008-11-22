@@ -1,0 +1,135 @@
+// $Id: CHANGELOG.txt,v 1.1.2.36 2008/11/13 21:01:20 jareyero Exp $
+
+5.x-1.1 to 5.x-1.2
+------------------------------
+- Backported help text for Inmediate sending, #330786
+- Digesting options per interval and support for digesting plug-ins.
+- New digest format, 'Long', to print out the whole event.
+- Reworked message templating and digesting, added tests.
+- Performance improvements for taxonomy subscriptions (and groups).
+- Improved query builder to support fields with array values.
+- Simpletest update, moved tests around, did some clean up.
+
+5.x-1.0 to 5.x-1.1
+------------------------------
+- Added Dutch translation by Mr. Pi, #323350
+- Fixed wrong token, by truelove-nl, #319945
+- Added constants for subscription status
+- Fixed some slow queries, scalability issues, by Scott Reynolds, #318810 and #318248
+
+5.x-1.0-rc2 to 5.x-1.0 (First stable release!)
+------------------------------
+- Added german translation, by rastatt, #311403
+- Dropped the option to skip confirmation form
+- Fixed: Subscriptions allowed for disallowed content types, #295646
+- Fixed some unit tests
+
+5.x-1.0-rc1 to 5.x-1.0-rc2
+------------------------------
+- Fixed notices and code readability, by Zen, #310598
+- Fixed concatenationsyntax error, by Zen, #310594
+- Implemented: configurable events to trigger or not notification, #255402
+- Moved developer documentation to online handbook, http://drupal.org/node/253102
+- Spin off notifications_mail2web to it's own package, http://drupal.org/project/mail2web
+- Fixed multiple strings across all modules, by rastatt, #290063
+- Fixed typo in notifications_autosubscribe form text
+- Added inline documentation about the messaging/notifications API
+- Removed obsoleted 'pull' operation in notifications_messaging()
+- Better query building and more flexibility in notifications_user_get_subscriptions()
+
+5.x-1.0-beta3 to 5.x-1.0-rc1
+------------------------------
+- Improved security during user switching, by moshe, #284444
+- Some other bug fixes back ported from 6.x version
+- Moved notifications_group to og_notifications (OG package), by Zen, #254036
+- Added confirmation message when submitting subscriptions block form, #260434
+- Fixed: Notifications queued when send interval is 'Never', by Scott Reinolds, #268662
+- Added: PHP4 compatibility function, by phonydream2, #261902
+- Added event/hook support for not saving/queueing some event types, #255402
+- Removed "Duplicated subscription found and updated message", #260436
+- Fixed Wrong redirection and user message not showing up after subscribing, #251979
+- Reworked subscribe/unsubscribe pages, added confirmation for unsubscribe.
+- Autosubscribe form_alter points to incorrent form, by Liam McDermott, #256872
+- Theme username for notifications by author list, by jaydub, #253989 
+- Regrouped admin pages for messaging and notifications
+- Fixed bug in notifications_delete_subscriptions(), by Zen, #255416
+- Applied big notifications_group patch, by Zen, #254036
+
+5.x-1.0-beta2 to 5.x-1.0-beta3
+------------------------------
+- Fixed critical bug with message digesting not working, #253401
+
+5.x-1.0-beta1 to 5.x-1.0-beta2
+--------------------------------
+- Added new mail2web module
+- Added Notifications Lite module, extra simple notifications API.
+- Removed notifications_default_send_method setting and updated forms accordingly.
+- Messaging method default now shared with messaging module. Simplified user settings.
+- Disabled form control when there's only one sending method or send interval
+- Fixed bug: notifications_queue not respecting 'Notify poster of own posts' setting
+- Patch for PHP 4 compatibility by markus_petrux, http://drupal.org/node/222794
+- Function notifications_queue() now returns event object
+- Internal API change: notifications_message_part() now takes optional event as last argument
+- New feature for message composition: texts may be predefined in $event->text;
+- Support for empty message parts, using MESSAGING_EMPTY constant
+
+5.x-1.0-alpha2 to 5.x-1.0-beta1
+--------------------------------
+- Code clean up, compliance with coding standards
+- Fixed Notifications cron processing records ignoring module name by Brian Neisler, http://drupal.org/node/244571
+- Implemented notifications sender option, see http://drupal.org/node/227377
+- Resolved naming conflict with other modules by Lynn, http://drupal.org/node/232610
+- Rewritten notifications_load_user() to use messaging_load_user() so they share caching
+- Added back 'Never' send interval.
+- Subscriptions fields not mandatory anymore, http://drupal.org/node/237972
+- Improved digesting format for new posts, http://drupal.org/node/218745
+- Delete node/feed/group subscriptions when they don't apply anymore, http://drupal.org/node/236194
+- Removed handling of pull messaging, moved that feature to messaging module [message queueing].
+
+5.x-1.0-alpha1 to 5.x-1.0-alpha2
+--------------------------------
+- Added pager to user subscriptions (threads, authors, feeds), http://drupal.org/node/226867
+- Reworked content type UI settings, now allows multiple display options
+- Added new block for notifications UI, and new 'comment' option
+- Added nice UI for administering send intervals. Gone 'Never' that didnt make too much sense
+
+- Changed auto subscribe option in form, fixed UI issues, see http://drupal.org/node/230035
+- Fixed error when no query conditions retrieved for the query, http://drupal.org/node/230770
+- Added select all/none checkboxes to user subscription pages, by jaydub, http://drupal.org/node/227837
+- Removed notifications_mixed module that was not working and confusing people
+
+- Added notifications_alter() hooks
+  hook_alter_notifications_event_types()
+	hook_alter_notifications_subscription_types()
+- Extended notifications_delete_subscriptions() with fields parameter, from Brian Neisler's patch
+- Added themeable function for notifications_digest_body()
+
+- Added parameters into the messaging array so other modules can use them
+- Polished and grouped settings page
+- Changed 'omitted' settings to 'allowed', update scripts
+- Added one more test for permissions/content types
+- Fixed several minor bugs with UI options (Jeff)
+
+16/02/07 - 28/02/07
+--------------------
+- Delete subscriptions when user deleted
+- Added links to nodes from subscriptions list, patch by jaydub, http://drupal.org/node/226861
+- One more pgsql compatibility patch by jaydub, http://drupal.org/node/223670
+- Fixed inconsistent link in notifications_tags
+- Fixed bug with taxonomy subscriptions and multiple vocabularies, http://drupal.org/node/226931
+- Added support for other modules in queue processing (notifications_callback)
+- Added pgsql support (untested), by jaydub, http://drupal.org/node/223670
+- Fixed db query error on unsubscribe, by chirale, http://drupal.org/node/222640
+
+06/02/07 - 15/02/07
+---------------------
+- Fixed issue with group name on form confirmation
+- Implemented access permission for group subscriptions
+- Added module field to allow other modules to handle data in notifications tables
+- Added status field to allow disabled subscriptions on the table
+- UI Type for nodes defaults to 'links'
+- Added simpletest for basic API, detected a pair bugs on notifications_get_subscriptions :-)
+- Added simpletest for content notifications. Needs more cases.
+- Fixed buggy url generation (destination not working on cron)
+- Improved page workflow and fixed bug in confirmation form (send_method)
+ 

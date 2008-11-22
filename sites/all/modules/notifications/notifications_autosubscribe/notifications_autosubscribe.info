@@ -1,0 +1,11 @@
+; $Id: notifications_autosubscribe.info,v 1.2.2.1 2008/04/13 10:33:04 jareyero Exp $
+name = Notifications Autosubscribe
+description = Provides automatic notifications.
+package = "Notifications"
+dependencies = notifications notifications_content
+
+; Information added by drupal.org packaging script on 2008-11-14
+version = "5.x-1.2"
+project = "notifications"
+datestamp = "1226662817"
+

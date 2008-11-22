@@ -1,0 +1,238 @@
+<?php
+// $Id: notifications.install,v 1.4.2.5 2008/04/13 10:33:04 jareyero Exp $
+/**
+ * Implementation of hook_install().
+ */
+function notifications_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {notifications} (
+                `sid` int(10) unsigned NOT NULL auto_increment,
+                `uid` int(11) NOT NULL,
+                `type` varchar(255) default NULL,
+                `event_type` varchar(255) default NULL,
+                `conditions` int(10) unsigned NOT NULL,
+                `send_interval` int(11) default NULL,
+                `send_method` varchar(255) NOT NULL,
+                `cron` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+                `module` VARCHAR(255) DEFAULT NULL,
+                `status` int NOT NULL default 1,
+                PRIMARY KEY  (`sid`)
+              )/*!40100 DEFAULT CHARACTER SET utf8 */");
+              
+          db_query("CREATE TABLE  {notifications_fields} (
+                    `sid` int(10) unsigned NOT NULL,
+                    `field` varchar(255) NOT NULL,
+                    `value` varchar(255) NOT NULL,
+                    PRIMARY KEY  (`sid`,`field`)
+                  )/*!40100 DEFAULT CHARACTER SET utf8 */");
+    
+          db_query("CREATE TABLE  {notifications_queue} (
+                    `sqid` int(10) unsigned NOT NULL auto_increment,
+                    `eid` int(11) unsigned NOT NULL default '0',
+                    `sid` int(11) unsigned NOT NULL default '0',
+                    `uid` int(11) default NULL,
+                    `language` varchar(255) default NULL,
+                    `type` varchar(255) default NULL,
+                    `send_interval` int(11) default NULL,
+                    `send_method` varchar(255) default NULL,
+                    `sent` int(10) unsigned NOT NULL default '0',
+                    `created` int(10) unsigned NOT NULL default '0',
+                    `cron` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+                    `conditions` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+                    `module` VARCHAR(255) DEFAULT NULL,
+                    PRIMARY KEY  (`sqid`)
+                  )/*!40100 DEFAULT CHARACTER SET utf8 */");
+    
+          db_query("CREATE TABLE  {notifications_event} (
+                    `eid` int(11) unsigned NOT NULL auto_increment,
+                    `module` varchar(255) default NULL,
+                    `type` varchar(255) default NULL,
+                    `action` varchar(255) default NULL,
+                    `oid` int(11) unsigned NOT NULL default '0',
+                    `language` varchar(255) default NULL,
+                    `uid` int(11) default NULL,
+                    `params` text,
+                    `created` int(11) unsigned NOT NULL default '0',
+                    PRIMARY KEY  (`eid`)
+                  )/*!40100 DEFAULT CHARACTER SET utf8 */");
+    
+          db_query("CREATE TABLE  {notifications_sent} (
+                    `uid` int(11) NOT NULL default '0',
+                    `send_interval` int(10) NOT NULL default '0',
+                    `send_method` varchar(50) NOT NULL,
+                    `sent` int(10) unsigned NOT NULL default '0',
+                    PRIMARY KEY  (`uid`,`send_interval`,`send_method`)
+                  )/*!40100 DEFAULT CHARACTER SET utf8 */");
+          break;
+        case 'pgsql':
+          db_query("CREATE TABLE {notifications} (
+                sid serial,
+                uid int NOT NULL,
+                type varchar(255) DEFAULT NULL,
+                event_type varchar(255) DEFAULT NULL,
+                conditions int NOT NULL,
+                send_interval int DEFAULT NULL,
+                send_method varchar(255) NOT NULL,
+                cron smallint NOT NULL DEFAULT 0,
+                module varchar(255) DEFAULT NULL,
+                status smallint NOT NULL DEFAULT 1,
+                PRIMARY KEY (sid)
+              )");
+              
+          db_query("CREATE TABLE  {notifications_fields} (
+                    sid int NOT NULL,
+                    field varchar(255) NOT NULL,
+                    value varchar(255) NOT NULL,
+                    PRIMARY KEY (sid,field)
+                  )");
+    
+          db_query("CREATE TABLE  {notifications_queue} (
+                    sqid serial,
+                    eid int NOT NULL DEFAULT '0',
+                    sid int NOT NULL DEFAULT '0',
+                    uid int DEFAULT NULL,
+                    language varchar(255) DEFAULT NULL,
+                    type varchar(255) DEFAULT NULL,
+                    send_interval int DEFAULT NULL,
+                    send_method varchar(255) DEFAULT NULL,
+                    sent int NOT NULL DEFAULT '0',
+                    created int NOT NULL DEFAULT '0',
+                    cron smallint NOT NULL DEFAULT 0,
+                    conditions smallint NOT NULL DEFAULT 0,
+                    module varchar(255) DEFAULT NULL,
+                    PRIMARY KEY (sqid)
+                  )");
+    
+          db_query("CREATE TABLE  {notifications_event} (
+                    eid serial,
+                    module varchar(255) DEFAULT NULL,
+                    type varchar(255) DEFAULT NULL,
+                    action varchar(255) DEFAULT NULL,
+                    oid int NOT NULL DEFAULT '0',
+                    language varchar(255) DEFAULT NULL,
+                    uid int DEFAULT NULL,
+                    params text,
+                    created int NOT NULL DEFAULT '0',
+                    PRIMARY KEY (eid)
+                  )");
+    
+          db_query("CREATE TABLE  {notifications_sent} (
+                    uid int NOT NULL DEFAULT '0', 
+                    send_interval int NOT NULL DEFAULT '0',
+                    send_method varchar(50) NOT NULL,
+                    sent int NOT NULL DEFAULT '0',
+                    PRIMARY KEY (uid,send_interval,send_method)
+                  )");
+          break;
+  }
+  // Module weight. It must run after most modules, to make sure they've done their work before we add the notifications queries
+  db_query("UPDATE {system} SET weight = 100 WHERE name = 'notifications_content' AND type = 'module'");
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function notifications_uninstall() {
+  db_query("DROP TABLE {notifications}");
+  db_query("DROP TABLE {notifications_fields}");
+  db_query("DROP TABLE {notifications_queue}");
+  db_query("DROP TABLE {notifications_event}");
+  db_query("DROP TABLE {notifications_sent}");
+}
+
+/**
+ * Update: Add cron flag for processing
+ */
+function notifications_update_1() {
+  $ret = array();
+  // Add field
+  $ret[] = update_sql("ALTER TABLE {notifications} ADD COLUMN `cron` TINYINT UNSIGNED NOT NULL DEFAULT 0");
+  $ret[] = update_sql("ALTER TABLE {notifications_queue} ADD COLUMN `cron` TINYINT UNSIGNED NOT NULL DEFAULT 0");  
+  // Populate field, this is new so all stored rows till now should be intended for cron processing
+  $ret[] = update_sql("UPDATE {notifications} SET cron = 1");
+  $ret[] = update_sql("UPDATE {notifications_queue} SET cron = 1");
+  return $ret;
+}
+
+/**
+ * Update:
+ * - Remove unused table and fields
+ * - Add conditions field for mysql4 compatibility
+ * - Updated variable name
+ */
+function notifications_update_2() {
+  $ret = array();
+  $ret[] = update_sql("DROP TABLE {notifications_user}");
+  $ret[] = update_sql("ALTER TABLE {notifications_queue} DROP COLUMN `name`;");
+  $ret[] = update_sql("ALTER TABLE {notifications_queue} DROP COLUMN `field`;");
+  $ret[] = update_sql("ALTER TABLE {notifications_queue} DROP COLUMN `value`;");
+  $ret[] = update_sql("ALTER TABLE {notifications_queue} DROP COLUMN `author`;");
+  $ret[] = update_sql("ALTER TABLE {notifications_queue} ADD COLUMN `conditions` INTEGER UNSIGNED NOT NULL DEFAULT 0 AFTER `cron`");
+  variable_set('notifications_default_auto', variable_get('notifications_autoset', 0));
+  variable_del('notifications_autoset');
+  return $ret;
+}
+
+/**
+ * - Added status and module fields
+ */
+function notifications_update_3() {
+  $ret[] = update_sql("ALTER TABLE {notifications} ADD COLUMN `module` VARCHAR(255) AFTER `cron`;");
+  $ret[] = update_sql("ALTER TABLE {notifications} ADD COLUMN `status` INT  NOT NULL DEFAULT 1 AFTER `module`;");
+  $ret[] = update_sql("ALTER TABLE {notifications_queue} ADD COLUMN `module` VARCHAR(255);");
+  // Set default module to 'notifications'
+  $ret[] = update_sql("UPDATE {notifications} SET module = 'notifications'");
+  $ret[] = update_sql("UPDATE {notifications_queue} SET module = 'notifications'");
+  return $ret;
+}
+
+/**
+ * Change module weight
+ */
+function notifications_update_4() {
+  $ret[] = update_sql("UPDATE {system} SET weight = 100 WHERE name = 'notifications_content' AND type = 'module'");
+  return $ret;
+}
+
+/**
+ * Update content type and taxonomy options
+ */
+function notifications_update_5() {
+  $ret = array();
+  // Content types
+  if ($omitted = variable_get('notifications_omitted_content_types', array())) {
+    $allowed = array();
+    $types = node_get_types();
+    foreach ($types as $type => $info) {
+      if (!isset($omitted[$type])) {
+        $allowed[$type] = $type;
+      }
+    }
+    variable_set('notifications_content_types', $allowed);
+  }
+  // Vocabularies
+  if ($omitted = variable_get('notifications_omitted_taxa', array())) {
+    $vocabularies = taxonomy_get_vocabularies();
+    foreach ($omitted as $vid) {
+      unset($vocabularies[$vid]);
+    }
+    variable_set('notifications_tags_vocabularies', array_combine(array_keys($vocabularies), array_keys($vocabularies)));
+  }
+  return $ret;
+}
+
+/**
+ * Update ui display options from plaintext to array
+ */
+function notifications_update_6() {
+  $ret = array();
+  foreach (node_get_types() as $type => $info) {
+    $option = variable_get('notifications_node_ui_'. $type, 0);
+    if ($option && !is_array($option)) {
+      variable_set('notifications_node_ui_'. $type, array($option));
+    }
+  }
+  return $ret;
+}
