@@ -1,0 +1,10 @@
+; $Id: mail_edit.info,v 1.1 2007/12/05 16:46:27 chx Exp $
+name = Mail Editor
+description = Allows editing of all mails
+package = Mail
+
+; Information added by drupal.org packaging script on 2007-12-13
+version = "5.x-1.1"
+project = "mail_edit"
+datestamp = "1197570917"
+

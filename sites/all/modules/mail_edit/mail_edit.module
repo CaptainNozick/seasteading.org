@@ -1,0 +1,221 @@
+<?php
+// $Id: mail_edit.module,v 1.4 2007/12/13 18:29:02 chx Exp $
+
+function mail_edit_menu($may_cache) {
+  $items = array();
+  if ($may_cache) {
+    $items[] = array(
+      'access' => user_access('administer site configuration'),
+      'callback' => 'mail_edit_overview',
+      'description' => t('Edit mails being sent out by Drupal.'),
+      'path' => 'admin/build/mail_edit',
+      'title' => t('Mail templates'),
+    );
+  }
+  return $items;
+}
+
+/**
+ * Implementation of hook_mail_alter().
+ */
+function mail_edit_mail_alter(&$mailkey, &$to, &$subject, &$body, &$from, &$headers) {
+  global $user, $base_url;
+  static $stored_variables, $alters;
+  if (!isset($stored_variables)) {
+    if (!empty($GLOBALS['form_values'])) {
+      foreach ($GLOBALS['form_values'] as $key => $value) {
+        $stored_variables["!$key"] = $value;
+      }
+    }
+    $stored_variables = array(
+      '!site' => variable_get('site_name', 'Drupal'),
+      '!uri' => $base_url,
+      '!uri_brief' => substr($base_url, strlen('http://')),
+      '!date' => format_date(time()),
+      '!login_uri' => url('user', NULL, NULL, TRUE),
+      '!mailkey' => $mailkey,
+    );
+  }
+  if (!isset($alters[$mailkey])) {
+    $sql = "SELECT * FROM {mail_edit} m";
+    if (module_exists('pm_subscriptions')) {
+      $sql .= ' LEFT JOIN {pm_subscriptions_mail_edit} p ON m.mailkey = p.mailkey';
+    }
+    $sql .= " WHERE m.mailkey = '%s'";
+    $alters[$mailkey] = db_fetch_object(db_query($sql, $mailkey));
+  }
+  if (!empty($alters[$mailkey])) {
+    $alter = $alters[$mailkey];
+    $sender = $user;
+    $recipient = user_load(array('mail' => $to));
+    $is_privatemsg = !empty($alter->type) && $recipient;
+    $variables = $stored_variables;
+    $variables['!site'] = t(variable_get('site_name', 'drupal'));
+    $variables['!sender_name'] = $sender->name;
+    $variables['!sender_page'] = url("user/$sender->uid", NULL, NULL, TRUE);
+    $variables['!sender_contact_page'] = (empty($sender->contact) ? t('(disabled)') : url("user/$sender->uid/contact", NULL, NULL, TRUE));
+    $variables['!sender_has_contact_page'] = (empty($sender->contact) ? 0 : 1);
+    if ($recipient) {
+      $variables['!recipient_name'] = $recipient->name;
+      $variables['!recipient_page'] = url("user/$recipient->uid", NULL, NULL, TRUE);
+      $variables['!edit_uri'] = url('user/'. $account->uid .'/edit', NULL, NULL, TRUE);
+      if (substr($mailkey, 0, 5) == 'user-') {
+        $variables['!username'] = $recipient->name;
+        $variables['!login_url'] = user_pass_reset_url($recipient);
+        $variables['!mailto'] = $recipient->mail;
+      }
+    }
+    foreach (module_implements('mail_edit_variables') as $module) {
+      $function = $module .'_mail_edit_variables';
+      $function($variables, $mailkey, $sender, $recipient);
+    }
+    if ($alter->subject) {
+      if (function_exists('subscriptions_template_preprocess')) {
+        $alter->subject = subscriptions_template_preprocess($alter->subject, $variables);
+      }
+      $subject = strtr($alter->subject, $variables);
+    }
+    if ($alter->body) {
+      if (function_exists('subscriptions_template_preprocess')) {
+        $alter->body = subscriptions_template_preprocess($alter->body, $variables);
+      }
+      $body = strtr($alter->body, $variables);
+    }
+    if ($is_privatemsg) {
+      $to = NULL;
+      module_invoke('privatemsg', 'send_privatemsg', $recipient, $subject, $body, FILTER_FORMAT_DEFAULT, 0, $alter->type, $variables);
+    }
+  }
+}
+
+/**
+ * Menu callback; administrative mail editing overview.
+ */
+function mail_edit_overview($mailkey = '') {
+  $keys = array();
+  if ($cache = cache_get('mail_edit_overview')) {
+    $keys = unserialize($cache->data);
+  }
+  else {
+    foreach (module_list() as $module) {
+      $file = file_get_contents(drupal_get_path('module', $module) ."/$module.module");
+      preg_match_all('/drupal_mail\((.)(.+)\1,/U', $file, $matches);
+      $keys = array_merge($keys, $matches[2]);
+    }
+    $keys = array_merge($keys, module_invoke_all('mailkeys'));
+    cache_set('mail_edit_overview', 'cache', serialize($keys));
+  }
+  if ($mailkey && (array_search($mailkey, $keys) !== FALSE)) {
+    return drupal_get_form('mail_edit_form', $mailkey);
+  }
+  sort($keys);
+
+  $header = array(t('Key'), t('Description'));
+  $rows = array();
+  foreach ($keys as $key) {
+    $rows[$key] = array(
+      l($key, 'admin/build/mail_edit/'. $key),
+      t('<em>No description has been set.</em>'),
+    );
+  }
+  $result = db_query('SELECT mailkey, description FROM {mail_edit}');
+  while ($d = db_fetch_object($result)) {
+    $rows[$d->mailkey][1] = $d->description;
+  }
+
+  $output = theme('table', $header, $rows, array('style' => 'width:98%;'));
+
+  return $output;
+}
+
+function mail_edit_form($mailkey) {
+  drupal_set_title(t('Settings for %mailkey', array('%mailkey' => $mailkey)));
+  if ($defaults = db_fetch_array(db_query("SELECT * FROM {mail_edit} WHERE mailkey = '%s'", $mailkey))) {
+    $insert = FALSE;
+  }
+  else {
+    $insert = TRUE;
+    $defaults = array('description' => '', 'subject' => '', 'body' => '');
+  }
+  $form['insert'] = array('#type' => 'value', '#value' => $insert);
+  $form['mailkey'] = array('#type' => 'value', '#value' => $mailkey);
+  $form['_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#weight' => -40,
+  );
+  $form['description'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Message description'),
+    '#default_value' => $defaults['description'],
+    '#description' => t("The description of this message (for admins only; users don't see this, except possibly in <a href='/subscriptions/pmsg'>/subscriptions/pmsg</a>, if the Subscriptions module is active.)"),
+    '#weight' => 0,
+  );
+  $form['subject'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Subject'),
+    '#default_value' => $defaults['subject'],
+    '#description' => t('The subject of the mail or private message.'),
+    '#weight' => 10,
+  );
+  $form['body'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Body'),
+    '#default_value' => $defaults['body'],
+    '#description' => t('The body of the mail or private message.'),
+    '#weight' => 20,
+  );
+  $form['help'] = array(
+    '#theme' => 'mail_edit_variables',
+    '#variables' => array(
+      '!recipient_name' => t('The name of the recipient.'),
+      '!recipient_page' => t('The user page of the recipient.'),
+      '!sender_name' => t('The name of the sender.'),
+      '!sender_page' => t('The user page of the sender.'),
+      '!sender_contact_page' => t('The contact page of the sender.'),
+      '!sender_has_contact_page' => t("The status of the sender's contact page: 1 = enabled, 0 = disabled."),
+    ),
+    '#weight' => 30,
+  );
+  if (substr($mailkey, 0, 7) == 'contact') {
+    $form['help']['#variables'] += array(
+      '!message' => t('The contact message itself.'),
+      '!subject' => t('The subject of the contact message.'),
+    );
+  }
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#weight' => 40,
+  );
+  return $form;
+}
+
+function mail_edit_form_submit($form_id, $form_values) {
+  $args = array($form_values['description'], $form_values['subject'], $form_values['body'], $form_values['mailkey']);
+  if ($form_values['insert']) {
+    db_query("INSERT INTO {mail_edit} (description, subject, body, mailkey) VALUES ('%s', '%s', '%s', '%s')", $args);
+  }
+  else {
+    db_query("UPDATE {mail_edit} SET description = '%s', subject = '%s', body = '%s' WHERE mailkey = '%s'", $args);
+  }
+  return 'admin/build/mail_edit';
+}
+
+function theme_mail_edit_variables($element) {
+  $output = "<p>Usable variables are:</p>";
+  $output .= "<dl>\n";
+  foreach($element['#variables'] as $dt => $dd) {
+    $output .= "<dt>$dt</dt><dd>$dd</dd>\n";
+  }
+  $output .= "</dl>\n";
+  return $output;
+}
+
+/**
+ * We provide some of the mailkeys for user module which are not catched by the
+ * regexp in mail_edit_overview.
+ */
+function mail_edit_mailkeys() {
+  return array('user-register-notify', 'user-register-welcome');
+}

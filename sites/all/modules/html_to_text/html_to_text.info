@@ -1,0 +1,9 @@
+; $Id: html_to_text.info,v 1.1 2008/01/16 02:26:39 chx Exp $
+name = HTML to Text
+description = The HTML to text facility of Drupal 6 
+
+; Information added by drupal.org packaging script on 2008-02-16
+version = "5.x-1.1"
+project = "html_to_text"
+datestamp = "1203195608"
+
