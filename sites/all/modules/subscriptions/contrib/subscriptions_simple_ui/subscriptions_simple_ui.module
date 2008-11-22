@@ -1,0 +1,165 @@
+<?php
+// $Id: subscriptions_simple_ui.module,v 1.1.2.18 2008/10/06 21:41:56 swill Exp $
+
+/**
+ * @file
+ * Provides a simple user interface for Subscriptions.
+ */
+
+/**
+* Implementation of hook_menu().
+*/
+function subscriptions_simple_ui_menu() {
+  $items = array();
+  
+  //create a menu call back that will do the actual 'subscribe' and 'unsubscribe' actions...
+  $items[] = array(
+    'path' => 'subscriptions-simple',
+    'title' => t('Perform Subscription Actions'),
+    'callback' => 'subscriptions_simple_ui_perform_action',
+    'access' => TRUE,
+    'type' => MENU_CALLBACK
+  );
+
+  return $items;
+}
+
+/**
+ * Returns TRUE on node/NID pages if the NID is not blocked.
+ */
+function subscriptions_simple_ui_can_subscribe() {
+  global $user;
+  
+  return ($user->uid && arg(0) == 'node' && is_numeric(arg(1)) && !subscriptions_node_is_blocked(arg(1)) && user_access('subscribe to content'));
+}
+
+/**
+ * Implementation of hook_link().
+ *
+ * Add a Subscribe or Unsubscribe link to node pages.
+ * Also, add a Subscribe or Unsubscribe link to the comments (according to Display Settings).
+ */
+function subscriptions_simple_ui_link($type, $node = NULL, $teaser = NULL) {
+  global $user;
+
+	$links = array();
+
+  if (($type == 'node' || ($type == 'comment' && variable_get('subscriptions_form_link_on_comments', 0))) &&
+			subscriptions_simple_ui_can_subscribe() && empty($teaser)) {
+		if (!variable_get('subscriptions_avoid_empty_subscribe_links', 0) || module_invoke_all('subscriptions', 'node_options', $user, $node)) {
+			$enabled_types = variable_get('subscriptions_simple_ui_content_types', array()); // These are selected in the Simple Display Settings
+			$blocked_types = variable_get('subscriptions_blocked_content_types', array());
+			if ($type == 'node' && $node->comment == 2) { // commenting is enabled, so show subscription links (pointless otherwise)
+				$comments_enabled = true;
+			} else {  // comments are not enabled for the node, or the type is 'comment'
+				$comments_enabled = false;
+			}
+			if ($type == 'comment') {
+				$parent = node_load($node->nid);
+				// --- this next line is a little bit of a hack... --- //
+				// since $node->type is null for comments, i am setting it to the node type of its parent node so the following if statement checks correctly.
+				$node->type = $parent->type;
+				
+				// only show the subscribe/unsubscribe links if comments are enabled.
+				if ($parent->comment == 2) { // $comments_enabled is currently false, make it true (no need for an else)
+					$comments_enabled = true;
+				}
+			}
+      if ((!in_array($node->type, $blocked_types) || user_access('subscribe to all content types')) &&
+					(in_array($node->type, $enabled_types)) && $comments_enabled) {	
+				$comment_fragment = '';
+				if ($type == 'comment') { // Send the cid so you can come back to the same place on the page after the subscription action.
+					$comment_fragment = '/'.$node->cid;
+				}
+				if (!subscriptions_get_subscription($user->uid, 'node', 'nid', $node->nid)) {  // Place the SUBSCRIBE link...
+					$links['subscriptions-simple-subscribe'] = array(
+	          'href' => 'subscriptions-simple/subscribe/'.$node->nid.$comment_fragment,
+	          'title' => t('Subscribe'),
+	          'attributes' => array('title' => t('Receive notifications about changes and/or comments to this page.')),
+	        );
+				} else { // Place the UNSUBSCRIBE link...
+					$links['subscriptions-simple-unsubscribe'] = array(
+	          'href' => 'subscriptions-simple/unsubscribe/'.$node->nid.$comment_fragment,
+	          'title' => t('Unsubscribe'),
+	          'attributes' => array('title' => t('Stop receiving notifications about changes and/or comments to this page.')),
+	        );
+				}
+			} // end blocked types etc
+		} // end avoid empty links
+  } // end can subscribe
+	return $links;
+}
+
+/**
+ * callback for the subscriptions-simple url.  this function does the subscribe and unsubscribe actions...
+ */
+function subscriptions_simple_ui_perform_action() {
+	global $user;
+	
+	if (arg(2) != "") {
+		$node = node_load(arg(2));
+		if (arg(1) == 'subscribe') {
+			subscriptions_write_subscription('node', 'nid', $node->nid, -1, $user->uid, _subscriptions_get_setting('send_interval', $user), _subscriptions_get_setting('send_updates', $user), _subscriptions_get_setting('send_comments', $user));
+			drupal_set_message("Your subscription was activated...");
+		} else if (arg(1) == 'unsubscribe') {
+			$module = 'node';
+			$field = 'nid';
+			$value = $node->nid;
+			$author_uid = -1;
+			$recipient_uid = $user->uid;
+			db_query("DELETE FROM {subscriptions} WHERE module = '%s' AND field = '%s' AND value = '%s' AND author_uid = %d AND recipient_uid = %d", $module, $field, $value, $author_uid, $recipient_uid);
+  		drupal_set_message(t('Your subscription was deactivated.'));
+		}
+		
+		if (arg(3) != "") {
+			drupal_goto("node/".arg(2), NULL, "comment-".arg(3));
+		} else {
+			drupal_goto("node/".arg(2));
+		}
+	}
+}
+
+/**
+ * Implementation of hook form_alter().
+ *
+ * Adds the Display Settings part to the admin/settings/subscriptions form.
+ *
+ * @ingroup hooks
+ * @ingroup form
+ */
+function subscriptions_simple_ui_form_alter($form_id, &$form) {
+  global $user;
+  $tr = 't';
+  if ($form_id == 'subscriptions_settings_form') {
+		// General content settings
+    $select = array();
+    $select[0] = '<'. t('none') .'>';
+    $nodetypes = node_get_types();
+    foreach ($nodetypes as $ntype => $nname) {
+      $select[$ntype] = $nname->name;
+    }
+    $form['simple_display_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Subscriptions Simple UI - Display Settings'),
+        '#collapsible' => TRUE,
+        '#weight' => -4,
+    );
+		$form['simple_display_settings']['simple_desc'] = array(
+      '#value'         => '<p>'. t("With <i>Subscriptions Simple UI</i> the <b>Subscribe</b> or <b>Unsubscribe</b> link is placed in the link section of every applicable node.  <br /><br /> If you click on Subscribe, you will be subscribed to that node and the link will change to Unsubscribe and vice-versa.") .'</p>',
+    );
+		$form['simple_display_settings']['subscriptions_simple_ui_content_types'] = array(
+      '#type'          => 'select',
+      '#title'         => t('Use Subscriptions Simple UI with'),
+      '#default_value' => variable_get('subscriptions_simple_ui_content_types', array()),
+      '#options'       => $select,
+      '#description'   => t('Select the content types which should use the Subscriptions Simple UI.<br />NOTE: If this is the only Subscriptions UI you have enabled then you will need to select all the content types in order for them to have a subscriptions UI.<br /> NOTE: Currently, if you have Subcriptions UI enabled, both module\'s subscription options will show on content types with Simple UI enabled.'),
+      '#multiple'      => TRUE,
+    );
+		$form['simple_display_settings']['subscriptions_form_link_on_comments'] = array(
+      '#type'          => 'checkbox',
+      '#title'         => t('Add Subscribe and Unsubscribe to the links section of comments the same as for nodes'),
+      '#default_value' => variable_get('subscriptions_form_link_on_comments', 0),
+      '#description'   => t('This allows a user to subscribe or unsubscribe while viewing the comments of a post.'),
+    );
+  }
+}

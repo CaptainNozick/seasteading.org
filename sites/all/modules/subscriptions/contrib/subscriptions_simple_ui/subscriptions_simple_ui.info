@@ -1,0 +1,11 @@
+; $Id: subscriptions_simple_ui.info,v 1.1.2.2 2008/01/18 21:47:25 swill Exp $
+name = Subscriptions Simple UI
+description = Provides a simple UI to Subscriptions.
+package = "Subscriptions"
+dependencies = subscriptions
+
+; Information added by drupal.org packaging script on 2008-10-07
+version = "5.x-2.x-dev"
+project = "subscriptions"
+datestamp = "1223338359"
+
