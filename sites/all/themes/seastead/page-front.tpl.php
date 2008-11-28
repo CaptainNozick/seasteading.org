@@ -43,7 +43,7 @@
 				<?php if ($sidebar_left): ?>
 					<?=$sidebar_left ?>
 					<form action="http://groups.google.com/group/seasteading-announcements/boxsubscribe">
-						<p><strong>Join our mailing list (1-2 msgs/month):</strong><br />
+						<p>Join our mailing list (1-2 messages per month):<br />
 						<input type="text" name="email" /> <input type="image" src="<?php print base_path() . path_to_theme() ?>/images/submit_arrow.gif" /></p>
 					</form>
 				<?php endif; ?>
