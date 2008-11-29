@@ -1,0 +1,893 @@
+# $Id: cs.po,v 1.1.2.3 2008/11/24 14:26:29 wwalc Exp $
+#
+# Czech translation of Drupal (general)
+# Copyright Tomas Capek <soulcharmer@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: 5.x-2.x-dev\n"
+"POT-Creation-Date: 2008-11-12 14:27+0100\n"
+"PO-Revision-Date: 2008-11-12 14:35+0100\n"
+"Last-Translator: Tomáš Čapek <charmer@solnet.cz>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n< =4) ? 1 : 2;\n"
+
+#: fckeditor.module:50
+msgid "<p>Note: FCKeditor is highly configurable. The most commonly used features are listed below. If you want to take a look at all available settings, open <code>!fckconfig</code> and then customize <code>!fckeditor_config</code> to your needs. This is also the only way to define new toolbar sets. It is advised to not edit <code>fckconfig.js</code> because you may overwrite it accidentally when you update the editor.</p>"
+msgstr "<p>Poznámka: FCKeditor je vysoce konfigurovatelný. Nastavení nejobvyklejších funkcí je zde. Pokud máte zájem měnit i ostatní volby, otevřete <code>!fckconfig</code> a upravte <code>!fckeditor_config</code>. Toto je také jediný způsob, jak vytvářet nové nástrojové lišty. Nedoporučujeme editovat přímo <code>fckconfig.js</code>, protože hrozí, že jej nechtěně přepíšete při nahrání nové verze editoru.</p>"
+
+#: fckeditor.module:55
+msgid "Enables the usage of FCKeditor (WYSIWYG editor) instead of plain text fields."
+msgstr "Umožňuje použití FCKeditoru (editor WYSIWYG) místo obyčejného pole pro text."
+
+#: fckeditor.module:59
+msgid "<p>The Global Profile allows you to define settings that are common for all profiles. Values defined in other profiles will be appended to the global configuration. This way you can avoid repeating some of the settings that are usually the same in each profile.</p>"
+msgstr "<p>V globálním profilu se definuje nastavení, které je společné pro všechny profily. Hodnoty nastavení u jiných profilů se přidají ke globální konfiguraci. Tímto způsobem se můžete vyhnout opakovanému nastavování stejných voleb pro každý profil.</p>"
+
+#: fckeditor.module:62
+msgid "<p>The FCKeditor module allows Drupal to replace textarea fields with a rich text or <acronym title=\"What You See Is What You Get\">WYSIWYG</acronym> editor. This editor brings many of the powerful functionalities of known desktop editors like Word to the web. It's relatively lightweight and doesn't require any kind of installation on the client computer.</p><p>More information about the editor is located at the !fckeditorlink. A small user guide is located at !userguidelink.</p>"
+msgstr "<p>Modul FCKeditor umožňuje Drupalu, aby nahradit obyčejná vstupní pole pro text výkonným HTML editorem typu <acronym title=\"What You See Is What You Get\">WYSIWYG</acronym>. Tento editor poskytuje webovým stránkám mnoho pokročilých funkcí známých z běžných kancelářských aplikací jako je Word. Je přitom poměrně jednoduchý a nemusí se instalovat na koncových počítačích.</p><p>Podrobnější informace najdete na !fckeditorlink. Stručná uživatelská příručka je na !userguidelink.</p>"
+
+#: fckeditor.module:64;72;77;544
+msgid "FCKeditor homepage"
+msgstr "domovská stránka FCKeditoru"
+
+#: fckeditor.module:65;73
+msgid "FCKeditor userguide"
+msgstr "Uživatelská příručka FCKeditoru"
+
+#: fckeditor.module:67
+msgid "<p>Profiles can be defined based on user roles. A FCKeditor profile can define which pages receive this FCKeditor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions. It is possible also to define the Global Profile that will hold values that will be appended to all other profiles.</p><p>Lastly, only users with the <code>!access1</code> !permission will be able to use FCKeditor. </p>"
+msgstr "<p>Profily se definují pro uživatelské role. V profilu FKCeditoru lze nastavit, u kterých polí se bude FCKeditor používat, které funkce a témata budou aktivní, jak se bude editor zobrazovat, a několik dalších funkcí. Je také možné nastavit globální profil, ve kterém bude nastavení společné pro všechny profily.</p><p>Pouze uživatele s oprávněním <code>!access1</code> budou moci FCKeditor používat.</p>"
+
+#: fckeditor.module:67;1637
+msgid "permission"
+msgstr "oprávnění"
+
+#: fckeditor.module:67;631;660;1495;1589;1637;139
+msgid "access fckeditor"
+msgstr "přístup k fckeditoru"
+
+#: fckeditor.module:70
+msgid "<p>The FCKeditor module allows Drupal to replace textarea fields with a rich text or <acronym title=\"What You See Is What You Get\">WYSIWYG</acronym> editor. This editor brings many of the powerful functionalities of known desktop editors like Word to the web. It's relatively lightweight and doesn't require any kind of installation on the client computer.</p><p>More information is located at the !fckeditorlink. A small user guide is located at !userguidelink.</p>"
+msgstr "<p>Modul FCKeditor umožňuje Drupalu, aby nahradit obyčejná vstupní pole pro text výkonným HTML editorem typu <acronym title=\"What You See Is What You Get\">WYSIWYG</acronym>. Tento editor poskytuje webovým stránkám mnoho pokročilých funkcí známých z běžných kancelářských aplikací jako je Word. Je přitom poměrně jednoduchý a nemusí se instalovat na koncových počítačích.</p><p>Podrobnější informace najdete na !fckeditorlink. Stručná uživatelská příručka je na !userguidelink.</p>"
+
+#: fckeditor.module:75
+msgid "<h3>Installation</h3><p>Go to the !fckeditorlink and download the latest version. Then uncompress the contents of the \"fckeditor\" directory of the downloaded file to %fckeditordir.</p>"
+msgstr "<h3>Instalace</h3><p>Navštivte !fckeditorlink a stáhněte nejnovější verzi editoru. Archiv rozbalte do adresáře \"fckeditor\", který je v adresáři %fckeditordir.</p>"
+
+#: fckeditor.module:80
+msgid "<h3>Configuration</h3><ol><li>Enable the module as usual from Drupal's admin pages.</li><li>Grant permissions for use of FCKeditor in <code>!path2</code></li><li>Under <code>!path1</code>, create the fckeditor profiles. In each profile you can choose which textareas will be replaced by FCKeditor, select default toolbar and configure some more advanced settings </li><li>For the Rich Text Editing to work you also need to configure your !filterlink for the users that may access Rich Text Editing. Either grant those users Full HTML access or use the following: <br/><code>!filter</code>. </li><li>To have a better control over line breaks, you may disable <code>Line break converter</code> in the chosen filter (recommended).</li><li>Modify the fckeditor.config.js file to custom your needs (optional).<br />You may copy the needed configuration lines from the default FCKeditor configuration settings (modules/fckeditor/fckeditor/fckconfig.js), the lines in fckeditor.config.js will override most settings.</li></ol>"
+msgstr "<h3>Nastavení</h3><ol><li>Aktivujte modul obvyklým způsobem z administrace Drupalu.</li><li>Nastavte oprávnění používat FCKeditor v <code>!path2</code></li><li>V <code>!path1</code> vytvořte profily. V každém profilu můžete nastavit, u kterých polí se bude FCKeditor používat, zvolit výchozí podobu nástrojové lišty a nastavit další pokročilé funkcí</li><li>Aby uživatelům fungovalo bohaté formátování textu, je nutné také nastavit přístup v !filterlink. Buď povolte uživatelům filtr Úplné HTML nebo použijte následující: <br/><code>!filter</code>. </li><li>K lepšímu ovládání konců řádek je doporučeno ve zvoleném filtru vypnout <code>Zlom konců řádek</code>.</li><li>Volitelně můžete FCKeditor upravit podle svých představ v souboru fckeditor.config.js.<br />Můžete zkopírovat potřebné řádky konfigurace z výchozí souboru nastavení FKCeditoru (modules/fckeditor/fckeditor/fckconfig.js); většina řádků v souboru fckeditor.config.js se uplatní přednostně."
+
+#: fckeditor.module:82
+msgid "Administer > Settings > FCKeditor"
+msgstr "Administrace > Nastavení > FKCeditor"
+
+#: fckeditor.module:83
+msgid "Administer > User Management > Access Control"
+msgstr "Administrace > Uživatelé > Kontrola přístupu"
+
+#: fckeditor.module:88
+msgid "filters"
+msgstr "filtry"
+
+#: fckeditor.module:90
+msgid "<h3>Installation troubleshooting</h3><p>If your FCKeditor does not show you must check if all files are extracted correctly. The directory %fckeditordir should have the following files <code>fckeditor.js, fckconfig.js, fckstyles.xml, fcktemplates.xml</code> and a directory named <code>editor</code>.</p>"
+msgstr "<h3>Řesení potíží při instalaci</h3><p>Pokud se FCKeditor nezobrazuje, zkontrolujte, zda jsou všechny soubory rozbaleny na správném místě. Adresář %fckeditordir by měl obsahovat soubory <code>fckeditor.js, fckconfig. js, fckstyles.xml, fcktemplates.xml</code> a adresář pojmenovaný <code>editor</code>.</p>"
+
+#: fckeditor.module:94
+msgid "The correct directory structure is as follows: <blockquote><pre>!structure</pre></blockquote>"
+msgstr "Správná struktura adresářů je následující: <blockquote><pre>!structure</pre></blockquote>"
+
+#: fckeditor.module:97
+msgid "<h3>Plugins: Teaser break and Pagebreak</h3><p>By default, FCKeditor module comes with two plugins that can handle teaser break (&lt;!--break--&gt;) and pagebreak (&lt;!--pagebreak--&gt;). You can enable any (or even both) of them.<ol><li>Open <code>!fckeditor.config.js</code> and uncomment these three lines: <pre>!code</pre></li><li>The second step is to add buttons to the toolbar (in the same file). The button names are: <code>DrupalBreak, DrupalPageBreak</code>. For example if you have a toolbar with an array of buttons defined as follows: <pre>!buttons1</pre> simply add those two buttons at the end of array: <pre>!buttons2</pre> (remember about single quotes).</li></ol></p>"
+msgstr "<h3>Rozšíření: zlom stránky a oddělovač úvodního odstavce</h3><p>FCKeditor implicitně obsahuje dvě rozšíření pro oddělovač úvodního odstavce (&lt;!--break--&gt;) a pro zlom stránky (&lt;!--pagebreak--&gt;). Můžete aktivovat jeden nebo oba.<ol><li>Otevřete soubor <code>!fckeditor.config.js</code> a odkomentujte následující tři řádky: <pre>!code</ pre></li><li>Druhým krokem je přidání tlačítek do nástrojové lišty (ve stejném souboru). Tato tlačítka mají tato jména: <code>DrupalBreak, DrupalPageBreak</code>. Například pokud máte lištu s polem tlačítek definovaných takto <pre>!buttons1</pre>, stačí přidat tyto dvě tlačítka na konec pole: <pre>!buttons2</pre> (nezapomeňte na apostrofy).</li></ol></p>"
+
+#: fckeditor.module:108
+msgid "<h3>Uploading images and files</h3><p>There are three ways of uploading files: By using the built-in file browser, by using a module like !imce or using the core upload module.</p>"
+msgstr "<h3>Nahrávání obrázků a souborů</h3><p>Soubory lze nahrávat jedním ze tří způsobů: použít vestavěný prohlížeč souborů editoru, použít modul jako je !imce nebo použít výchozí modul Drupalu pro nahrávání souborů."
+
+#: fckeditor.module:110;1980
+msgid "IMCE"
+msgstr "IMCE"
+
+#: fckeditor.module:114
+msgid "<h3>How to enable the file browser</h3><p>The editor gives the end user the flexibility to create a custom file browser that can be integrated on it. The included file browser allows users to view the content of a specific directory on the server and add new content to that directory (create folders and upload files).</p><p><ol><li>To enable file browsing you need to edit the connector configuration file in your fckeditor module directory, the file should be in:<blockquote><code>!config3</code> <br/> (FCKeditor 2.5+)<br/><br/> or <br/><br/><code>!config1</code><br/> and <br/><code>!config2</code> <br/> (FCKeditor 2.3.x - 2.4.x)</blockquote></p><p>In this file(s) you will need to enable the file browser by adding one line that includes file with the special authentication function for Drupal (<code>filemanager.config.php</code>). Add this code: <blockquote><code>!code1</code><br/> (FCKeditor 2.5+)</blockquote> or <blockquote><code>!code2</code> <br/> (FCKeditor 2.3.x - 2.4.x)</blockquote> straight below this line: <blockquote><code>!code3</code></blockquote> The config.php file also holds some other important settings, please take a look at it and adjust it to your needs (optional).</p></li>"
+msgstr "<h3>Jak aktivovat prohlížeč souborů</h3><p>Editor umožňuje uživateli vytvoření vlastního prohlížeče souborů, který s ním může být integrován. Vložený prohlížeč souborů umožňuje přístup k vybranému adresáři na serveru a přidávat do tohoto adresáře nové soubory (tj. vytvářet adresáře a nahrávat soubory).</   p><p><ol><li>Prohlížení souborů aktivujete tak, že upravíte soubor konektoru ve vašem adresáři s modulem fckeditor; tento soubor je v <blockquote><code>!config3</code> <br/> (FCKeditor 2.5+)<br/><br/> nebo <br/><br/><code>!config1</code><br/> a <br/><code>!config2</code> <br/> (FCKeditor 2.3.x - 2.4.x)</blockquote></       p><p>V tomto souboru je potřeba aktivovat prohlížeč souborů přidáním řádky s názvem souboru, ve kterém je speciální autentizační funkce do Drupalu (<code>filemanager.config.php</code>). Přidejte tento kód: <blockquote><code>!code1</code><br/> (FCKeditor 2.5+)</blockquote> nebo <blockquote><code>!code2</code> <br/> (FCKeditor 2.3.x - 2.4.x)</blockquote> hned pod následující řádku: <blockquote><code>!code3</code></blockquote> Soubor config.php rovněž obsahuje některá důležitá nastavení, volitelně je můžete upravit podle svých potřeb.</p></li>"
+
+#: fckeditor.module:124
+msgid "<li>As of Drupal 5.2, additional step is required: locate file named <code>settings.php</code> inside your drupal directory (usually <code>sites/default/settings.php</code>) and set <strong><code>&#36;cookie_domain</code></strong> variable to the appropiate domain (remember to uncomment that line). If you not do this, FCKeditor will claim that file browser is disabled</li>"
+msgstr "<li>Od verze Drupalu 5.2 je nutné provést ještě jeden krok: v souboru <code>settings.php</code>, který je ve vašem instalačním adresáři Drupalu (obvykle <code>sites/default/settings.php</code>) nastavte proměnnou <strong><code>&#36; cookie_domain</code></strong> pro správnou doménu (nezapomeňte řádek odkomentovat). Pokud to neuděláte, bude FCKeditor tvrdit, že prohlížeč souborů je deaktivován.</li>"
+
+#: fckeditor.module:125
+msgid "<li>Enabling file uploads is <strong>a security risk</strong>. That's why you have to grant a !link to enable the file browser to certain groups.</li>"
+msgstr "<li>Funkce nahrávání souborů představuje <strong>bezpečnostní riziko</strong>. Proto je potřeba, abyste povolili !link, aby určité skupiny uživatel mohly prohlížeč souborů používat.</li>"
+
+#: fckeditor.module:125
+msgid "separate permission"
+msgstr "samostatné oprávnění"
+
+#: fckeditor.module:126
+msgid "<li>Lastly, adjust the !fb for each !profile.</li></ol>"
+msgstr "<li>A konečně, upravte !fb pro každý !profile.</li></ol>"
+
+#: fckeditor.module:126;1966;1975
+msgid "File browser settings"
+msgstr "Nastavení prohlížeče souborů"
+
+#: fckeditor.module:126
+msgid "profile"
+msgstr "profil"
+
+#: fckeditor.module:127
+msgid "<h3>Modules: Image Assist</h3><p>Image Assist can be integrated with FCKeditor. To do this, simply copy the <code>!iaf1</code> file to <code>!iaf2</code>.</p>"
+msgstr "<h3>Moduly: Image Assist</h3><p>Module Image Assist lze s FCKeditorem integrovat. Stačí nakopírovat soubor <code>!iaf1</code> do <code>!iaf2</code>.</p>"
+
+#: fckeditor.module:311
+#: fckeditor.info:0
+msgid "FCKeditor"
+msgstr "FCKeditor"
+
+#: fckeditor.module:313
+msgid "Configure the rich editor."
+msgstr "Nastavení HTML editoru"
+
+#: fckeditor.module:317
+msgid "XSS Filter"
+msgstr "Filtr XSS"
+
+#: fckeditor.module:318
+msgid "XSS Filter."
+msgstr "Filtr XSS."
+
+#: fckeditor.module:378;488
+msgid "Include mode selected, but no fields/paths given. Enter at least one path or field where FCKeditor should appear."
+msgstr "Je zvolen vkládací režim, ale nejsou určeny žádná pole ani cesty. Zadejte alespoň jednu cestu nebo pole, kde se FCKeditor bude zobrazovat."
+
+#: fckeditor.module:382
+msgid "Minimum rows must be a valid number"
+msgstr "Minimální počet řádků musí být celé číslo."
+
+#: fckeditor.module:386;1210
+msgid "If FCKeditor is enabled by default, popup window must be disabled."
+msgstr "Pokud je FCKeditor povolen implicitně, vyskakovací okno nesmí být povoleno."
+
+#: fckeditor.module:390;1214
+msgid "If toggle is enabled, popup window must be disabled."
+msgstr "Pokud je přepínač povolen, vyskakovací okno nesmí být povoleno."
+
+#: fckeditor.module:394
+msgid "You must give a profile name."
+msgstr "Musíte zadat jméno profilu."
+
+#: fckeditor.module:398
+msgid "Enter valid width. Ex: 400 or 100%"
+msgstr "Vložte korektní šířku, např. 400 nebo 100%."
+
+#: fckeditor.module:403
+msgid "CSS path is not empty. Please set the \"Editor CSS\" option to \"define css\" mode."
+msgstr "Cesta pro styl CSS není prázdná. Nastavte volbu \"Editor CSS\" na hodnotu \"definovat css\"."
+
+#: fckeditor.module:406
+msgid "Double quotes are not allowed in CSS path."
+msgstr "V cestě pro styl CSS nemohou být uvozovky."
+
+#: fckeditor.module:409;421
+msgid "Enter valid path, do not surround it with quotes."
+msgstr "Vložte korektní cestu bez uvozovek."
+
+#: fckeditor.module:415
+msgid "Path to predefined styles is not empty. Please set the \"Predefined styles\" option to \"define path to fckstyles.xml\" mode."
+msgstr "Cesta pro přednastavené styly není prázdná. Nastavte volbu \"Přednastavené styly\" na hodnotu \"definovat cestu k fckstyles.xml\"."
+
+#: fckeditor.module:418
+msgid "Double quotes are not allowed in path."
+msgstr "V cestě nemohou být uvozovky."
+
+#: fckeditor.module:427
+msgid "Enter valid, semicolon separated, list of HTML font formats (no semicolon at the end of list expected)."
+msgstr "Vložte korektní seznam formátů písem pro HTML, oddělené středníkem (za poslední položku středník nepatří)."
+
+#: fckeditor.module:435;443;495;503
+msgid "Invalid field specified: %1"
+msgstr "Je zadáno neplatné pole: %1"
+
+#: fckeditor.module:452;460;512;520
+msgid "Invalid path specified: %1"
+msgstr "Je zadána neplatná cesta: %1"
+
+#: fckeditor.module:467
+msgid "Path to uploaded files is required."
+msgstr "Musíte zadat cestu k nahraným souborům."
+
+#: fckeditor.module:470
+msgid "Absolute path to uploaded files is required."
+msgstr "Musíte zadat absolutní cestu k nahraným souborům."
+
+#: fckeditor.module:540
+msgid "checking for %filename"
+msgstr "kontroluji %filename"
+
+#: fckeditor.module:542
+msgid "The FCKeditor component is not installed correctly. Please go to the !fckeditorlink to download the latest version. After that you must extract the files to %modulepath and make sure that the directory %modulesubdir and the file %modulefile exist. Refer to the !readme for more information."
+msgstr "Komponenta FCKeditoru není správně nainstalována. Prosím navštivte adresu !fckeditorlink a stáhněte nejnovější verzi. Poté rozbalte soubory do adresáře %modulepath a ujistěte se, že adresář %modulesubdir a soubor %modulefile existují. Více informací najdete v !readme ."
+
+#: fckeditor.module:575;580
+msgid "Edit FCKeditor profile"
+msgstr "Úprava profilu FCKeditoru"
+
+#: fckeditor.module:586
+msgid "Deleted profile"
+msgstr "Profil byl smazán"
+
+#: fckeditor.module:592
+msgid "Deleted Global profile"
+msgstr "Globální profil byl smazán"
+
+#: fckeditor.module:596;1608
+msgid "Create profile"
+msgstr "Vytvořit profil"
+
+#: fckeditor.module:597;1612
+msgid "Update profile"
+msgstr "Upravit profil"
+
+#: fckeditor.module:600
+msgid "Your FCKeditor profile has been updated."
+msgstr "Váš profil pro FCKeditor byl upraven."
+
+#: fckeditor.module:600
+msgid "Your FCKeditor profile has been created."
+msgstr "Váš profil pro FCKeditor byl vytvořen."
+
+#: fckeditor.module:608;1466
+msgid "Create global profile"
+msgstr "Vytvořit globální profil"
+
+#: fckeditor.module:609;1470
+msgid "Update global profile"
+msgstr "Upravit globální profil"
+
+#: fckeditor.module:613
+msgid "FCKeditor global profile has been saved."
+msgstr "Globální profil FCKeditoru byl uložen."
+
+#: fckeditor.module:622
+msgid "FCKeditor settings"
+msgstr "Nastavení FCKeditoru"
+
+#: fckeditor.module:626
+msgid "Could not find the FCKeditor engine installed at <strong>!fckeditor-directory</strong>. Please !download, uncompress it and copy the folder into !fckeditor-path."
+msgstr "Nemohu najít jádro FCKeditoru nainstalované v adresáři <strong>!fckeditor-directory</strong>. Prosím !download a rozbalte ho do adresáře !fckeditor-path."
+
+#: fckeditor.module:626
+msgid "download FCKeditor"
+msgstr "stáhněte FCKeditor"
+
+#: fckeditor.module:630
+msgid "There is currently no role with the <strong>!access</strong> permission. Visit !acl administration section."
+msgstr "Žádná uživatelská role nemá aktuálně nastaveno oprávnění <strong>!access</strong>. Navštivte sekci administrace !acl."
+
+#: fckeditor.module:631
+msgid "Access control"
+msgstr "Kontrola přístupu."
+
+#: fckeditor.module:649
+msgid "No FCKeditor profiles found. At this moment, nobody is able to use FCKeditor. Create new profile below."
+msgstr "Nebyl nalezen žádný profil FCKeditoru. V tuto chvíli nemůže nikdo FCKeditor používat. Vytvořte prosím nový profil."
+
+#: fckeditor.module:660
+msgid "Not all roles with <strong>!access</strong> permission are associated with FCKeditor profiles. As a result, users having the following roles may be unable to use FCKeditor: !list Create new or edit FCKeditor profiles below and in the <strong>Basic setup</strong> section, check &quot;Roles allowed to use this profile&quot;."
+msgstr "Ne všechny uživatelské role s oprávnění <strong>!access</strong> jsou provázány s nějakým profilem FCKeditoru. Tím pádem uživatelé následujících rolí nebudou moci FCKeditor používat: !list. Vytvořte nový nebo upravte existující profil a v sekci <strong>Základní nastavení</strong> zkontrolujte &quot;Role, které mohou používat tento profil&quot;."
+
+#: fckeditor.module:710;737
+msgid "Profile"
+msgstr "Profil"
+
+#: fckeditor.module:710
+msgid "Roles"
+msgstr "Role"
+
+#: fckeditor.module:710;737
+msgid "Operations"
+msgstr "Akce"
+
+#: fckeditor.module:719;736
+msgid "edit"
+msgstr "upravit"
+
+#: fckeditor.module:719;736
+msgid "delete"
+msgstr "smazat"
+
+#: fckeditor.module:722
+msgid "Profiles"
+msgstr "Profily"
+
+#: fckeditor.module:724
+msgid "Create new profile"
+msgstr "Vytvořit nový profil"
+
+#: fckeditor.module:727
+msgid "No profiles found. Click here to !create."
+msgstr "Nenalezen žádný profil. Kliknutím můžete !create."
+
+#: fckeditor.module:727
+msgid "create a new profile"
+msgstr "vytvořit nový profil"
+
+#: fckeditor.module:732
+msgid "Global Profile not found. Click here to !create."
+msgstr "Globální profil nenalezen. Kliknutím můžete !create."
+
+#: fckeditor.module:732
+msgid "create the global profile"
+msgstr "vytvořit globální profil"
+
+#: fckeditor.module:735
+msgid "Global Settings"
+msgstr "Globální nastavení"
+
+#: fckeditor.module:736
+msgid "FCKeditor Global Profile"
+msgstr "Globální profil FCKeditoru"
+
+#: fckeditor.module:896;897
+msgid "Switch to plain text editor"
+msgstr "Přepnout na obyčejný editor"
+
+#: fckeditor.module:896;897
+msgid "Switch to rich text editor"
+msgstr "Přepnout na rozšířený editor"
+
+#: fckeditor.module:1088
+msgid "Open rich editor"
+msgstr "Otevřít editor HTML"
+
+#: fckeditor.module:1101
+msgid "The ID for !excluding this element is: !id - the path is: !path"
+msgstr "ID pro !excluding tohoto prvku je !id - cesta je : !path "
+
+#: fckeditor.module:1102
+msgid "excluding or including"
+msgstr "vyloučení nebo zahrnutí"
+
+#: fckeditor.module:1125
+msgid "Rich Text Editor settings"
+msgstr "Nastavení rosšířeného editoru"
+
+#: fckeditor.module:1133;1782
+msgid "Default state"
+msgstr "Výchozí stav"
+
+#: fckeditor.module:1135;1175;1784;1824
+msgid "enabled"
+msgstr "zapnuto"
+
+#: fckeditor.module:1135;1175;1784;1824
+msgid "disabled"
+msgstr "vypnuto"
+
+#: fckeditor.module:1136
+msgid "Should rich-text editing be enabled or disabled by default in textarea fields? If disabled, rich text editor may still be enabled using toggle or popup window."
+msgstr "Má být rozšířený editor implicitně povolen pro textová vstupní pole? Pokud není, lze jej přesto aktivovat přepínačem nebo vyskakovacím oknem."
+
+#: fckeditor.module:1141;1790
+msgid "Show disable/enable rich text editor toggle"
+msgstr "Zobrazovat přepínač zapnutí/vypnutí rozšířeného editoru"
+
+#: fckeditor.module:1143;1151;1200;1645;1792;1800;1849;1899;1907;1987;1994
+msgid "true"
+msgstr "ano"
+
+#: fckeditor.module:1143;1151;1200;1645;1792;1800;1849;1899;1907;1987;1994
+msgid "false"
+msgstr "ne"
+
+#: fckeditor.module:1144
+msgid "Whether or not to show the disable/enable rich text editor toggle below the textarea. Works only if FCKeditor is not running a popup window (see below)."
+msgstr "Určuje, zda se bude pod textovým vstupním polem zobrazovat přepínač pro rozšířený editor. Funguje pouze pokud FCKeditor neběží ve vyskakovacím okně (viz níže)."
+
+#: fckeditor.module:1149;1798
+msgid "Use FCKeditor in a popup window"
+msgstr "Používat FCKeditor ve vyskakovacím okně"
+
+#: fckeditor.module:1152;1801
+msgid "If this option is enabled a link to a popup window will be used instead of a textarea replace."
+msgstr "Pokud je tato volba povolena, bude místo přepínače vstupního pole použit odkaz k vyskakovacímu oknu."
+
+#: fckeditor.module:1157;1806
+msgid "Skin"
+msgstr "Téma vzhledu"
+
+#: fckeditor.module:1160
+msgid "Choose a FCKeditor skin."
+msgstr "Zvolte téma vzhledu pro FCKeditor."
+
+#: fckeditor.module:1165;1814
+msgid "Toolbar"
+msgstr "Nástrojová lišta"
+
+#: fckeditor.module:1168
+msgid "Choose a FCKeditor toolbar set."
+msgstr "Zvolte nástrojovou lištu pro FCKeditor."
+
+#: fckeditor.module:1173;1822
+msgid "Start the toolbar expanded"
+msgstr "Spouštět nástrojovou lištu otevřenou."
+
+#: fckeditor.module:1176;1825
+msgid "The toolbar start expanded or collapsed."
+msgstr "Zda bude nástrojová lišta při spuštění sbalená nebo otevřená."
+
+#: fckeditor.module:1181;1830
+msgid "Width"
+msgstr "Šířka"
+
+#: fckeditor.module:1183;1832
+msgid "Width in pixels or percent. Ex: 400 or 100%"
+msgstr "Šířka v pixelech nebo procentech, např. 400 nebo 100%"
+
+#: fckeditor.module:1190;1839
+msgid "Language"
+msgstr "Jazyk"
+
+#: fckeditor.module:1193;1842
+msgid "The language for the FCKeditor interface."
+msgstr "Jazyk pro uživatelské rozhraní FCKeditoru."
+
+#: fckeditor.module:1198;1847
+msgid "Auto-detect language"
+msgstr "Automaticky zjistit jazyk"
+
+#: fckeditor.module:1201;1850
+msgid "Use auto detect user language feature."
+msgstr "Určuje, zda se použije fukce automatické detekce pro lokalizaci uživatelského rozhraní."
+
+#: fckeditor.module:1218
+msgid "Enter valid width. Example: 400 or 100%."
+msgstr "Vložte korektní šířku, např. 400 nebo 100%."
+
+#: fckeditor.module:1453;1594
+msgid "administer"
+msgstr "spravovat"
+
+#: fckeditor.module:1454;1595;0
+msgid "fckeditor"
+msgstr "fckeditor"
+
+#: fckeditor.module:1455
+msgid "Add new FCKeditor global profile"
+msgstr "Přidat nový globální profil FCKeditoru"
+
+#: fckeditor.module:1462
+msgid "Global profile already exist. Only one global profile is allowed."
+msgstr "Globální profil již existuje. Může existovat pouze jeden globální profil."
+
+#: fckeditor.module:1475
+msgid "Main setup"
+msgstr "Hlavní nastavení"
+
+#: fckeditor.module:1487
+msgid "Role precedence"
+msgstr "Priorita rolí"
+
+#: fckeditor.module:1489
+msgid "A user having <strong>multiple roles</strong> gets the permissions of the highest one. Sort role IDs according to their <strong>precedence from higher to lower</strong> by putting > in between.<br />"
+msgstr "Uživatel, který má <strong>více rolí</strong>, získá oprávnění nejvyšší z nich. Uspořádejte identifikátory rolí podle důležitosti <strong>od nejvyšší po nejnižší</strong> tak, že mezi ně vložíte znak >."
+
+#: fckeditor.module:1492
+msgid "Here is the id-name pairs of roles having access to FCKeditor:"
+msgstr "Zde jsou dvojice identifikátorů rolí, které mají přístup do FCKeditoru:"
+
+#: fckeditor.module:1495
+msgid "You haven't assigned the <code>!access1</code> !permissions yet."
+msgstr "Zatím jste nenastavili !permissions <code>!access1</code>."
+
+#: fckeditor.module:1495;1590
+msgid "permissions"
+msgstr "oprávnění"
+
+#: fckeditor.module:1500;1701
+msgid "Visibility settings"
+msgstr "Nastavení viditelnosti"
+
+#: fckeditor.module:1507;1715
+msgid "Use inclusion or exclusion mode"
+msgstr "Použít vylučovací nebo zahrnovací režim"
+
+#: fckeditor.module:1509;1717
+msgid "exclude"
+msgstr "vylučovací"
+
+#: fckeditor.module:1509;1717
+msgid "include"
+msgstr "zahrnovací"
+
+#: fckeditor.module:1510;1718
+msgid "Choose the way of disabling/enabling FCKeditor on selected fields/paths (see below). Use exclude to disable FCKeditor on selected fields/paths. Use include if you want to load FCKeditor only on selected paths/fields."
+msgstr "Zvolte, jakým způsobem se bude FCKeditor zapínat/vypínat na vybraných polích/cestách (viz níže). Vylučovací režim na vybraných polích/cestách FCKeditor vypne. Zahrnovací režim zapne FCKeditor pouze na zvolených polích/cestách."
+
+#: fckeditor.module:1520;1728
+msgid "Fields to exclude/include"
+msgstr "Pole pro vyloučení/zahrnutí"
+
+#: fckeditor.module:1526;1734
+msgid "Enter names (HTML ID's) of fields that may or may not have an FCKeditor, depending on the chosen option for the inclusion/exclusion mode.<br />You may separate the different entries by commas, spaces or newlines."
+msgstr "Vložte jména polí, která smí nebo nesmí používat FKCeditor v závislosti na zvoleném režimu.<br />Jednotlivá jména můžete oddělovat čárkami, mezerami nebo novými řádky."
+
+#: fckeditor.module:1536;1744
+msgid "Paths to exclude/include"
+msgstr "Cesty pro vyloučení/zahrnutí"
+
+#: fckeditor.module:1542;1750
+msgid "Enter drupal paths here, depending on the chosen option for the inclusion/exclusion mode.<br />Paths may be used the same way as in the drupal blocks configuration.<br />You may separate the different entries by commas, spaces or newlines. <br />You may also use * as a wildcard character (for example <code>comment/*</code>)."
+msgstr "Vložte cesty Drupalu v závislosti na zvoleném režimu.<br />Cesty lze používat stejně jako v nastavení bloků.<br />Jednotlivá jména můžete oddělovat čárkami, mezerami nebo novými řádky.<br />Můžete také použít * jako zástupný znak (např. <code>comment/*</code>)."
+
+#: fckeditor.module:1547;1755
+msgid "Force simplified toolbar on the following fields"
+msgstr "Pro následující pole používat zjednodušenou nástrovou lištu"
+
+#: fckeditor.module:1551;1760
+msgid "Enter names (HTML ID's) of fields that should have the simplified toolbar.<br />If you don't want to use this feature, simply leave this field empty.<br />You may separate the different entries by commas, spaces or newlines."
+msgstr "Vložte jména polí, která mají mít zjednodušenou nástrojovou lištu.<br />Pokud tuto volbu nechcete používat, nechte toto pole prázdné.<br />Jednotlivá jména můžete oddělovat čárkami, mezerami nebo novými řádky."
+
+#: fckeditor.module:1556;1765
+msgid "Force simplified toolbar on the following paths"
+msgstr "Pro následující cesty používat zjednodušenou nástrovou lištu"
+
+#: fckeditor.module:1560;1770
+msgid "Enter drupal paths that should have the simplified toolbar.<br />If you don't want to use this feature, simply leave this field empty.<br />Paths may be used the same way as in the drupal blocks configuration.<br />You may separate the different entries by commas, spaces or newlines.<br />You may also use * as a wildcard character (for example <code>comment/*</code>)."
+msgstr "Vložte jména cest, které mají mít zjednodušenou nástrojovou lištu.<br />Pokud tuto volbu nechcete       používat, nechte toto pole prázdné.<br />Cesty lze používat stejně jako v nastavení bloků. Jednotlivá jména můžete oddělovat čárkami, mezerami nebo novými řádky.<br />Můžete také použít * jako zástupný znak (např. <code>comment/*</code>)."
+
+#: fckeditor.module:1587
+msgid "You haven't assigned <code>!access1</code> !permissions yet.<br/>It is recommended to assign the <code>!access1</code> !permissions before updating FCKeditor profiles."
+msgstr "Zatím jste nenastavili !permissions <code>!access1</code>.<br />Je doporučeno nastavit !permissions <code>!access1</code> ještě před upravou profilu."
+
+#: fckeditor.module:1596
+msgid "Add new FCKeditor profile"
+msgstr "Přidat nový profil FCKeditoru"
+
+#: fckeditor.module:1606
+msgid "Not all user roles are shown since they already have fckeditor profiles. You must first unassign profiles in order to add them to a new one."
+msgstr "Nejsou zobrazeny všechny uživatelské role, protože některé už mají svůj profil. Musíte je z jednoho profilu odebrat, abyste je mohli přidat do jiného."
+
+#: fckeditor.module:1617
+msgid "Basic setup"
+msgstr "Základní nastavení"
+
+#: fckeditor.module:1624
+msgid "Profile name"
+msgstr "Jméno profilu"
+
+#: fckeditor.module:1628
+msgid "Enter a name for this profile. This name is only visible within the fckeditor administration page."
+msgstr "Zadejte jméno profilu. Toto jméno je viditelné pouze na administrační stránce FCKeditoru."
+
+#: fckeditor.module:1634
+msgid "Roles allowed to use this profile"
+msgstr "Role, které mohou tento profil používat"
+
+#: fckeditor.module:1637
+msgid "Only roles with '!access1' permission will be shown here. If no role is available, make sure that you have assigned the '!access1' !permission."
+msgstr "Pouze role s oprávněním '!access1' se zde zobrazí. Pokud nevidíte žádnou roli, ujistěte se, že jste nastavili !permission '!access1'."
+
+#: fckeditor.module:1643
+msgid "Allow users to customize FCKeditor appearance"
+msgstr "Povolit uživatelům upravovat vzhled FCKeditoru"
+
+#: fckeditor.module:1646
+msgid "If allowed, users will be able to override <code>Editor appearance</code> by visiting their profile page."
+msgstr "Pokud je povoleno, uživatelé budou moci přenastavit <code>Vzhled editoru</code> na stránce svého uživatelského profilu."
+
+#: fckeditor.module:1651
+msgid "Security"
+msgstr "Bezpečnost"
+
+#: fckeditor.module:1652
+msgid "Because Drupal stores content in an unmodified form, it is necessary to perform additional security checks before FCKeditor renders the Html content for editing."
+msgstr "Jelikož Drupal ukládá obsah v nezměněné podobě, je nutné provádět dodatečné bezpečnostní kontroly dříve, než FCKeditor vygeneruje HTML pro editování."
+
+#: fckeditor.module:1652
+msgid "Without security filters, when you decide to edit an article which contains a malicious attack (like xss), that code will be rendered along with the html and therefore executed by your browser."
+msgstr "Pokud budete editovat obsah stránky, která obsahuje škodlivý kód (např. XSS), a nepoužijete bezpečnostní filtr, tento kód se vygeneruje spolu s ostatním HTML a tím pádem se ve vašem prohlížeči spustí. "
+
+#: fckeditor.module:1652
+msgid "Before FCKeditor renders the content in its editor, it makes an AJAX call to check the node's textarea for which filters are checked below and are in the textarea's input format."
+msgstr "Ještě než FCKeditor vygeneruje obsah stránky do textového pole, přes AJAX u stránky zkontroluje níže zaškrtnuté filtry, které náleží k formátu textu stránky."
+
+#: fckeditor.module:1652
+msgid "For example, if you're using a Filtered HTML input format and have checked the HTML filter below, it will be executed. However, if you edit node with Full HTML input format assigned, HTML filter will not be executed."
+msgstr "Například pokud používáte formát textu Omezené HTML a níže zaškrtnete filtr HTML, kontrola se spustí. Pokud ale editujete stránku s formátem textu HTML bez omezení, kontrola filtru HTML se provádět nebude."
+
+#: fckeditor.module:1652
+msgid "Most obvious is when using a custom module's security filter which allows html attributes but strips attribute xss when viewed, but FCKeditor will attempt to show original content when edited which could be malicious. Now same filter if checked below will run when edited to clean up content."
+msgstr "Nejzřejmější je situace při použití bezpečnostního filtru externího modulu, který povoluje atributy HTML, ale při náhledu odstraňuje atribut xss. FCKeditor se při editování pokusí zobrazit původní obsah, který může být škodlivý. Pokud bude stejný filtr zaškrtnut zde, před editací se spustí a vyčistí obsah."
+
+#: fckeditor.module:1661
+msgid "Security filters"
+msgstr "Bezpečnostní filtry"
+
+#: fckeditor.module:1662
+msgid "Please choose carefully all filters that protect your content (probably not all filters listed below are security filters)."
+msgstr "S rozmyslem prosím vyberte všechny filtry, které chrání váš obsah. Je pravděpodobné, že ne všechny filtry níže budou bezpečnostní."
+
+#: fckeditor.module:1690
+msgid "Security settings"
+msgstr "Nastavení bezpečnosti"
+
+#: fckeditor.module:1693
+msgid "Always run security filters for FCKeditor."
+msgstr "Bezpečnostní filtry pro FCKeditor spouštět vždy."
+
+#: fckeditor.module:1694
+msgid "Run security filters only when FCKeditor is set to start automatically."
+msgstr "Bezpečnostní filtry spouštět jen tehdy, pokud se FCKeditor spouští automaticky."
+
+#: fckeditor.module:1696
+msgid "There are two ways of starting FCKeditor: automatically and manually (via toggle or in a popup). If you decide to apply security filters only when FCKeditor starts automatically, you'll not be protected when toggling manually from plain textarea to FCKeditor or when using FCKeditor in a popup mode. So choose this option only, if you can detect various attacks (mainly XSS) by yourself just by looking at the HTML code."
+msgstr "FCKeditor lze spouštět dvěma způsoby: automaticky nebo manuálně přes přepínač nebo vyskakovací okno. Pokud aplikujete bezpečnostní filtry jen v případe automatického spouštění, nebudete chráněni, když zapnete editor dodatečně. Tuto volbu proto používejte, pouze pokud dokážete odhalit různé útoky (zejména XSS) sami, pouhým pohledem na kód HTML."
+
+#: fckeditor.module:1708
+msgid "Minimum rows"
+msgstr "Minimální počet řádků"
+
+#: fckeditor.module:1710
+msgid "FCKeditor will be triggered if the textarea has more rows than entered here. Enter '1' if you do not want to use this feature."
+msgstr "FCKeditor se spustí, pokud bude mít dané vstupní pole více řádku, než je zde zadáno. Zadáte-li '1', nebude se tato funkce uplatňovat."
+
+#: fckeditor.module:1775
+msgid "Editor appearance"
+msgstr "Vzhled editoru"
+
+#: fckeditor.module:1785
+msgid "Default editor state. If disabled, rich text editor may still be enabled using toggle or popup window."
+msgstr "Výchozí stav editoru. Pokud je vypnut, lze je aktivovat přepínačem nebo vyskakovacím oknem."
+
+#: fckeditor.module:1793
+msgid "Whether or not to show the disable/enable rich text editor toggle below the textarea. Works only if FCKeditor is not running in a popup window (see below)."
+msgstr "Určuje, zda se bude pod textovým vstupním polem zobrazovat přepínač pro rozšířený editor. Funguje pouze pokud FCKeditor neběží ve vyskakovacím okně (viz níže)."
+
+#: fckeditor.module:1809
+msgid "Choose a default skin."
+msgstr "Zvolte výchozí téma vzhledu"
+
+#: fckeditor.module:1817
+msgid "Choose a default toolbar set. To define new toolbar, edit <code>fckeditor.config.js</code> located in !module_path."
+msgstr "Zvolte výchozí nástrojovou lištu. Můžete také vytvořit novou lištu v souboru <code>fckeditor.config.js</code>, který je v module_path."
+
+#: fckeditor.module:1865
+msgid "Cleanup and output"
+msgstr "Výstup a úpravy vstupu"
+
+#: fckeditor.module:1872
+msgid "Enter mode"
+msgstr "Režim pro Enter"
+
+#: fckeditor.module:1875
+msgid "Set which tag FCKeditor should use when [Enter] key is pressed."
+msgstr "Nastavte, která značka se má použít, když uživatel stiskne [Enter]."
+
+#: fckeditor.module:1880
+msgid "Shift + Enter mode"
+msgstr "Režim pro Shift+Enter"
+
+#: fckeditor.module:1883
+msgid "Set which tag FCKeditor should use when [Shift] + [Enter] is pressed."
+msgstr "Nastavte, která značka se má použít, když uživatel stiskne [Shift]+[Enter]."
+
+#: fckeditor.module:1888
+msgid "Font formats"
+msgstr "Formáty písem"
+
+#: fckeditor.module:1892
+msgid "Semicolon separated list of HTML font formats. Allowed values are: p;div;pre;address;h1;h2;h3;h4;h5;h6"
+msgstr "Seznam formátů písem pro HTML, oddělovačem je středník. Povolené hodnoty jsou p;div;pre;address;h1;h2;h3;h4;h5;h6"
+
+#: fckeditor.module:1897
+msgid "Apply source formatting"
+msgstr "Aplikovat formátování zdroje"
+
+#: fckeditor.module:1900
+msgid "When set to \"true\" the editor will format the XHTML when switching from WYSIWYG view to Source view, by inserting line breaks on some tags endings and indenting paragraphs, tables and lists."
+msgstr "Pokud je povoleno, editor bude formátovat text při přepnutí z WYSIWYG pohledu na zdrojový pohled tak, že za některé ukončovací značky vloží řádkové zlomy a bude zarovnávat odstavce, tabulky a seznamy."
+
+#: fckeditor.module:1905
+msgid "Format output"
+msgstr "Formátování výstupu"
+
+#: fckeditor.module:1908
+msgid "When set to \"true\" the editor will format the XHTML output by inserting line breaks on some tags endings and indenting paragraphs, tables and lists."
+msgstr "Pokud je povoleno, editor bude formátovat text tak, že za některé ukončovací značky vloží řádkové zlomy a bude zarovnávat odstavce, tabulky a seznamy."
+
+#: fckeditor.module:1923
+msgid "CSS"
+msgstr "CSS"
+
+#: fckeditor.module:1930
+msgid "Editor CSS"
+msgstr "Editor CSS"
+
+#: fckeditor.module:1932
+msgid "use theme css"
+msgstr "používat styl tématu"
+
+#: fckeditor.module:1932
+msgid "define css"
+msgstr "definovat css"
+
+#: fckeditor.module:1932;1949
+msgid "FCKeditor default"
+msgstr "výchozí styl"
+
+#: fckeditor.module:1933
+msgid "Defines the CSS to be used in the editor area.<br />use theme css - load style.css from current site theme.<br/>define css - enter path for css file below.<br />FCKeditor default - uses default CSS from editor."
+msgstr "Určuje, který styl CSS bude editor používat.<br />používat styl tématu - nahraje style.css z aktuálního tématu vzhledu vašeho webu.<br / >definovat css - můžete zadat cestu ke svému vlastnímu stylu.<br />výchozí styl - použije se implicitní styl FCKeditoru."
+
+#: fckeditor.module:1938
+msgid "CSS path"
+msgstr "Cesta ke stylu CSS"
+
+#: fckeditor.module:1942
+msgid "Enter path to CSS file (<em>example: css/editor.css</em>) or a list of css files seperated by a comma (<em>example: /themes/garland/style.css,http://example.com/style.css</em>).<br />Macros: %h (host name: !host), %t (path to theme: !theme)<br />Be sure to select \"define css\" above."
+msgstr "Vložte cestu ke stylu (<em>např.: css/editor.css</em>) nebo seznam cest k několika souborům oddělených čárkami (<em>např.: /themes/garland/style.css,http://example.com/style.css</em>).<br />Makra: %h (host name: !host), %t (cesta k tématu: !theme).<br />Ujistěte se, že je nastavena volba \"definovat css\"."
+
+#: fckeditor.module:1947
+msgid "Predefined styles"
+msgstr "Přednastavené styly"
+
+#: fckeditor.module:1949
+msgid "use theme fckstyles.xml"
+msgstr "použít téma fckstyles.xml"
+
+#: fckeditor.module:1949
+msgid "define path to fckstyles.xml"
+msgstr "nastavit cestu k fckstyles.xml"
+
+#: fckeditor.module:1950
+msgid "Define the location of <code>fckstyles.xml</code> file. It is used by the &quot;Style&quot; dropdown list available in the Default toolbar.<br />Copy !fckstyles.xml inside your theme directory (<code>!theme</code>) and adjust it to your needs."
+msgstr "Určete umístění souboru <code>fckstyles.xml</code>. Ten se používá v rozbalovacím menu &quot;Styl&quot;, které je součástí výchozí nástrojové lišty editoru.<br />Zkopírujte !fckstyles.xml do adresáře tématu vzhledu (<code>!theme</code>), kde jej můžete upravit podle svých potřeb."
+
+#: fckeditor.module:1955
+msgid "Predefined styles path"
+msgstr "Cesta k přednastaveným stylům"
+
+#: fckeditor.module:1959
+msgid "Enter path to XML file with predefined styles (<em>example: /fckstyles.xml</em>).<br />Macros: %h (host name: !host), %t (path to theme: !theme), %m (path to FCKeditor module: !module)<br />Be sure to select \"define path to fckstyles.xml\" above."
+msgstr "Vložte cestu k souboru XML s přednastavenými styly (<em>např.: /fckstyles.xml</em>).<br />Makra: %h (host name: !host), %t (cesta k tématu: !theme).<br />Ujistěte se, že je nastavena volba \"nastavit cestu k fckstyles.xml\"."
+
+#: fckeditor.module:1969
+msgid "The file browser settings are not diplayed because you have configured IMCE to handle file browsing."
+msgstr "Nastavení prohlížeče souborů není zobrazeno, protože máte pro manipulaci se soubory nainstalován a nakonfigurován modul IMCE."
+
+#: fckeditor.module:1978
+msgid "Set file browser settings. If you enable file uploads and disable basic and advanced file management, you will need to manage your images and other files with the core upload module or a contrib module like !imce. Please note that these options require manual configuration, check !readme for more information.<br />"
+msgstr "Nastavte prohlížeč souborů. Pokud povolíte nahrávání souborů, ale zakážete základní a pokročilou správu souborů, budete muset spravovat obrázky a další soubory výchozím modulem Drupalu nebo externím modulem jako je !imce. Tyto volby ovšem vyžadují manuální konfiguraci, více informací najdete v !readme.<br />"
+
+#: fckeditor.module:1988
+msgid "Allow basic file management"
+msgstr "Povolit základní správu souborů"
+
+#: fckeditor.module:1990
+msgid "Allow quick uploads."
+msgstr "Povolit rychlé nahrávání"
+
+#: fckeditor.module:1995
+msgid "Allow advanced file management"
+msgstr "Povolit pokročilou správu souborů"
+
+#: fckeditor.module:1997
+msgid "Allow file management in the advanced file manager."
+msgstr "Povolit správu souborů v rozšířeném manažeru souborů"
+
+#: fckeditor.module:2005
+msgid "Path to uploaded files"
+msgstr "Cesta k nahraným souborům"
+
+#: fckeditor.module:2009
+msgid "Path to uploaded files relative to the document root.<br />Available wildcard characters:<br/><strong>%b</strong> - base URL path of the Drupal installation (!base).<br/><strong>%f</strong> - Drupal file system path where the files are stored (!files).<br /><strong>%u</strong> - User ID.<br />Current path: !path"
+msgstr "Cesta k nahraným souborům je relativní vzhledem ke kořenovému adresáři dokumentu.<br />Dostupné zástupné znaky:<br /><strong>%b</strong> - základní URL instalace Drupalu (!base).<br/><strong>%f</strong> - cesta k adresáři souborovému systému Drupalu (!files).<br /><strong>%u</strong> - ID uživatele.<br />Aktuální cesta: !path"
+
+#: fckeditor.module:2013
+msgid "Absolute path to uploaded files"
+msgstr "Absolutní cesta k nahraným souborům"
+
+#: fckeditor.module:2017
+msgid "The path to the local directory (in the server) which points to the path defined above. If empty, FCKeditor will try to discover the right path.<br />Available wildcard characters:<br/><strong>%d</strong> - server path to document root (!root).<br /><strong>%b</strong> - base URL path of the Drupal installation (!base).<br/><strong>%f</strong> - Drupal file system path where the files are stored (!files).<br /><strong>%u</strong> - User ID.<br />Current path: !path"
+msgstr "Cesta k lokálnímu adresáři na serveru, který odpovídá cestě definované výše. Když není zadána žádná hodnota, FCKeditor se pokusí ji najít.<br />Dostupné zástupné znaky:<br /><strong>%d</strong> - cesta ke kořenovému adresáři dokumentu na serveru (!root).<br /><strong>%b</strong> - základní URL instalace Drupalu (!base).<br/><strong>%f</strong> - cesta k adresáři souborovému systému Drupalu (!files).<br /><strong>%u</strong> - ID uživatele.<br />Aktuální cesta: !path"
+
+#: fckeditor.module:2020
+msgid "Setting relative path to uploaded files has been disabled because private downloads are enabled and this path is calculated automatically."
+msgstr "Nastavení relativní cesty k nahraným souborům bylo zablokováno, protože stahování je nastaveno jako soukromé a tato cesta se nastavuje automaticky."
+
+#: fckeditor.module:2022
+msgid "Setting path to uploaded files has been disabled because private downloads are enabled and this path is calculated automatically."
+msgstr "Nastavení cesty k nahraným souborům bylo zablokováno, protože stahování je nastaveno jako soukromé a tato cesta se nastavuje automaticky."
+
+#: fckeditor.module:2029
+msgid "Advanced options"
+msgstr "Pokročilé volby"
+
+#: fckeditor.module:2036
+msgid "Link to paths only"
+msgstr "Odkaz pouze na cesty"
+
+#: fckeditor.module:2036
+msgid "Link using internal: links"
+msgstr "Odkaz používající interní linky"
+
+#: fckeditor.module:2036
+msgid "Allow user to select between paths and internal links"
+msgstr "Povolit uživatelům volbu mezi cestami a interními linky"
+
+#: fckeditor.module:2037
+msgid "Path Filter & Link To Content integration"
+msgstr "Filtr cest a integrace Odkazu na data"
+
+#: fckeditor.module:2039
+msgid "With !plink extension it is possible to use :internal links. By default !link extension is linking to nodes using paths."
+msgstr "S rozšířením !plink je možné používat interní linky. Implicitně rozšíření !link poskytuje uzly používající cesty."
+
+#: fckeditor.module:2039
+msgid "Path Filter"
+msgstr "Filtr cest"
+
+#: fckeditor.module:2039
+msgid "Link To Content"
+msgstr "Odkaz na data"
+
+#: fckeditor.module:2044
+msgid "Custom javascript configuration"
+msgstr "Volitelné nastave Javascriptu"
+
+#: fckeditor.module:2048
+msgid "Warning: to change FCKeditor configuration globally, you should modify the config file: <code>!fckeditor_config</code>.<br/>Sometimes it is required to change the FCKeditor configuration for selected profile. Use this box to define settings that are uniqe for this profile.<br/>Available options are listed in the !docs.<br/>Warning: if you make something wrong here, FCKeditor may fail to load.<br/>For example to disable some advanced tabs in dialog windows in FCKeditor, add the following: !example"
+msgstr "Varování: globální nastavení FCKeditoru byste měli editovat v souboru <code>!fckeditor_config</code>.<br/>Někdy je nutné pozměnit konfiguraci FCKeditoru pro daný profil.<br />Dostupné volby najdete v !docs.<br />Varování: pokud zde něco nastavíte špatně, je možné, že se FCKeditor vůbec nenahraje.<br />Například když potřebujete zrušit některé záložky v dialogových oknech FCKeditoru, napište následující: !example "
+
+#: fckeditor.module:2051
+msgid "FCKeditor documentation"
+msgstr "Dokumentace FCKeditoru"
+
+#: fckeditor.module:2191;2195
+msgid "Yes, delete!"
+msgstr "Ano, smazat!"
+
+#: fckeditor.module:2192
+msgid "!profile profile"
+msgstr "profil !profile"
+
+#: fckeditor.module:2196
+msgid "Global Profile"
+msgstr "Globální profil"
+
+#: fckeditor.module:2199
+msgid "Confirm profile deletion"
+msgstr "Potvrďte smazání profilu"
+
+#: fckeditor.module:2200
+msgid "You're about to delete the FCKeditor profile, read the question below carefully."
+msgstr "Chystáte se smazat profil FCKeditoru, buďte prosím opatrní."
+
+#: fckeditor.module:2202
+msgid "<p>Are you sure that you want to delete the !profile?</p><p>!yes !no</p>"
+msgstr "<p>Jste si jisti, že chcete smazat !profile?</p><p>!yes !no</p>"
+
+#: fckeditor.module:2205
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: fckeditor.module:139
+msgid "administer fckeditor"
+msgstr "spravovat fckeditor"
+
+#: fckeditor.module:139
+msgid "allow fckeditor file uploads"
+msgstr "povolit nahrávání souborů"
+
+#: fckeditor.info:0
+msgid "Enables the usage of FCKeditor (WYSIWYG) instead of plain text fields."
+msgstr "Umožní používání FCKeditoru (WYSIWYG) místo obyčejného vstupního textového pole."
+

@@ -1,0 +1,335 @@
+# SPANISH translation of DRUPAL privatemsg.module
+# Copyright 2005 Eduin Yezid Carrillo Vega <webmaster@scoutsace.org>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: privatemsg.module $Id\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2005-07-22 09:33-0500\n"
+"Last-Translator: Eduin Yezid Carrillo Vega\n"
+"Language-Team: SPANISH <webmaster@scoutace.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Basepath: C:/projects/drupal/contributions/modules/privatemsg\n"
+"X-Poedit-KeywordsList: t\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: privatemsg.module:10
+msgid "Allows private messages between users."
+msgstr "Permitir mensajes privados entre usuarios."
+
+#: privatemsg.module:20
+msgid "write to author"
+msgstr "escribir al autor"
+
+#: privatemsg.module:34
+msgid "view inbox"
+msgstr "mensajes privados"
+
+#: privatemsg.module:49
+#: privatemsg.module:56
+#: privatemsg.module:59
+msgid "History"
+msgstr "Historial"
+
+#: privatemsg.module:49
+#: privatemsg.module:56
+#: privatemsg.module:59
+#: privatemsg.module:179
+#: privatemsg.module:276
+msgid "Private messages"
+msgstr "Mensajes Privados"
+
+#: privatemsg.module:49
+msgid "send private message"
+msgstr "enviar mensaje privado"
+
+#: privatemsg.module:56
+msgid "<a href=\"%login\">login</a> or <a href=\"%register\">register</a> to send private messages to this user"
+msgstr "<a href=\"%login\">inicie sesión</a> o <a href=\"%register\">registrese</a> para enviar mensajes privado a este usuario"
+
+#: privatemsg.module:59
+#, php-format
+msgid "<a href=\"%login\">login</a> to send private messages to this user"
+msgstr "<a href=\"%login\">inicie sesión</a> para enviar mensajes privados a este usuario"
+
+#: privatemsg.module:67
+msgid "Allow private messages"
+msgstr "Permitir mensajes privados"
+
+#: privatemsg.module:67
+msgid "Check this box to allow users to send you private messages."
+msgstr "Seleccione esta opción para permitir a otros usuarios que le envíen mensajes privados."
+
+#: privatemsg.module:68
+msgid "Receive daily e-mail for unread messages"
+msgstr "Recibir una notificación diaria de mensajes sin leer"
+
+#: privatemsg.module:68
+msgid "Check this box to receive e-mail notification for unread messages. Only one e-mail will be sent per day."
+msgstr "Seleccione esta opción para recibir una notificación vía correo electrónico del número de mensajes sin leer. Solo se enviará un mensaje diariamente."
+
+#: privatemsg.module:69
+msgid "Private message settings"
+msgstr "Opciones de mensajes privados"
+
+#: privatemsg.module:79
+msgid "Private messaging max rate"
+msgstr "Frecuencia máxima de mensajes privados"
+
+#: privatemsg.module:79
+msgid "Max submit rate for private messaging. To prevent abuse."
+msgstr "Frecuancia máxima de envío de mensajes privados. Sirve para evitar abusos."
+
+#: privatemsg.module:80
+msgid "Sent message status"
+msgstr "Estado de envío del mensaje"
+
+#: privatemsg.module:80
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: privatemsg.module:80
+msgid "Enabled"
+msgstr "Activado"
+
+#: privatemsg.module:80
+msgid "If enabled users can see whether a message has been read or not."
+msgstr "Si está habilitado, los usuarios podrán ver si un mensaje ha sido leído o no."
+
+#: privatemsg.module:82
+msgid "Messages per page"
+msgstr "Mensajes por página"
+
+#: privatemsg.module:82
+msgid "The maximum number of messages displayed per page; links to browse messages automatically appear."
+msgstr "El número máximo de mensajes mostrados por página; los enlaces para navegar los otros mensajes serán agregados automáticamente."
+
+#: privatemsg.module:84
+msgid "Display link with posts"
+msgstr "Mostrar enlace con mensajes"
+
+#: privatemsg.module:84
+msgid "Provide a link to send private messages to users with posts they start."
+msgstr "Crea un enlace para enviar mensajes privados a los usuarios que han creado contenidos."
+
+#: privatemsg.module:85
+msgid "Display link with comments"
+msgstr "Mostrar enlace con comentarios"
+
+#: privatemsg.module:85
+msgid "Provide a link to send private messages to users with their comments."
+msgstr "Crea un enlace para enviar mensajes privados a los usuarios junto a sus comentarios."
+
+#: privatemsg.module:86
+msgid "\"Write to author\" links"
+msgstr "Enlaces \"Escribir al autor\""
+
+#: privatemsg.module:144
+#, php-format
+msgid "New private messages at %site."
+msgstr "Nuevos mensajes privados en %site."
+
+#: privatemsg.module:145
+#, fuzzy
+msgid ""
+"Hi %name,\n"
+"This is an automatic reminder from the site %site. You have %new unread private messages.\n"
+"\n"
+"To read your messages, follow this link:\n"
+"%link1\n"
+"\n"
+"If you don't want to receive these email again, change your preferences here:\n"
+"%link2"
+msgstr ""
+"Hola %name,\n"
+"este es un recordatorio automático del sitio %site. Tiene %new mensajes privados sin leer.\n"
+"\n"
+"Para leer los mensajes, siga este enlace:\n"
+"%link1\n"
+"\n"
+"Si no desea recibir este mensaje otra vez, cambie la preferencias para su usuario aquí:\n"
+"%link2\n"
+"\n"
+
+#: privatemsg.module:183
+msgid "Read message"
+msgstr "Leer mensaje"
+
+#: privatemsg.module:184
+#: privatemsg.module:192
+#: privatemsg.module:198
+#: privatemsg.module:205
+#: privatemsg.module:247
+msgid "Home"
+msgstr "Inicio"
+
+#: privatemsg.module:184
+#: privatemsg.module:192
+#: privatemsg.module:198
+#: privatemsg.module:205
+msgid "private messages"
+msgstr "mensajes privados"
+
+#: privatemsg.module:186
+#: privatemsg.module:191
+#: privatemsg.module:197
+#: privatemsg.module:563
+msgid "Write a new message"
+msgstr "Escrbir un nuevo mensaje"
+
+#: privatemsg.module:201
+#: privatemsg.module:368
+msgid "Send private message"
+msgstr "Enviar mensaje privado"
+
+#: privatemsg.module:208
+#: privatemsg.module:576
+msgid "Move to folder"
+msgstr "Mover a la carpeta"
+
+#: privatemsg.module:222
+#: privatemsg.module:565
+msgid "Delete messages"
+msgstr "Borrar mensajes"
+
+#: privatemsg.module:236
+#: privatemsg.module:588
+msgid "New folder"
+msgstr "Nueva carpeta"
+
+#: privatemsg.module:237
+#: privatemsg.module:454
+msgid "Add folder"
+msgstr "Agregar carpeta"
+
+#: privatemsg.module:246
+msgid "Create new folder"
+msgstr "Crear nueva carpeta"
+
+#: privatemsg.module:252
+#: privatemsg.module:582
+msgid "Delete folder"
+msgstr "Borrar carpeta"
+
+#: privatemsg.module:261
+#: privatemsg.module:585
+msgid "Empty folder"
+msgstr "Vaciar carpeta"
+
+#: privatemsg.module:295
+#: privatemsg.module:310
+msgid "Inbox"
+msgstr "Bandeja de Entrada"
+
+#: privatemsg.module:302
+#: privatemsg.module:315
+msgid "Sent messages"
+msgstr "Mensajes Enviados"
+
+#: privatemsg.module:336
+#: privatemsg.module:337
+msgid "Re:"
+msgstr "Re:"
+
+#: privatemsg.module:356
+#: privatemsg.module:482
+#: privatemsg.module:552
+msgid "To"
+msgstr "Para"
+
+#: privatemsg.module:357
+msgid "contacts"
+msgstr "contactos"
+
+#: privatemsg.module:365
+#: privatemsg.module:483
+#: privatemsg.module:553
+msgid "Subject"
+msgstr "Asunto"
+
+#: privatemsg.module:366
+msgid "Message"
+msgstr "Mensaje"
+
+#: privatemsg.module:377
+msgid "The <em>Recipient</em> field is required."
+msgstr "El campo <em>Destinatario</em> es obligatorio."
+
+#: privatemsg.module:385
+msgid "The <em>Recipient</em> does not exist."
+msgstr "El <em>Destinatario</em> no existe."
+
+#: privatemsg.module:389
+msgid "%name does not accept private messages."
+msgstr "%name no acepta mensajes privados."
+
+#: privatemsg.module:393
+msgid "The <em>Subject</em> field is required."
+msgstr "El campo <em>Asunto</em> es obligatorio."
+
+#: privatemsg.module:397
+msgid "The <em>Message</em> field is required."
+msgstr "El campo <em>Mensaje</em> es obligatorio."
+
+#: privatemsg.module:401
+msgid "The supplied input format is invalid."
+msgstr "El formato de entrada suministrado no es válido."
+
+#: privatemsg.module:406
+msgid "Message sent."
+msgstr "Mensaje enviado."
+
+#: privatemsg.module:453
+msgid "Name"
+msgstr "Nombre"
+
+#: privatemsg.module:481
+#: privatemsg.module:552
+msgid "From"
+msgstr "De"
+
+#: privatemsg.module:484
+#: privatemsg.module:551
+msgid "Date"
+msgstr "Fecha"
+
+#: privatemsg.module:488
+msgid "Reply to this message"
+msgstr "Responder este mensaje"
+
+#: privatemsg.module:491
+msgid "Delete this message"
+msgstr "Borrar este mensaje"
+
+#: privatemsg.module:491
+msgid "Are you sure to delete this message?"
+msgstr "¿Está seguro que desea eliminar este mensaje?"
+
+#: privatemsg.module:494
+msgid "List messages"
+msgstr "Lista de mensajes"
+
+#: privatemsg.module:498
+msgid "Error: you can't read this message."
+msgstr "Error: no puede leer este mensaje."
+
+#: privatemsg.module:546
+msgid "<p>No messages</p>"
+msgstr "<p>No hay mensajes</p>"
+
+#: privatemsg.module:565
+msgid "Are you sure you want to delete these messages?"
+msgstr "¿Está seguro que desea eliminar estos mensajes?"
+
+#: privatemsg.module:582
+msgid "Are you sure you want to delete this folder and all its messages?"
+msgstr "¿Está seguro que desea eliminar esta carpeta y todos sus mensajes?"
+
+#: privatemsg.module:585
+msgid "Are you sure you want to delete every message in this folder?"
+msgstr "¿Está seguro que desea eliminar este cada mensaje de esta carpeta?"
+

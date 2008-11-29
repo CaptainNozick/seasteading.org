@@ -1,0 +1,78 @@
+30 April 2005
+-------------
+- Added pager to message lists
+- Added PostgreSQL support
+- Use input formats for private messages (allow HTML in messages)
+
+26 March 2004
+-------------
+- Removed custom _form_submit in favor of "attributes" argument in core form_submit (jik)
+- Added optional "write to author" links under nodes/comments (modified patch by jik)
+- Minor code updates/cleanup
+- Update to work with new CVS _user hook changes
+
+9 December 2003
+---------------
+- updated to function with latest menu system changes
+- updated to work with latest theme system updates
+  - themeable functions return their output rather than printing it
+  - updated to use theme(page)
+  - grouped themeable functions and added phpDoc comments
+- added {} to allow table prefixing
+
+23 May 2003, "qui, nell'ascensore?"
+----------------------------------
+- used $_POST instead of global vars
+- used theme() instead of $theme
+
+
+22 May 2003, "day of the Matrix"
+--------------------------------
+- major rewrite
+- updated to latest cvs, should work in Drupal 4.2
+- added folders, you can move messages in folders, empty folders
+- mail once per day if you have unread messages (user option)
+- message pruning (move old messages to another table)
+- list of contacts: it's built automatically looking at users you write to
+- theme()ized
+- if you are updating run you just need to run privatemsg.sql
+
+
+20 August 2002
+--------------
+- major cleanup, used t() and l() everywhere
+- minor bugs fixed
+
+
+19 June 2002
+------------
+- cached _privatemsg_get_new_messages(), saves 2-3 queries per page
+
+
+21 Feburary 2002
+----------------
+- moved link to private messages to the user block.
+- added link to send messages to user info pages.
+- some XHTML changes.
+- user system has changed from $user->id to $user->uid.
+
+
+19 December 2001 "giuro che mi trattengo"
+--------------------------
+- sent messages; sender can delete unread messages (optional, see settings)
+- messages splitted in pages, setting for "how many messages per page"
+
+
+15 December 2001 "nice evening"
+--------------------------
+- privatemsg_get_link() to add theme support; see INSTALL 
+- throttle to limit abuse; setting in admin for max send rate
+- checked sql indexing and added index to recipient (should we index author?)
+- save sender ip address
+- code cleanup (less global variables, use drupal form functions, better date format in list, comply to coding standards)
+- minor cosmetic changes
+
+
+12 December 2001
+--------------------------
+- initial release.

@@ -1,0 +1,386 @@
+# $Id: ru.po,v 1.1.4.3 2007/04/08 20:04:45 mindless Exp $
+#
+# LANGUAGE translation of Drupal (modules/privatemsg/privatemsg.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  privatemsg.module,v 1.70.2.7 2007/02/01 06:49:43 mindless
+#  privatemsg.info,v 1.1 2007/01/27 00:56:10 mindless
+#
+# Copyright 2006 seaji <seaji@narod.ru>
+# Copyright 2007 Maynichev <maynich@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: privatemsg.module,v 1.70.2.7\n"
+"POT-Creation-Date: 2007-02-11 04:26+0000\n"
+"PO-Revision-Date: 2007-02-11 15:29+0600\n"
+"Last-Translator: Maynichev <maynich@gmail.com>\n"
+"Language-Team: Maynichev <maynich@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: ../..\n"
+
+#: modules/privatemsg/privatemsg.module:13
+msgid "The private messaging module allows users to send messages to each other without having to share email addresses. An inbox link will appear in the navigation menu. The \"write to author\" links are included in posts, allowing users to write a private message instead of commenting openly.  Allowing users to communicate directly is an important  part of building the strength of the community."
+msgstr "Модуль Личные сообщения позволяет обмениваться личными сообщениями между пользователями без использования E-mail. В меню навигации появляется новый пункт Входящие, а ссылка  \"Написать автору\" позволяет общаться только с автором, а не в открытом доступе. Личные или приватные сообщения есть сейчас во всех развитых форумах и CMS."
+
+#: modules/privatemsg/privatemsg.module:14
+msgid "Users can also select whether to receive email notices of new messages by editing their user profile.  The contacts list contains only users that you have previously messaged. To contact users not in your list, you need to know their local user name.  Administrators can set messaging options such as frequency of emails, message status display, and number of messages to display per page.   They can also configure 'Write to Author' options."
+msgstr "Пользователь может сам выбрать будет или нет он получать напоминания о новых сообщениях по E-mail. Установка производится в профиле пользователя. Администратор также может менять некоторые длугие установки."
+
+#: modules/privatemsg/privatemsg.module:15
+msgid ""
+"<p>You can</p>\r\n"
+"<ul>\r\n"
+"<li>administer privatemsg at <a href=\"%admin-settings-privatemsg\">administer &gt;&gt; settings &gt;&gt; private message</a>.</li>\r\n"
+"<li>view your private messages at <a href=\"%privatemsg\">view inbox</a>.</li>\r\n"
+msgstr ""
+"<p>Вы можете</p>\n"
+"<ul>\n"
+"<li>управлять установками  <a href=\"%admin-settings-privatemsg\">на странице  &gt;&gt; управление &gt;&gt; личными сообщениями</a>.</li>\n"
+"<li>просматривать свои сообщения <a href=\"%privatemsg\">на странице Входящие</a>.</li>\n"
+
+#: modules/privatemsg/privatemsg.module:20
+msgid "For more information please read the configuration and customization handbook <a href=\"!privatemsg\">Privatemsg page</a>."
+msgstr "Подробности см. в <a href=\"!privatemsg\">руководстве</a>."
+
+#: modules/privatemsg/privatemsg.module:39
+msgid "Write to author"
+msgstr "Написать автору"
+
+#: modules/privatemsg/privatemsg.module:56
+#: modules/privatemsg/privatemsg.info:0
+msgid "Privatemsg"
+msgstr "Личные сообщения"
+
+#: modules/privatemsg/privatemsg.module:57
+msgid "Configure Privatemsg settings."
+msgstr "Настройки модуля Личных сообщений (Privatemsg)"
+
+#: modules/privatemsg/privatemsg.module:61
+#: ;66;71;363;746
+msgid "Write a new message"
+msgstr "Написать новое сообщение"
+
+#: modules/privatemsg/privatemsg.module:76
+msgid "Privatemsg autocomplete"
+msgstr "Автозаполнение "
+
+#: modules/privatemsg/privatemsg.module:80
+msgid "Read message"
+msgstr "Просмотр сообщения"
+
+#: modules/privatemsg/privatemsg.module:85
+msgid "Create new folder"
+msgstr "Создать новую папку"
+
+#: modules/privatemsg/privatemsg.module:98
+msgid "My inbox"
+msgstr "Мои входящие"
+
+#: modules/privatemsg/privatemsg.module:120
+#: ;129;134;326
+msgid "Private messages"
+msgstr "Личные сообщения"
+
+#: modules/privatemsg/privatemsg.module:121
+msgid "send private message"
+msgstr "отправить сообщение"
+
+#: modules/privatemsg/privatemsg.module:130
+msgid "<a href=\"!login\">login</a> or <a href=\"!register\">register</a> to send private messages to this user"
+msgstr "<a href=\"!login\">войдите</a> или <a href=\"!register\">зарегистрируйтесь</a> для того, что бы отправить личное сообщение этому пользователю"
+
+#: modules/privatemsg/privatemsg.module:135
+msgid "<a href=\"!login\">login</a> to send private messages to this user"
+msgstr "Что бы отправить личное сообщение этому пользователю Вам необходимо <a href=\"!login\">войти</a>"
+
+#: modules/privatemsg/privatemsg.module:146
+msgid "Private message settings"
+msgstr "Настройки личных сообщений"
+
+#: modules/privatemsg/privatemsg.module:152
+msgid "Allow private messages"
+msgstr "Разрешить обмен личными сообщениями"
+
+#: modules/privatemsg/privatemsg.module:154
+msgid "Check this box to allow users to send you private messages."
+msgstr "Поставьте здесь галочку для того, чтобы разрешить другим пользователям отправлять Вам личные сообщения."
+
+#: modules/privatemsg/privatemsg.module:158
+msgid "Aggressive notification of new messages"
+msgstr "Форсированные напоминания о новых сообщениях"
+
+#: modules/privatemsg/privatemsg.module:160
+msgid "Show status message on every page until new messages are read."
+msgstr "Показывать статус на каждой странице, пока сообщения не прочитаны."
+
+#: modules/privatemsg/privatemsg.module:164
+msgid "Receive e-mail for unread messages"
+msgstr "Получать ежедневное уведомление по электронной почте о непрочтенных сообщениях."
+
+#: modules/privatemsg/privatemsg.module:165
+msgid "Daily"
+msgstr "Ежедневно"
+
+#: modules/privatemsg/privatemsg.module:165
+msgid "Every message"
+msgstr "Каждое сообщение"
+
+#: modules/privatemsg/privatemsg.module:167
+msgid "Select when to receive e-mail notification for unread messages."
+msgstr "Поставьте здесь галочку для того, чтобы получать ежедневное оповещение по электронной почте о непрочтенных сообщениях. Письмо будет высылаться только один раз в день."
+
+#: modules/privatemsg/privatemsg.module:181
+msgid "Private messaging max rate"
+msgstr "Макс. скорость отправки личных сообщений."
+
+#: modules/privatemsg/privatemsg.module:184
+msgid "Max submit rate for private messaging. To prevent abuse."
+msgstr "Макс. скорость отправки личных сообщений. (чтобы не было спама.)"
+
+#: modules/privatemsg/privatemsg.module:188
+msgid "Sent message status"
+msgstr "Статус отправленного сообщения"
+
+#: modules/privatemsg/privatemsg.module:191
+msgid "If enabled users can see whether a message has been read or not."
+msgstr "Если разрешено, пользователь может видеть открывали сообщение или нет."
+
+#: modules/privatemsg/privatemsg.module:195
+msgid "Messages per page"
+msgstr "Сообщений на страницу"
+
+#: modules/privatemsg/privatemsg.module:198
+msgid "The maximum number of messages displayed per page; links to browse messages automatically appear."
+msgstr "Максимальное количество сообщений, отображаемых на одной странице. Навигационные ссылки создаются автоматически."
+
+#: modules/privatemsg/privatemsg.module:203
+msgid "\"Write to author\" links"
+msgstr "Ссылки \"Написать автору\""
+
+#: modules/privatemsg/privatemsg.module:207
+msgid "Display link with posts"
+msgstr "Показывать ссылку вместе с публикацией"
+
+#: modules/privatemsg/privatemsg.module:210
+msgid "Provide a link to send private messages to users with posts they start."
+msgstr "Предоставлять ссылку для отправки личный сообщений автору матерьяла"
+
+#: modules/privatemsg/privatemsg.module:214
+msgid "Display link with comments"
+msgstr "Показывать ссылку в комментариях"
+
+#: modules/privatemsg/privatemsg.module:217
+msgid "Provide a link to send private messages to users with their comments."
+msgstr "Предоставлять ссылку для отправки личных сообщений автору комментария."
+
+#: modules/privatemsg/privatemsg.module:286
+msgid "New private messages at @site."
+msgstr "Новые личные сообщения на @site."
+
+#: modules/privatemsg/privatemsg.module:335
+#: ;350
+msgid "Inbox"
+msgstr "Входящие"
+
+#: modules/privatemsg/privatemsg.module:342
+#: ;355
+msgid "Sent messages"
+msgstr "Отправленные"
+
+#: modules/privatemsg/privatemsg.module:365
+#: ;724
+msgid "Delete messages"
+msgstr "Удалить сообщения"
+
+#: modules/privatemsg/privatemsg.module:372
+#: ;768
+msgid "New folder"
+msgstr "Новая папка"
+
+#: modules/privatemsg/privatemsg.module:374
+#: ;737
+msgid "Move to folder"
+msgstr "Переместить в папку"
+
+#: modules/privatemsg/privatemsg.module:376
+#: ;391;401
+msgid "Attempted use of unauthorized folder"
+msgstr "Попытка использовать папку, к которой нет доступа."
+
+#: modules/privatemsg/privatemsg.module:385
+#: ;762
+msgid "Empty folder"
+msgstr "Очистить папку"
+
+#: modules/privatemsg/privatemsg.module:398
+#: ;755
+msgid "Delete folder"
+msgstr "Удалить папку"
+
+#: modules/privatemsg/privatemsg.module:406
+msgid "Folder deleted."
+msgstr "Папка удалена."
+
+#: modules/privatemsg/privatemsg.module:432
+#: ;433
+msgid "Re:"
+msgstr "Re:"
+
+#: modules/privatemsg/privatemsg.module:454
+msgid "Contacts"
+msgstr "Контакты"
+
+#: modules/privatemsg/privatemsg.module:494
+msgid "Send private message"
+msgstr "Отправить сообщение"
+
+#: modules/privatemsg/privatemsg.module:504
+msgid "The <em>Recipient</em> does not exist."
+msgstr "<em>Получатель</em> не существует."
+
+#: modules/privatemsg/privatemsg.module:507
+msgid "@name does not accept private messages."
+msgstr "@name не принимает личных сообщений."
+
+#: modules/privatemsg/privatemsg.module:511
+msgid "The supplied input format is invalid."
+msgstr "Формат ввода неприменим."
+
+#: modules/privatemsg/privatemsg.module:520
+msgid "Message sent."
+msgstr "Сообщение отправлено."
+
+#: modules/privatemsg/privatemsg.module:552
+msgid "Message deleted."
+msgstr "Сообщение удалено."
+
+#: modules/privatemsg/privatemsg.module:597
+msgid "Add folder"
+msgstr "Создать папку"
+
+#: modules/privatemsg/privatemsg.module:606
+msgid "A folder with this name already exists."
+msgstr "Папка с этим именем уже существует."
+
+#: modules/privatemsg/privatemsg.module:613
+msgid "Folder created successfully."
+msgstr "Папка успешно создана."
+
+#: modules/privatemsg/privatemsg.module:644
+msgid "Reply to this message"
+msgstr "Ответить на это сообщение"
+
+#: modules/privatemsg/privatemsg.module:647
+msgid "Sender does not accept replies"
+msgstr "Отправитель не принимает ответов."
+
+#: modules/privatemsg/privatemsg.module:651
+msgid "Delete this message"
+msgstr "Удалить это сообщение"
+
+#: modules/privatemsg/privatemsg.module:651
+msgid "Are you sure to delete this message?"
+msgstr "Вы действительно хотите удалить это сообщение"
+
+#: modules/privatemsg/privatemsg.module:654
+msgid "List messages"
+msgstr "Список сообщений"
+
+#: modules/privatemsg/privatemsg.module:658
+msgid "Error: you can't read this message."
+msgstr "Ошибка: Вы не можете читать это сообщение."
+
+#: modules/privatemsg/privatemsg.module:725
+msgid "Are you sure you want to delete these messages?"
+msgstr "Вы действительно хотите удалить эти сообщения?"
+
+#: modules/privatemsg/privatemsg.module:756
+msgid "Are you sure you want to delete this folder and all its messages?"
+msgstr "Вы действительно хотите удалить эту папку и все сообщения, хранящиеся в ней?"
+
+#: modules/privatemsg/privatemsg.module:763
+msgid "Are you sure you want to delete every message in this folder?"
+msgstr "Вы действительно хотите удалить все сообщения из этой папки?"
+
+#: modules/privatemsg/privatemsg.module:789
+msgid "No messages."
+msgstr "Нет сообщений."
+
+#: modules/privatemsg/privatemsg.module:376
+#: ;391;401;0
+msgid "privatemsg"
+msgstr "privatemsg"
+
+#: modules/privatemsg/privatemsg.module:106
+msgid "You have one new <a href=\"!url\">private message</a>."
+msgid_plural "You have @count new <a href=\"!url\">private messages</a>."
+msgstr[0] "УВас есть одно новое <a href=\"!url\">личное сообщение</a>."
+msgstr[1] "У Вас @count новых <a href=\"!url\">личных сообщений</a>."
+msgstr[2] "У Вас @count новых <a href=\"!url\">личных сообщений</a>."
+
+#: modules/privatemsg/privatemsg.module:288
+msgid ""
+"Hi @name,\r\n"
+"This is an automatic reminder from the site @site. You have received a new private message.\r\n"
+"\r\n"
+"To read your message, follow this link:\r\n"
+"!link1\r\n"
+"\r\n"
+"If you don't want to receive these emails again, change your preferences here:\r\n"
+"!link2"
+msgid_plural ""
+"Hi @name,\r\n"
+"This is an automatic reminder from the site @site. You have @count unread private messages.\r\n"
+"\r\n"
+"To read your messages, follow this link:\r\n"
+"!link1\r\n"
+"\r\n"
+"If you don't want to receive these emails again, change your preferences here:\r\n"
+"!link2"
+msgstr[0] ""
+"Уважаемый пользователь @name,\n"
+"Уведомляем Вас, что на сайте @site для Вас есть новое личное сообщение.\n"
+"\n"
+"Для того, чтобы прочитать эти сообщения перейдите по ссылке:\n"
+"!link1\n"
+"\n"
+"Если Вы больше не хотите получать уведомления о личных сообщениях, измените свои настройки здесь:\n"
+"!link2"
+msgstr[1] ""
+"Уважаемый пользователь @name,\n"
+"Уведомляем Вас, что на сайте @site для Вас есть @count новых личных сообщений.\n"
+"\n"
+"Для того, чтобы прочитать эти сообщения перейдите по ссылке:\n"
+"!link1\n"
+"\n"
+"Если Вы больше не хотите получать уведомления о личных сообщениях, измените свои настройки здесь:\n"
+"!link2"
+msgstr[2] ""
+"Уважаемый пользователь @name,\n"
+"Уведомляем Вас, что на сайте @site для Вас есть @count новых личных сообщений.\n"
+"\n"
+"Для того, чтобы прочитать эти сообщения перейдите по ссылке:\n"
+"!link1\n"
+"\n"
+"Если Вы больше не хотите получать уведомления о личных сообщениях, измените свои настройки здесь:\n"
+"!link2"
+
+#: modules/privatemsg/privatemsg.module:227
+msgid "access private messages"
+msgstr "доступ к личным сообщениям"
+
+#: modules/privatemsg/privatemsg.info:0
+msgid "Allow private messages between users"
+msgstr "Позволяет обмениваться личными сообщениями между пользователями."
+
+#: modules/privatemsg/privatemsg.info:0
+msgid "Mail"
+msgstr "Адрес e-mail"
+

@@ -1,0 +1,5 @@
+; $Id: flatcomments.info,v 1.1.2.1 2007/11/26 01:56:16 heine Exp $
+name = Flat comments
+description = Makes all comments replies to the post regardless of the reply link used.
+dependencies = comment
+version = "$Name: DRUPAL-5--1-1 $"

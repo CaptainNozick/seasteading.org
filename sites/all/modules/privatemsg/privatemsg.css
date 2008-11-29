@@ -1,0 +1,39 @@
+/* $Id */
+
+.pm-view-table {
+  width: auto;
+}
+
+.pm-view-table .title-cell {
+  font-weight: bold;
+  text-align: right;
+}
+
+.pm-view-table .data-cell {
+  width: 100%;
+}
+
+.pm-block-link {
+  margin-left: 1em;
+}
+
+.pm-spacer {
+  margin-left: 1em;
+}
+
+#center form#privatemsg-view-form {
+  margin-bottom: 0em;
+}
+
+.pm-contacts-table {
+  width: auto;
+}
+
+.pm-view-table .form-item .description {
+  margin-bottom: 0em;
+}
+
+.pm-controls .form-submit{
+  margin: 0;
+  margin-top: 1em;
+}

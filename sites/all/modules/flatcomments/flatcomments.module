@@ -1,0 +1,53 @@
+<?php
+// $Id: flatcomments.module,v 1.5.4.2 2008/05/05 09:22:10 heine Exp $
+
+/**
+  * Make comments replies to the node, regardless of the reply link used.
+  *
+  * @author Heine Deelstra (http://heine.familiedeelstra.com).
+  */
+
+/**
+ * Modify the parent ID in comment_form and provide settings on node type configuration pages.
+ *
+ * Implementation of hook_form_alter().
+ */
+function flatcomments_form_alter($form_id, &$form) {
+  switch ($form_id) {
+
+    case 'comment_form':
+      // Check whether flatcomments are enabled for this node type and it's not an existing comment
+      // If so, make the node the parent by setting pid to NULL
+      $node = node_load($form['nid']['#value']);
+      if (variable_get("flatcomments_{$node->type}", FALSE) && !$form['cid']['#value']) {
+        $form['pid']['#value'] = NULL;
+      }
+      break;
+
+    case 'node_type_form':
+      if (isset($form['identity']['type']) && isset($form['workflow'])) {
+        $form['workflow']["flatcomments"] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Make all comments replies to the main post, regardless of the reply link used.'),
+          '#default_value' => variable_get("flatcomments_{$form['#node_type']->type}", FALSE),
+        );
+      }
+      break;
+  }
+}
+
+/**
+ * React to node type modifications.
+ *
+ * Implementation of hook_node_type().
+ */
+function flatcomments_node_type($op, $info) {
+  // Note: There's no need to react to updates, as the setting is on the configuration form and updated automatically.
+  switch ($op) {
+
+    case 'delete':
+      variable_del("flatcomments_{$info->type}");
+      break;
+
+  }
+}

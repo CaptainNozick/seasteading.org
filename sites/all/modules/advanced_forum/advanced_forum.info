@@ -1,0 +1,4 @@
+; $Id: advanced_forum.info,v 1.9 2008/06/10 03:21:58 michellec Exp $
+name = Advanced Forum
+description = Enables the look and feel of other popular forum software.
+dependencies = forum

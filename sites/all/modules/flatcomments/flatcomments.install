@@ -1,0 +1,15 @@
+<?php
+// $Id: flatcomments.install,v 1.1.4.2 2008/05/05 09:22:10 heine Exp $
+
+/**
+  * Remove flatcomments variables upon uninstallation.
+  *
+  * @author Heine Deelstra (http://heine.familiedeelstra.com).
+  */
+
+function flatcomments_uninstall() {
+  // Axe all flatcomments variables.
+  db_query("DELETE FROM {variable} WHERE name LIKE 'flatcomments_%'");
+  cache_clear_all('variables', 'cache');
+}
+

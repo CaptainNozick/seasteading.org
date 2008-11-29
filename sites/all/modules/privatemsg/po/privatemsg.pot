@@ -1,0 +1,413 @@
+# $Id: privatemsg.pot,v 1.1.4.8 2007/04/19 20:43:13 mindless Exp $
+#
+# LANGUAGE translation of Drupal (privatemsg.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  privatemsg.module,v 1.70.2.30 2007/04/19 20:40:20 mindless
+#  privatemsg.info,v 1.1 2007/01/27 00:56:10 mindless
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2007-04-19 13:41-0700\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: privatemsg.module:14
+msgid "To move the inbox link to another menu location, enable this menu item and set the location, then disable this menu item again. To change the text for the inbox link, visit <a href=\"!settings-url\">privatemsg settings</a>."
+msgstr ""
+
+#: privatemsg.module:19
+msgid "The private messaging module allows users to send messages to each other without having to share email addresses. An inbox link will appear in the navigation menu. The \"write to author\" links are included in posts, allowing users to write a private message instead of commenting openly.  Allowing users to communicate directly is an important  part of building the strength of the community."
+msgstr ""
+
+#: privatemsg.module:20
+msgid "Users can also select whether to receive email notices of new messages by editing their user profile.  The contacts list contains only users that you have previously messaged. To contact users not in your list, you need to know their local user name.  Administrators can set messaging options such as frequency of emails, message status display, and number of messages to display per page.   They can also configure 'Write to Author' options."
+msgstr ""
+
+#: privatemsg.module:21
+msgid "<p>You can</p>\n<ul>\n<li>administer privatemsg at <a href=\"%admin-settings-privatemsg\">administer &gt;&gt; settings &gt;&gt; private message</a>.</li>\n<li>view your private messages at <a href=\"%privatemsg\">view inbox</a>.</li>\n"
+msgstr ""
+
+#: privatemsg.module:26
+msgid "For more information please read the configuration and customization handbook <a href=\"!privatemsg\">Privatemsg page</a>."
+msgstr ""
+
+#: privatemsg.module:49
+msgid "Write to author"
+msgstr ""
+
+#: privatemsg.module:67 privatemsg.info:2
+msgid "Privatemsg"
+msgstr ""
+
+#: privatemsg.module:68
+msgid "Configure Privatemsg settings."
+msgstr ""
+
+#: privatemsg.module:72
+msgid "Private Messages"
+msgstr ""
+
+#: privatemsg.module:77;83;89;501;934
+msgid "Write a new message"
+msgstr ""
+
+#: privatemsg.module:95
+msgid "Privatemsg autocomplete"
+msgstr ""
+
+#: privatemsg.module:100
+msgid "Read message"
+msgstr ""
+
+#: privatemsg.module:105
+msgid "Create new folder"
+msgstr ""
+
+#: privatemsg.module:139;149;154;249;269;464
+msgid "Private messages"
+msgstr ""
+
+#: privatemsg.module:140
+msgid "Write private message"
+msgstr ""
+
+#: privatemsg.module:141
+msgid "Send private message to @name"
+msgstr ""
+
+#: privatemsg.module:150
+msgid "<a href=\"!login\">login</a> or <a href=\"!register\">register</a> to send private messages to this user"
+msgstr ""
+
+#: privatemsg.module:155
+msgid "<a href=\"!login\">login</a> to send private messages to this user"
+msgstr ""
+
+#: privatemsg.module:166
+msgid "Private message settings"
+msgstr ""
+
+#: privatemsg.module:172
+msgid "Allow private messages"
+msgstr ""
+
+#: privatemsg.module:174
+msgid "Check this box to allow users to send you private messages."
+msgstr ""
+
+#: privatemsg.module:178
+msgid "Aggressive notification of new messages"
+msgstr ""
+
+#: privatemsg.module:180
+msgid "Show status message on every page until new messages are read."
+msgstr ""
+
+#: privatemsg.module:184
+msgid "Receive e-mail for unread messages"
+msgstr ""
+
+#: privatemsg.module:185
+msgid "Never"
+msgstr ""
+
+#: privatemsg.module:185
+msgid "Daily"
+msgstr ""
+
+#: privatemsg.module:185
+msgid "Every message"
+msgstr ""
+
+#: privatemsg.module:187
+msgid "Select when to receive e-mail notification for unread messages."
+msgstr ""
+
+#: privatemsg.module:196;319
+msgid "Welcome"
+msgstr ""
+
+#: privatemsg.module:223
+msgid "Private message \"Write to author\" links"
+msgstr ""
+
+#: privatemsg.module:227
+msgid "Link on node"
+msgstr ""
+
+#: privatemsg.module:232
+msgid "Link on teaser"
+msgstr ""
+
+#: privatemsg.module:237
+msgid "Link on comments"
+msgstr ""
+
+#: privatemsg.module:265;473;488
+msgid "Inbox"
+msgstr ""
+
+#: privatemsg.module:266
+msgid "Write message"
+msgstr ""
+
+#: privatemsg.module:280
+msgid "Private messaging max rate"
+msgstr ""
+
+#: privatemsg.module:283
+msgid "Max submit rate for private messaging. To prevent abuse."
+msgstr ""
+
+#: privatemsg.module:287
+msgid "Sent message status"
+msgstr ""
+
+#: privatemsg.module:289
+msgid "Disabled"
+msgstr ""
+
+#: privatemsg.module:289
+msgid "Enabled"
+msgstr ""
+
+#: privatemsg.module:290
+msgid "If enabled users can see whether a message has been read or not."
+msgstr ""
+
+#: privatemsg.module:294
+msgid "Messages per page"
+msgstr ""
+
+#: privatemsg.module:297
+msgid "The maximum number of messages displayed per page; links to browse messages automatically appear."
+msgstr ""
+
+#: privatemsg.module:301
+msgid "Menu link"
+msgstr ""
+
+#: privatemsg.module:302
+msgid "My inbox"
+msgstr ""
+
+#: privatemsg.module:303
+msgid "Text shown in link to user's inbox."
+msgstr ""
+
+#: privatemsg.module:308
+msgid "\"Write to author\" links"
+msgstr ""
+
+#: privatemsg.module:309
+msgid "Edit <a href=\"!settings-url\">content types</a> to select where these links are displayed."
+msgstr ""
+
+#: privatemsg.module:314
+msgid "Welcome message for new users"
+msgstr ""
+
+#: privatemsg.module:318;626;831;984
+msgid "Subject"
+msgstr ""
+
+#: privatemsg.module:325;634
+msgid "Message"
+msgstr ""
+
+#: privatemsg.module:329
+msgid "Leave blank to disable this feature."
+msgstr ""
+
+#: privatemsg.module:335
+msgid "Sender"
+msgstr ""
+
+#: privatemsg.module:353
+msgid "The <em>Sender</em> does not exist."
+msgstr ""
+
+#: privatemsg.module:421
+msgid "New private messages at @site."
+msgstr ""
+
+#: privatemsg.module:480;493
+msgid "Sent messages"
+msgstr ""
+
+#: privatemsg.module:503;912
+msgid "Delete messages"
+msgstr ""
+
+#: privatemsg.module:510;956
+msgid "New folder"
+msgstr ""
+
+#: privatemsg.module:512;925
+msgid "Move to folder"
+msgstr ""
+
+#: privatemsg.module:514;529;539
+msgid "Attempted use of unauthorized folder"
+msgstr ""
+
+#: privatemsg.module:523;950
+msgid "Empty folder"
+msgstr ""
+
+#: privatemsg.module:536;943
+msgid "Delete folder"
+msgstr ""
+
+#: privatemsg.module:544
+msgid "Folder deleted."
+msgstr ""
+
+#: privatemsg.module:570;571
+msgid "Re:"
+msgstr ""
+
+#: privatemsg.module:595;830;983
+msgid "To"
+msgstr ""
+
+#: privatemsg.module:616
+msgid "Contacts"
+msgstr ""
+
+#: privatemsg.module:643;655
+msgid "Preview"
+msgstr ""
+
+#: privatemsg.module:647;695
+msgid "Send private message"
+msgstr ""
+
+#: privatemsg.module:672
+msgid "Preview message"
+msgstr ""
+
+#: privatemsg.module:682
+msgid "The <em>Recipient</em> does not exist."
+msgstr ""
+
+#: privatemsg.module:685
+msgid "@name does not accept private messages."
+msgstr ""
+
+#: privatemsg.module:689
+msgid "The supplied input format is invalid."
+msgstr ""
+
+#: privatemsg.module:701
+msgid "Message sent."
+msgstr ""
+
+#: privatemsg.module:736
+msgid "Message deleted."
+msgstr ""
+
+#: privatemsg.module:774
+msgid "Name"
+msgstr ""
+
+#: privatemsg.module:781
+msgid "Add folder"
+msgstr ""
+
+#: privatemsg.module:790
+msgid "A folder with this name already exists."
+msgstr ""
+
+#: privatemsg.module:797
+msgid "Folder created successfully."
+msgstr ""
+
+#: privatemsg.module:806
+msgid "Points for sending a private message"
+msgstr ""
+
+#: privatemsg.module:829;983
+msgid "From"
+msgstr ""
+
+#: privatemsg.module:832;982
+msgid "Date"
+msgstr ""
+
+#: privatemsg.module:839
+msgid "Reply to this message"
+msgstr ""
+
+#: privatemsg.module:842
+msgid "Sender does not accept replies"
+msgstr ""
+
+#: privatemsg.module:846
+msgid "Delete this message"
+msgstr ""
+
+#: privatemsg.module:846
+msgid "Are you sure to delete this message?"
+msgstr ""
+
+#: privatemsg.module:849
+msgid "List messages"
+msgstr ""
+
+#: privatemsg.module:855
+msgid "Error: you can't read this message."
+msgstr ""
+
+#: privatemsg.module:913
+msgid "Are you sure you want to delete these messages?"
+msgstr ""
+
+#: privatemsg.module:944
+msgid "Are you sure you want to delete this folder and all its messages?"
+msgstr ""
+
+#: privatemsg.module:951
+msgid "Are you sure you want to delete every message in this folder?"
+msgstr ""
+
+#: privatemsg.module:977
+msgid "No messages."
+msgstr ""
+
+#: privatemsg.module:514;529;539;0
+msgid "privatemsg"
+msgstr ""
+
+#: privatemsg.module:125
+msgid "You have one new <a href=\"!url\">private message</a>."
+msgid_plural "You have @count new <a href=\"!url\">private messages</a>."
+msgstr[0] ""
+msgstr[1] ""
+
+#: privatemsg.module:423
+msgid "Hi @name,\nThis is an automatic reminder from the site @site. You have received a new private message.\n\nTo read your message, follow this link:\n!link1\n\nIf you don't want to receive these emails again, change your preferences here:\n!link2"
+msgid_plural "Hi @name,\nThis is an automatic reminder from the site @site. You have @count unread private messages.\n\nTo read your messages, follow this link:\n!link1\n\nIf you don't want to receive these emails again, change your preferences here:\n!link2"
+msgstr[0] ""
+msgstr[1] ""
+
+#: privatemsg.module:362
+msgid "access private messages"
+msgstr ""
+
+#: privatemsg.info:3
+msgid "Allow private messages between users"
+msgstr ""
+
+#: privatemsg.info:4
+msgid "Mail"
+msgstr ""
+

@@ -1,0 +1,458 @@
+# $Id: ja.po,v 1.1.2.1 2007/04/18 18:09:56 imagine Exp $
+# -----------------------------------------------------------------------------
+# Japanese translation of Drupal (privatemsg.module)
+#
+# Copyright (c) 2006-2007  Drupal Japan  ( http://drupal.jp/ )  /
+#                          Drupal Nippon ( http://drupon.org/ ) /
+#                          Takafumi      ( jp.drupal@imagine **reverse order**)
+#
+# Generated from file:
+#  privatemsg.module,v 1.70.2.24 2007/03/08 00:33:14 mindless
+#  privatemsg.info,v 1.1 2007/01/27 00:56:10 mindless
+#
+# -----------------------------------------------------------------------------
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2007-04-15 18:28+0900\n"
+"Last-Translator: Takafumi <jp.drupal@imagine **reverse order**>\n"
+"Language-Team: Drupal Japan / Drupal Nippon\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: privatemsg.module:14
+msgid "To move the inbox link to another menu location, enable this menu item and set the location, then disable this menu item again. To change the text for the inbox link, visit <a href=\"!settings-url\">privatemsg settings</a>."
+msgstr "「受信箱」を別のメニューに移動したい場合、このメニューアイテムの配置と有効化を行い、その後、再びこのメニューアイテムを無効にしてください。 「受信箱」のテキスト変更は、 <a href=\"!settings-url\">プライベートメッセージの設定</a>ページで行えます。"
+
+#: privatemsg.module:19
+msgid "The private messaging module allows users to send messages to each other without having to share email addresses. An inbox link will appear in the navigation menu. The \"write to author\" links are included in posts, allowing users to write a private message instead of commenting openly.  Allowing users to communicate directly is an important  part of building the strength of the community."
+msgstr "プライベートメッセージモジュールは、メールを介することなくユーザ同士がメッセージを送信できるようにします。 ナビゲーションメニューには、「受信箱」リンクが表示されます。 投稿に表示される「投稿者へPM送信」リンクは、ユーザが表立ってコメントする代わりにプライベートメッセージを書けるようにします。 ユーザ同士が直接更新できることは、コミュニティの強さを構築する上で重要な役割を占めます。"
+
+#: privatemsg.module:20
+msgid "Users can also select whether to receive email notices of new messages by editing their user profile.  The contacts list contains only users that you have previously messaged. To contact users not in your list, you need to know their local user name.  Administrators can set messaging options such as frequency of emails, message status display, and number of messages to display per page.   They can also configure 'Write to Author' options."
+msgstr "ユーザは自身のユーザプロフィールを編集して、新着メッセージがあった際にメール通知を受け取るかどうかを選択できます。 コンタクトリストには、以前にメッセージを送信したことのあるユーザのみが含まれます。 リストにないユーザにメッセージを送信したい場合は、そのユーザ名がわかっている必要があります。 管理者は、メール送信の頻度やメッセージ状況の表示、ページあたりのメッセージ表示数などのオプションを設定できます。 また、コンテンツタイプの設定を通じて、「投稿者へPM送信」リンクの設定を行うこともできます。"
+
+# 削除し忘れ？ リンク先は無効
+#: privatemsg.module:21
+msgid ""
+"<p>You can</p>\n"
+"<ul>\n"
+"<li>administer privatemsg at <a href=\"%admin-settings-privatemsg\">administer &gt;&gt; settings &gt;&gt; private message</a>.</li>\n"
+"<li>view your private messages at <a href=\"%privatemsg\">view inbox</a>.</li>\n"
+msgstr ""
+"<p>プライベートメッセージに関して、以下のことが行えます：</p>\n"
+"<ul>\n"
+"<li>プライベートメッセージの管理<br /><a href=\"%admin-settings-privatemsg\">管理セクション &gt;&gt; サイトの環境設定 &gt;&gt; プライベートメッセージ</a></li>\n"
+"<li>プライベートメッセージの表示<br /><a href=\"%privatemsg\">受信箱</a></li>\n"
+
+#: privatemsg.module:26
+msgid "For more information please read the configuration and customization handbook <a href=\"!privatemsg\">Privatemsg page</a>."
+msgstr "より詳しい情報を得たい場合は、<a href=\"%ping\">Drupalハンドブックの Privatemsg のページ（英文）</a>を参照してください。"
+
+#: privatemsg.module:49
+msgid "Write to author"
+msgstr "投稿者へPM送信"
+
+#: privatemsg.module:67 privatemsg.info:0
+msgid "Privatemsg"
+msgstr "プライベートメッセージ"
+
+#: privatemsg.module:68
+msgid "Configure Privatemsg settings."
+msgstr "プライベートメッセージの設定を行います。"
+
+#: privatemsg.module:72
+msgid "Privatemsg menu"
+msgstr "プライベートメッセージメニュー"
+
+#: privatemsg.module:77;83;89;493;927
+msgid "Write a new message"
+msgstr "新しいメッセージを書く"
+
+#: privatemsg.module:95
+msgid "Privatemsg autocomplete"
+msgstr "プライベートメッセージ自動補完"
+
+#: privatemsg.module:100
+msgid "Read message"
+msgstr "メッセージ表示"
+
+#: privatemsg.module:105
+msgid "Create new folder"
+msgstr "新しいフォルダの作成"
+
+#: privatemsg.module:139;149;154;241;261;456
+msgid "Private messages"
+msgstr "プライベートメッセージ"
+
+#: privatemsg.module:140
+msgid "Write private message"
+msgstr "プライベートメッセージを書く"
+
+#: privatemsg.module:141
+msgid "Send private message to @name"
+msgstr "@nameさんにプライベートメッセージを送信します"
+
+#: privatemsg.module:150
+msgid "<a href=\"!login\">login</a> or <a href=\"!register\">register</a> to send private messages to this user"
+msgstr "このユーザにプライベートメッセージを送るには、<a href=\"!login\">ログイン</a>（<a href=\"!register\">ユーザ登録</a>）してください。"
+
+#: privatemsg.module:155
+msgid "<a href=\"!login\">login</a> to send private messages to this user"
+msgstr "このユーザにプライベートメッセージを送るには、<a href=\"!login\">ログイン</a>してください。"
+
+#: privatemsg.module:166
+msgid "Private message settings"
+msgstr "プライベートメッセージの設定"
+
+#: privatemsg.module:172
+msgid "Allow private messages"
+msgstr "プライベートメッセージを許可"
+
+#: privatemsg.module:174
+msgid "Check this box to allow users to send you private messages."
+msgstr "プライベートメッセージを利用するかどうかを指定してください。 ここにチェックを入れると、他のユーザがあなた宛にプライベートメッセージを送信できるようになります。"
+
+#: privatemsg.module:178
+msgid "Aggressive notification of new messages"
+msgstr "新着メッセージの積極的な通知"
+
+#: privatemsg.module:180
+msgid "Show status message on every page until new messages are read."
+msgstr "ここにチェックを入れると、未読の新着メッセージがある場合、すべてのページで状況メッセージを表示します。"
+
+#: privatemsg.module:184
+msgid "Receive e-mail for unread messages"
+msgstr "未読メッセージの通知をメールで受信"
+
+#: privatemsg.module:185
+#msgid "Never"
+#msgstr "しない"
+
+#: privatemsg.module:185
+msgid "Daily"
+msgstr "1日ごと"
+
+#: privatemsg.module:185
+msgid "Every message"
+msgstr "メッセージごと"
+
+#: privatemsg.module:187
+msgid "Select when to receive e-mail notification for unread messages."
+msgstr "未読メッセージがある場合にメールで通知するタイミングを指定してください。"
+
+#: privatemsg.module:196;311
+msgid "Welcome"
+msgstr "ようこそ"
+
+#: privatemsg.module:215
+msgid "Private message \"Write to author\" links"
+msgstr "プライベートメッセージの「投稿者へPM送信」リンク"
+
+#: privatemsg.module:219
+msgid "Link on node"
+msgstr "ノードでリンクを表示"
+
+#: privatemsg.module:224
+msgid "Link on teaser"
+msgstr "ティーザー（抜粋）でリンクを表示"
+
+#: privatemsg.module:229
+msgid "Link on comments"
+msgstr "コメントでリンクを表示"
+
+#: privatemsg.module:257;465;480
+msgid "Inbox"
+msgstr "受信箱"
+
+#: privatemsg.module:258
+msgid "Write message"
+msgstr "メッセージを書く"
+
+#: privatemsg.module:272
+msgid "Private messaging max rate"
+msgstr "プライベートメッセージの最低送信間隔"
+
+#: privatemsg.module:275
+msgid "Max submit rate for private messaging. To prevent abuse."
+msgstr "プライベートメッセージを送信する際の最低間隔を指定してください。 これは悪用の防止に有効です。"
+
+#: privatemsg.module:279
+msgid "Sent message status"
+msgstr "送信メッセージの状況"
+
+#: privatemsg.module:281
+#msgid "Disabled"
+#msgstr "無効"
+
+#: privatemsg.module:281
+#msgid "Enabled"
+#msgstr "有効"
+
+#: privatemsg.module:282
+msgid "If enabled users can see whether a message has been read or not."
+msgstr "送信したメッセージの状況を表示するかどうかを指定してください。 有効にすると、受信者にメッセージが読まれるまで「新着」マークが付きます。"
+
+#: privatemsg.module:286
+msgid "Messages per page"
+msgstr "1ページあたりのメッセージ数"
+
+#: privatemsg.module:289
+msgid "The maximum number of messages displayed per page; links to browse messages automatically appear."
+msgstr "1ページに表示するメッセージ数を指定してください。 指定した数値を超えるメッセージがある場合、メッセージをブラウズするためのリンクが自動的に表示されます。"
+
+#: privatemsg.module:293
+msgid "Menu link"
+msgstr "メニューリンク"
+
+#: privatemsg.module:294
+msgid "My inbox"
+msgstr "受信箱"
+
+#: privatemsg.module:295
+msgid "Text shown in link to user's inbox."
+msgstr "ユーザの受信箱リンクに表示するテキストを入力してください。"
+
+#: privatemsg.module:300
+msgid "\"Write to author\" links"
+msgstr "「投稿者へPM送信」リンク"
+
+#: privatemsg.module:301
+msgid "Edit <a href=\"!settings-url\">content types</a> to select where these links are displayed."
+msgstr "<a href=\"!settings-url\">コンテンツタイプ</a>を編集して、このリンクを表示する箇所を選んでください。"
+
+#: privatemsg.module:306
+msgid "Welcome message for new users"
+msgstr "新しいユーザへのウェルカムメッセージ"
+
+#: privatemsg.module:310;619;824;977
+#msgid "Subject"
+#msgstr "件名"
+
+#: privatemsg.module:317;627
+#msgid "Message"
+#msgstr "メッセージ"
+
+#: privatemsg.module:321
+msgid "Leave blank to disable this feature."
+msgstr "プライベートメッセージで送る、新しいユーザへの歓迎メッセージの内容を記入してください。 なお、この機能を無効にしたい場合は空欄にしてください。"
+
+#: privatemsg.module:327
+msgid "Sender"
+msgstr "送信者"
+
+#: privatemsg.module:345
+msgid "The <em>Sender</em> does not exist."
+msgstr "<b>送信者</b>が存在しません。"
+
+#: privatemsg.module:413
+msgid "New private messages at @site."
+msgstr "@site で新しいプライベートメッセージが届きました"
+
+#: privatemsg.module:472;485
+msgid "Sent messages"
+msgstr "送信メッセージ"
+
+#: privatemsg.module:495;905
+msgid "Delete messages"
+msgstr "メッセージの削除"
+
+#: privatemsg.module:502;949
+msgid "New folder"
+msgstr "新しいフォルダ"
+
+#: privatemsg.module:504;918
+msgid "Move to folder"
+msgstr "フォルダへ移動"
+
+#: privatemsg.module:506;521;531
+msgid "Attempted use of unauthorized folder"
+msgstr "権限のないフォルダの使用が試みられました。"
+
+#: privatemsg.module:515;943
+msgid "Empty folder"
+msgstr "フォルダを空にする"
+
+#: privatemsg.module:528;936
+msgid "Delete folder"
+msgstr "フォルダの削除"
+
+#: privatemsg.module:536
+msgid "Folder deleted."
+msgstr "フォルダが削除されました。"
+
+#: privatemsg.module:562;563
+msgid "Re:"
+msgstr "Re:"
+
+#: privatemsg.module:587;823;976
+#msgid "To"
+#msgstr "宛先"
+
+#: privatemsg.module:609
+msgid "Contacts"
+msgstr "コンタクト"
+
+#: privatemsg.module:636;648
+#msgid "Preview"
+#msgstr "プレビュー"
+
+#: privatemsg.module:640;688
+msgid "Send private message"
+msgstr "プライベートメッセージの送信"
+
+#: privatemsg.module:665
+msgid "Preview message"
+msgstr "メッセージのプレビュー"
+
+#: privatemsg.module:675
+msgid "The <em>Recipient</em> does not exist."
+msgstr "<b>受信者</b>が存在しません。"
+
+#: privatemsg.module:678
+msgid "@name does not accept private messages."
+msgstr "@nameさんはプライベートメッセージを受け取りません。"
+
+#: privatemsg.module:682
+msgid "The supplied input format is invalid."
+msgstr "使用された入力書式が無効です。"
+
+#: privatemsg.module:694
+msgid "Message sent."
+msgstr "メッセージが送信されました。"
+
+#: privatemsg.module:729
+msgid "Message deleted."
+msgstr "メッセージが削除されました。"
+
+#: privatemsg.module:767
+#msgid "Name"
+#msgstr "名前"
+
+#: privatemsg.module:774
+msgid "Add folder"
+msgstr "フォルダの追加"
+
+#: privatemsg.module:783
+msgid "A folder with this name already exists."
+msgstr "同名のフォルダがすでに存在しています。"
+
+#: privatemsg.module:790
+msgid "Folder created successfully."
+msgstr "フォルダは正常に作成されました。"
+
+#: privatemsg.module:799
+msgid "Points for sending a private message"
+msgstr "プライベートメッセージ送信のためのポイント"
+
+#: privatemsg.module:822;976
+#msgid "From"
+#msgstr "送信元"
+
+#: privatemsg.module:825;975
+#msgid "Date"
+#msgstr "日付"
+
+#: privatemsg.module:832
+msgid "Reply to this message"
+msgstr "このメッセージに返信"
+
+#: privatemsg.module:835
+msgid "Sender does not accept replies"
+msgstr "送信者は返信を受け取りません"
+
+#: privatemsg.module:839
+msgid "Delete this message"
+msgstr "このメッセージを削除"
+
+#: privatemsg.module:839
+msgid "Are you sure to delete this message?"
+msgstr "本当に、このメッセージを削除してもよろしいですか？"
+
+#: privatemsg.module:842
+msgid "List messages"
+msgstr "メッセージ一覧"
+
+#: privatemsg.module:848
+msgid "Error: you can't read this message"
+msgstr "エラー： このメッセージを読むことはできません"
+
+#: privatemsg.module:906
+msgid "Are you sure you want to delete these messages?"
+msgstr "本当に、これらのメッセージを削除してもよろしいですか？"
+
+#: privatemsg.module:937
+msgid "Are you sure you want to delete this folder and all its messages?"
+msgstr "本当に、このフォルダとすべてのメッセージを削除してもよろしいですか？"
+
+#: privatemsg.module:944
+msgid "Are you sure you want to delete every message in this folder?"
+msgstr "本当に、このフォルダのすべてのメッセージを削除してもよろしいですか？"
+
+#: privatemsg.module:970
+msgid "No messages."
+msgstr "メッセージはありません。"
+
+#: privatemsg.module:506;521;531;0 privatemsg.info:0
+msgid "privatemsg"
+msgstr "privatemsg"
+
+#: privatemsg.module:125
+msgid "You have one new <a href=\"%url\">private message</a>"
+msgid_plural "You have @count new <a href=\"%url\">private messages</a>"
+msgstr[0] "1通の新着<a href=\"%url\">プライベートメッセージ</a>があります"
+msgstr[1] "@count通の新着<a href=\"%url\">プライベートメッセージ</a>があります"
+
+#: privatemsg.module:415
+msgid ""
+"Hi @name,\n"
+"This is an automatic reminder from the site @site. You have received a new private message.\n"
+"\n"
+"To read your message, follow this link:\n"
+"!link1\n"
+"\n"
+"If you don't want to receive these emails again, change your preferences here:\n"
+"!link2"
+msgid_plural ""
+"Hi @name,\n"
+"This is an automatic reminder from the site @site. You have @count unread private messages.\n"
+"\n"
+"To read your messages, follow this link:\n"
+"!link1\n"
+"\n"
+"If you don't want to receive these emails again, change your preferences here:\n"
+"!link2"
+msgstr[0] ""
+"@nameさん\n"
+"これは @site からの自動通知です。\n"
+"あなたは新しいプライベートメッセージを受け取りました。\n"
+"\n"
+"メッセージを読むために、以下のリンクを訪れてください：\n"
+"!link1\n"
+"\n"
+"今後、このようなメールを受け取りたくない場合は、以下のリンクで設定を変更してください：\n"
+"!link2"
+msgstr[1] ""
+"@nameさん\n"
+"これは @site からの自動通知です。\n"
+"あなたには@count通の未読プライベートメッセージがあります。\n"
+"\n"
+"メッセージを読むために、以下のリンクを訪れてください：\n"
+"!link1\n"
+"\n"
+"今後、このようなメールを受け取りたくない場合は、以下のリンクで設定を変更してください：\n"
+"!link2"
+
+#: privatemsg.module:354
+msgid "access private messages"
+msgstr "プライベートメッセージへのアクセス"
+
+#: privatemsg.info:0
+msgid "Allow private messages between users"
+msgstr "ユーザ間でプライベートメッセージの送受信ができるようにします。"
+
+#: privatemsg.info:0
+msgid "Mail"
+msgstr "メール"
+

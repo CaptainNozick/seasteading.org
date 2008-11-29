@@ -1,0 +1,18 @@
+TODO:
+- messages should be nodes (not a good idea, perfomance wise)
+- get rid of javascript (now used very few, just in contact list)
+- sort messages per author/date/ecc
+- mix with mail (receive a mail in your mailbox, answer by email)
+- option to have every message sent in a central box even from other sites
+- help and info
+- some watchdogs if someone tries something stupid/bad (e.g. delete someone else's messages)
+
+doubts:
+- is author to index?
+- change links (write new, reply, delete, etc) to form buttons?
+- admin with message search?
+- admin to probe messages (?)
+
+other ideas:
+- integration with jabber(?)
+- filters

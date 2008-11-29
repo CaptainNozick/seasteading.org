@@ -1,0 +1,49 @@
+Readme
+------
+
+This is my first Drupal module: a very basic private messaging module.
+It allows your site's visitors to send private messages to each other.
+It does not use Jabber at all (but could be fun to use it).
+
+Features:
+ - read/write/delete messages
+ - reply to message with quoting
+ - new messages support (block and page)
+ - folders
+ - pruning
+ - contact list
+ - option to get mail if you have unread messages
+
+If you want to create a link to send a user a message, use:
+l(t("send private message"), "privatemsg/msgto/$user->uid"))
+
+Send comments to marco@porciletto.org.
+
+
+Requirements
+------------
+This module requires Drupal 4.7+.
+
+
+Installation
+------------
+
+1. Copy the files to the Drupal modules/privatemsg directory. Drupal should automatically detect it. Enable in administration/site configuration/modules.
+
+2. Check "access private messages" in "roles and permissions" in the administration; anonymous users should not have permission. You can also change something in "settings and filters".
+
+3. Enjoy!
+
+
+Author
+------
+
+Marco Molinari <marco@porciletto.org>
+
+
+Upgrading
+---------
+
+If you are upgrading from versions before 29-Apr-2005, you will need to run the
+appropriate SQL statements from the privatemsg.install file.  Open the file in a
+text editor to determine which statements you will need to run.

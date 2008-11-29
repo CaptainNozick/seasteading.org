@@ -1,0 +1,274 @@
+<?php
+// $Id: privatemsg.install,v 1.5.2.5.2.3 2008/07/27 00:11:36 litwol Exp $
+
+function privatemsg_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {privatemsg} (
+          id            int unsigned NOT NULL primary key,
+          author        int unsigned NOT NULL,
+          recipient     int unsigned NOT NULL,
+          subject       varchar(255) NOT NULL,
+          message       text NOT NULL,
+          timestamp     int unsigned NOT NULL,
+          newmsg        tinyint unsigned NOT NULL,
+          hostname      varchar(255) NOT NULL,
+          folder        int unsigned NOT NULL DEFAULT 0,
+          author_del    tinyint unsigned NOT NULL DEFAULT 0,
+          recipient_del tinyint unsigned NOT NULL DEFAULT 0,
+          format        int NOT NULL DEFAULT 0,
+          thread        int NOT NULL DEFAULT 0,
+          type          varchar(255) NOT NULL,
+          variables     longtext,
+          key (recipient),
+          key (folder),
+          key(type),
+          key(author)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      db_query("CREATE TABLE {privatemsg_folder} (
+          fid           int unsigned NOT NULL primary key,
+          uid           int unsigned NOT NULL,
+          name          varchar(255) NOT NULL
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      db_query("CREATE TABLE {privatemsg_archive} (
+          id            int unsigned NOT NULL primary key,
+          author        int unsigned NOT NULL,
+          recipient     int unsigned NOT NULL,
+          subject       VARCHAR(64) NOT NULL,
+          message       text NOT NULL,
+          timestamp     int unsigned NOT NULL,
+          hostname      varchar(255) NOT NULL,
+          folder        int unsigned NOT NULL,
+          format        int NOT NULL DEFAULT 0,
+          thread        int NOT NULL DEFAULT 0,
+          key (recipient)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      db_query('CREATE TABLE {privatemsg_block_user} (
+          author int unsigned NOT NULL,
+          recipient int unsigned NOT NULL,
+          PRIMARY KEY (author, recipient)
+        )  /*!40100 DEFAULT CHARACTER SET utf8 */');
+      break;
+      /*
+                notification_subject varchar(255) NOT NULL,
+          notification_text_body varchar(255) NOT NULL,
+          notification_html_body varchar(255) NOT NULL,
+          notification_group_text_body varchar(255) NOT NULL,
+          notification_group_html_body varchar(255) NOT NULL,
+*/
+    case 'pgsql':
+      db_query("CREATE TABLE {privatemsg} (
+          id            integer NOT NULL,
+          author        integer NOT NULL,
+          recipient     integer NOT NULL,
+          subject       varchar(255) NOT NULL,
+          message       text NOT NULL,
+          timestamp     integer NOT NULL,
+          newmsg        smallint NOT NULL,
+          hostname      varchar(255) NOT NULL,
+          format        smallint NOT NULL DEFAULT 0,
+          folder        integer NOT NULL DEFAULT 0,
+          author_del    smallint NOT NULL DEFAULT 0,
+          recipient_del smallint NOT NULL DEFAULT 0,
+          thread        int NOT NULL DEFAULT 0,
+          type          varchar(255) NOT NULL,
+          variables     text,
+          PRIMARY KEY (id)
+        )");
+      db_query("CREATE INDEX {privatemsg_folder_index} ON {privatemsg}(folder)");
+      db_query("CREATE INDEX {privatemsg_folder_recipient} ON {privatemsg}(recipient)");
+      db_query("CREATE INDEX {privatemsg_folder_type} ON {privatemsg}(type)");
+      db_query("CREATE INDEX {privatemsg_folder_author} ON {privatemsg}(author)");
+      db_query("CREATE TABLE {privatemsg_folder} (
+          fid           integer NOT NULL,
+          uid           integer NOT NULL,
+          name          varchar(255) not null,
+          PRIMARY KEY (fid)
+        )");
+      db_query("CREATE TABLE {privatemsg_archive} (
+          id            integer NOT NULL,
+          author        integer NOT NULL,
+          recipient     integer NOT NULL,
+          subject       varchar(64) NOT NULL,
+          message       text NOT NULL,
+          timestamp     integer NOT NULL,
+          hostname      varchar(255) NOT NULL,
+          format        smallint NOT NULL DEFAULT 0,
+          folder        integer NOT NULL,
+          thread        int NOT NULL DEFAULT 0,
+          PRIMARY KEY (id)
+        )");
+      db_query("CREATE INDEX {privatemsg_archive_recipient} ON {privatemsg_archive}(recipient)");
+      db_query('CREATE SEQUENCE {privatemsg}_id_seq INCREMENT 1 START 1');
+      db_query('CREATE SEQUENCE {privatemsg_folder}_fid_seq INCREMENT 1 START 1');
+      db_query('CREATE TABLE {privatemsg_block_user} (
+          author int unsigned NOT NULL,
+          recipient int unsigned NOT NULL,
+          PRIMARY KEY (author, recipient)
+        )');
+      db_query("create or replace function unix_timestamp(timestamp with time zone)
+        returns int as '
+        declare
+           date alias for \$1;
+           timezero timestamp;
+           offset interval;
+        begin
+           timezero := timestamp ''1970-1-1 00:00'' at time zone ''utc'';
+           offset := date-timezero;
+
+           return (extract(''days'' from offset)*86400+
+                   extract(''hours'' from offset)*3600+
+                   extract(''minutes'' from offset)*60+
+                   extract(''seconds'' from offset))::int;
+        end;
+        ' language 'plpgsql'");
+      db_query("create or replace function unix_timestamp(timestamp without time zone)
+        returns int as '
+        declare
+           date alias for \$1;
+           timezero timestamp;
+           offset interval;
+        begin
+           timezero := timestamp ''1970-1-1 00:00'' at time zone ''utc'';
+           offset := date-timezero;
+
+           return (extract(''days'' from offset)*86400+
+                   extract(''hours'' from offset)*3600+
+                   extract(''minutes'' from offset)*60+
+                   extract(''seconds'' from offset))::int;
+        end;
+        ' language 'plpgsql'");
+      break;
+  }
+  // Sent messages folder
+  db_query("INSERT INTO {privatemsg_folder} (fid, uid, name) VALUES (1, 0, 'Sent')");
+  do {
+    $i = db_next_id('{privatemsg_folder}_fid');
+  } while ($i < 1);  // In case this api ever changes to start at zero..
+}
+
+function privatemsg_uninstall() {
+  db_query("DROP TABLE {privatemsg}");
+  db_query("DROP TABLE {privatemsg_folder}");
+  db_query("DROP TABLE {privatemsg_archive}");
+  if (db_table_exists('privatemsg_block_user')) {
+    db_query("DROP TABLE {privatemsg_block_user}");
+  }
+
+  // The following two tables are now a part of the pm_subscriptions module,
+  // but have been retained to handle updated installs that do not use the
+  // pm_subscriptions module.
+  if (db_table_exists('privatemsg_mails')) {
+    db_query("DROP TABLE {privatemsg_mails}");
+  }
+  if (db_table_exists('privatemsg_mail_edit')) {
+    db_query("DROP TABLE {privatemsg_mail_edit}");
+  }
+
+  db_query("DELETE FROM {variable} WHERE name LIKE 'privatemsg_%'");
+  cache_clear_all('variables', 'cache');
+}
+
+function privatemsg_update_1() {
+  return _system_update_utf8(array('privatemsg', 'privatemsg_archive', 'privatemsg_folder'));
+}
+
+function privatemsg_update_2() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $sql = 'ALTER TABLE {%s} MODIFY %s int unsigned NOT NULL';
+      $seq = "INSERT INTO {sequences} (name, id) VALUES ('%s', %d)";
+      break;
+    case 'pgsql':
+      $sql = 'ALTER TABLE {%s} ALTER COLUMN %s SET DEFAULT NULL';
+      $seq = 'CREATE SEQUENCE %s_seq INCREMENT 1 START %d';
+      break;
+    default:
+      return $ret;
+  }
+  foreach (array('privatemsg' => 'id', 'privatemsg_folder' => 'fid') as $table => $id) {
+    $ret[] = update_sql(sprintf($sql, $table, $id));
+    $max = db_result(db_query('SELECT max('. $id .') FROM {'. $table .'}'));
+    if ($table == 'privatemsg') {
+      $max = max($max, db_result(db_query('SELECT max(id) FROM {privatemsg_archive}')));
+    }
+    $ret[] = update_sql(sprintf($seq, '{'. $table .'}_'. $id, $max));
+  }
+  $ret[] = update_sql(sprintf($sql, 'privatemsg_archive', 'id'));
+  return $ret;
+}
+
+function privatemsg_update_3() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql('ALTER TABLE {privatemsg} ADD thread int NOT NULL');
+      $ret[] = update_sql('ALTER TABLE {privatemsg_archive} ADD thread int NOT NULL');
+      break;
+    case 'pgsql':
+      foreach (array('privatemsg', 'privatemsg_archive') as $table) {
+        $ret[] = update_sql("ALTER TABLE {$table} ADD thread int");
+        $ret[] = update_sql("ALTER TABLE {$table} ALTER COLUMN thread SET DEFAULT 0");
+        $ret[] = update_sql("UPDATE {$table} SET thread = 0");
+        $ret[] = update_sql("ALTER TABLE {$table} ALTER COLUMN thread SET NOT NULL");
+      }
+      break;
+  }
+  return $ret;
+}
+
+function privatemsg_update_4() {
+  $ret = array();
+
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {privatemsg} ADD type varchar(255) NOT NULL default '', ADD KEY (type)");
+      $ret[] = update_sql("ALTER TABLE {privatemsg} CHANGE subject subject varchar(255) NOT NULL default ''");
+      if (!db_table_exists('privatemsg_block_user')) {
+        $ret[] = update_sql('CREATE TABLE {privatemsg_block_user} (
+            author int unsigned NOT NULL,
+            recipient int unsigned NOT NULL,
+            PRIMARY KEY (author, recipient)
+          )  /*!40100 DEFAULT CHARACTER SET utf8 */');
+      }
+      break;
+    case 'pgsql':
+      db_add_column($ret, 'privatemsg', 'type', 'varchar(255)', array('not null' => TRUE, 'default' => "''"));
+      $ret[] = update_sql("CREATE INDEX {privatemsg_folder_type} ON {privatemsg}(type)");
+      db_change_column($ret, 'privatemsg', 'subject', 'subject', 'varchar(255)', array('not null' => TRUE, 'default' => "''"));
+      if (!db_table_exists('privatemsg_block_user')) {
+        $ret[] = update_sql('CREATE TABLE {privatemsg_block_user} (
+            author int unsigned NOT NULL,
+            recipient int unsigned NOT NULL,
+            PRIMARY KEY (author, recipient)
+          )');
+      }
+      break;
+  }
+
+  return $ret;
+}
+
+/**
+ * Add variables column for use by the subscriptions module.
+ */
+function privatemsg_update_5() {
+  $ret = array();
+
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {privatemsg} ADD variables longtext");
+      break;
+    case 'pgsql':
+      db_add_column($ret, 'privatemsg', 'variables', 'text');
+      break;
+  }
+
+  return $ret;
+}

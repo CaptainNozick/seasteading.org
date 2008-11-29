@@ -1,0 +1,4 @@
+; $Id: privatemsg.info,v 1.1.2.3 2008/06/13 05:11:48 litwol Exp $
+name = Private messages
+description = Allow private messages between users.
+package = Mail

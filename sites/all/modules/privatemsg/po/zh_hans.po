@@ -1,0 +1,412 @@
+# LANGUAGE translation of Drupal (privatemsg.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: privatemsg.module,v 1.46.2.2 2005/05/02 17:27:16 tdobes
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Drupal汉化 privatemsg-5.x-1.0\n"
+"POT-Creation-Date: 2007-02-12 19:32+0100\n"
+"PO-Revision-Date: 2007-02-13 14:30-0500\n"
+"Last-Translator: 大米 <verydummy@gmail.com>\n"
+"Language-Team: DrupalChina.org <drupalchina.org@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=1;\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: CHINA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: privatemsg.module:13
+msgid "The private messaging module allows users to send messages to each other without having to share email addresses. An inbox link will appear in the navigation menu. The \"write to author\" links are included in posts, allowing users to write a private message instead of commenting openly.  Allowing users to communicate directly is an important  part of building the strength of the community."
+msgstr "允许用户直接相互联络的功能是建造一个强大的社区不可缺少的重要功能。私人消息(private messagin)模块允许用户无需email地址而可以相互发送站内信息。在导航菜单上将会显示收件箱菜单。在每篇文章下还将有一个“发消息给作者”的链接，允许用户私下交换观点与信息。"
+
+#: privatemsg.module:14
+msgid "Users can also select whether to receive email notices of new messages by editing their user profile.  The contacts list contains only users that you have previously messaged. To contact users not in your list, you need to know their local user name.  Administrators can set messaging options such as frequency of emails, message status display, and number of messages to display per page.   They can also configure 'Write to Author' options."
+msgstr "用户可以在个人信息页设置是否接收email通知。这个联络名单只列出你发送过信息的用户。要联络其他用户，你需要首先知道他们的用户名。管理员可以对email时间间隔、信息状态显示以及每页显示消息数进行设置，此外管理员还可以设置是否显示“发消息给作者”这一选项。"
+
+#: privatemsg.module:15
+msgid ""
+"<p>You can</p>\n"
+"<ul>\n"
+"<li>administer privatemsg at <a href=\"%admin-settings-privatemsg\">administer &gt;&gt; settings &gt;&gt; private message</a>.</li>\n"
+"<li>view your private messages at <a href=\"%privatemsg\">view inbox</a>.</li>\n"
+msgstr ""
+"<p>您可以</p>\n"
+"<ul>\n"
+"<li>在这里管理私人消息： <a href=\"%admin-settings-privatemsg\">管理 &gt;&gt; 设置 &gt;&gt; 私人消息</a>.</li>\n"
+"<li>在 <a href=\"%privatemsg\">收件箱</a>察看私人信息。</li>\n"
+
+#: privatemsg.module:20
+msgid "For more information please read the configuration and customization handbook <a href=\"!privatemsg\">Privatemsg page</a>."
+msgstr "更多帮助信息请阅读设置与定制手册中的<a href=\"%!privatemsg\">私人消息模块介绍</a>。"
+
+#: privatemsg.module:39
+msgid "Write to author"
+msgstr "发消息给作者"
+
+#: privatemsg.module:56
+msgid "Privatemsg"
+msgstr "私人消息"
+
+#: privatemsg.module:57
+msgid "Configure Privatemsg settings."
+msgstr "私人消息设置。"
+
+#: privatemsg.module:61
+#: ;66;71;363;746
+msgid "Write a new message"
+msgstr "撰写新消息"
+
+#: privatemsg.module:76
+msgid "Privatemsg autocomplete"
+msgstr "私人消息自动补全"
+
+#: privatemsg.module:80
+msgid "Read message"
+msgstr "阅读消息"
+
+#: privatemsg.module:85
+msgid "Create new folder"
+msgstr "创建新的文件夹"
+
+#: privatemsg.module:98
+msgid "My inbox"
+msgstr "我的收件箱"
+
+#: privatemsg.module:120
+#: ;129;134;326
+msgid "Private messages"
+msgstr "私人消息"
+
+#: privatemsg.module:121
+msgid "send private message"
+msgstr "发送私人消息"
+
+#: privatemsg.module:130
+msgid "<a href=\"!login\">login</a> or <a href=\"!register\">register</a> to send private messages to this user"
+msgstr "要发消息给该用户请先<a href=\"%!login\">登录</a> 或 <a href=\"!register\">注册</a> "
+
+#: privatemsg.module:135
+msgid "<a href=\"!login\">login</a> to send private messages to this user"
+msgstr "<a href=\"!login\">登录</a> 后发送私人消息给该用户。"
+
+#: privatemsg.module:146
+msgid "Private message settings"
+msgstr "私人消息设置"
+
+#: privatemsg.module:152
+msgid "Allow private messages"
+msgstr "允许私人消息"
+
+#: privatemsg.module:154
+msgid "Check this box to allow users to send you private messages."
+msgstr "选中此项将允许其他用户给您发送私人消息。"
+
+#: privatemsg.module:158
+msgid "Aggressive notification of new messages"
+msgstr "持续提示新消息"
+
+#: privatemsg.module:160
+msgid "Show status message on every page until new messages are read."
+msgstr "在每个页面都显示状态信息，直到没有未读的新消息。"
+
+#: privatemsg.module:164
+msgid "Receive e-mail for unread messages"
+msgstr "通过email接收每日未读的消息"
+
+#: privatemsg.module:165
+msgid "Never"
+msgstr "永不"
+
+#: privatemsg.module:165
+msgid "Daily"
+msgstr "每天"
+
+#: privatemsg.module:165
+msgid "Every message"
+msgstr "每条消息"
+
+#: privatemsg.module:167
+msgid "Select when to receive e-mail notification for unread messages."
+msgstr "选择何时接收新消息的email通知。"
+
+#: privatemsg.module:181
+msgid "Private messaging max rate"
+msgstr "消息发送最大频率"
+
+#: privatemsg.module:184
+msgid "Max submit rate for private messaging. To prevent abuse."
+msgstr "消息发送的最大频率。避免该功能被滥用。"
+
+#: privatemsg.module:188
+msgid "Sent message status"
+msgstr "已发送消息的状态"
+
+#: privatemsg.module:190
+msgid "Disabled"
+msgstr "禁止"
+
+#: privatemsg.module:190
+msgid "Enabled"
+msgstr "允许"
+
+#: privatemsg.module:191
+msgid "If enabled users can see whether a message has been read or not."
+msgstr "如果允许该功能，用户能看到消息是否被阅读"
+
+#: privatemsg.module:195
+msgid "Messages per page"
+msgstr "每页消息数"
+
+#: privatemsg.module:198
+msgid "The maximum number of messages displayed per page; links to browse messages automatically appear."
+msgstr "每页显示的最大消息数。"
+
+#: privatemsg.module:203
+msgid "\"Write to author\" links"
+msgstr "\"发消息给作者\" 链接"
+
+#: privatemsg.module:207
+msgid "Display link with posts"
+msgstr "在文章后显示链接"
+
+#: privatemsg.module:210
+msgid "Provide a link to send private messages to users with posts they start."
+msgstr "在用户文章后面提供一个发送消息给该作者的链接。"
+
+#: privatemsg.module:214
+msgid "Display link with comments"
+msgstr "在评论后显示链接"
+
+#: privatemsg.module:217
+msgid "Provide a link to send private messages to users with their comments."
+msgstr "在用户评论后提供一个发送消息给作者的链接"
+
+#: privatemsg.module:286
+msgid "New private messages at @site."
+msgstr "有来自 @site 的新的私人消息。"
+
+#: privatemsg.module:335
+#: ;350
+msgid "Inbox"
+msgstr "收件箱"
+
+#: privatemsg.module:342
+#: ;355
+msgid "Sent messages"
+msgstr "已发出消息"
+
+#: privatemsg.module:365
+#: ;724
+msgid "Delete messages"
+msgstr "删除消息"
+
+#: privatemsg.module:372
+#: ;768
+msgid "New folder"
+msgstr "新文件夹"
+
+#: privatemsg.module:374
+#: ;737
+msgid "Move to folder"
+msgstr "移动到文件夹"
+
+#: privatemsg.module:376
+#: ;391;401
+msgid "Attempted use of unauthorized folder"
+msgstr "试图使用没有权限的文件夹"
+
+#: privatemsg.module:385
+#: ;762
+msgid "Empty folder"
+msgstr "清空文件夹"
+
+#: privatemsg.module:398
+#: ;755
+msgid "Delete folder"
+msgstr "删除文件夹"
+
+#: privatemsg.module:406
+msgid "Folder deleted."
+msgstr "文件夹已删除。"
+
+#: privatemsg.module:432
+#: ;433
+msgid "Re:"
+msgstr "回复："
+
+#: privatemsg.module:446
+#: ;635;795
+msgid "To"
+msgstr "收件人"
+
+#: privatemsg.module:454
+msgid "Contacts"
+msgstr "联络名单"
+
+#: privatemsg.module:477
+#: ;636;796
+msgid "Subject"
+msgstr "标题"
+
+#: privatemsg.module:485
+msgid "Message"
+msgstr "消息"
+
+#: privatemsg.module:494
+msgid "Send private message"
+msgstr "发送私人消息"
+
+#: privatemsg.module:504
+msgid "The <em>Recipient</em> does not exist."
+msgstr "<em>收件人</em>不存在。"
+
+#: privatemsg.module:507
+msgid "@name does not accept private messages."
+msgstr "@name 不接受私人消息"
+
+#: privatemsg.module:511
+msgid "The supplied input format is invalid."
+msgstr "使用的输入格式无效。"
+
+#: privatemsg.module:520
+msgid "Message sent."
+msgstr "消息已发送。"
+
+#: privatemsg.module:552
+msgid "Message deleted."
+msgstr "消息已删除。"
+
+#: privatemsg.module:590
+msgid "Name"
+msgstr "名称"
+
+#: privatemsg.module:597
+msgid "Add folder"
+msgstr "添加文件夹"
+
+#: privatemsg.module:606
+msgid "A folder with this name already exists."
+msgstr "已存在相同名字的文件夹。"
+
+#: privatemsg.module:613
+msgid "Folder created successfully."
+msgstr "创建文件夹成功。"
+
+#: privatemsg.module:634
+#: ;795
+msgid "From"
+msgstr "发件人"
+
+#: privatemsg.module:637
+#: ;794
+msgid "Date"
+msgstr "日期"
+
+#: privatemsg.module:644
+msgid "Reply to this message"
+msgstr "回复该消息"
+
+#: privatemsg.module:647
+msgid "Sender does not accept replies"
+msgstr "发信人不接受私人消息"
+
+#: privatemsg.module:651
+msgid "Delete this message"
+msgstr "删除该消息"
+
+#: privatemsg.module:651
+msgid "Are you sure to delete this message?"
+msgstr "你真的要删除该消息吗？"
+
+#: privatemsg.module:654
+msgid "List messages"
+msgstr "消息列表"
+
+#: privatemsg.module:658
+msgid "Error: you can't read this message."
+msgstr "错误：不能阅读该消息"
+
+#: privatemsg.module:725
+msgid "Are you sure you want to delete these messages?"
+msgstr "你确认删除该消息吗？"
+
+#: privatemsg.module:756
+msgid "Are you sure you want to delete this folder and all its messages?"
+msgstr "你确认删除该文件夹及其所有消息吗？"
+
+#: privatemsg.module:763
+msgid "Are you sure you want to delete every message in this folder?"
+msgstr "你确认删除该文件夹的所有消息吗？"
+
+#: privatemsg.module:789
+msgid "No messages."
+msgstr "无消息。"
+
+#: privatemsg.module:376
+#: ;391;401;0
+msgid "privatemsg"
+msgstr "私人消息"
+
+#: privatemsg.module:106
+msgid "You have one new <a href=\"!url\">private message</a>."
+msgid_plural "You have @count new <a href=\"!url\">private messages</a>."
+msgstr[0] "你有 1 条 <a href=\"!url\">新消息</a>"
+msgstr[1] "你有 @count 条 <a href=\"!url\">新消息</a>"
+
+#: privatemsg.module:288
+msgid ""
+"Hi @name,\n"
+"This is an automatic reminder from the site @site. You have received a new private message.\n"
+"\n"
+"To read your message, follow this link:\n"
+"!link1\n"
+"\n"
+"If you don't want to receive these emails again, change your preferences here:\n"
+"!link2"
+msgid_plural ""
+"Hi @name,\n"
+"This is an automatic reminder from the site @site. You have @count unread private messages.\n"
+"\n"
+"To read your messages, follow this link:\n"
+"!link1\n"
+"\n"
+"If you don't want to receive these emails again, change your preferences here:\n"
+"!link2"
+msgstr[0] ""
+"@name 您好，\n"
+"这是一个来自 @site 的自动提醒邮件。您有 1 条新消息。\n"
+"\n"
+"请通过下面链接阅读这些消息：\n"
+"!link1\n"
+"\n"
+"如果您不想再接到这样的自动提醒邮件，请点击下面链接：\n"
+"!link2"
+msgstr[1] ""
+"@name 您好，\n"
+"这是一个来自 @site 的自动提醒邮件。您有 @count 条新消息。\n"
+"\n"
+"请通过下面链接阅读这些消息：\n"
+"!link1\n"
+"\n"
+"如果您不想再接到这样的自动提醒邮件，请点击下面链接：\n"
+"!link2"
+
+#: privatemsg.module:227
+msgid "access private messages"
+msgstr "访问私人消息"
+
+#~ msgid "Allows private messages between users."
+#~ msgstr "允许用户间发送私人消息"
+#~ msgid "Home"
+#~ msgstr "消息首页"
+#~ msgid "private messages"
+#~ msgstr "私人消息"
+#~ msgid "The <em>Recipient</em> field is required."
+#~ msgstr "您必须填写<em>收件人</em> 。"
+#~ msgid "The <em>Subject</em> field is required."
+#~ msgstr "您必须填写<em>标题</em>。"
+#~ msgid "The <em>Message</em> field is required."
+#~ msgstr "<em>消息</em>不能为空。"
+

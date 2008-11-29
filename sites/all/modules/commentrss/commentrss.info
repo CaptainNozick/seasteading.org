@@ -1,0 +1,4 @@
+; $Id: commentrss.info,v 1.1.2.2 2007/07/14 22:06:54 tangent Exp $
+name = Comment RSS
+description = Provides RSS feeds for comments
+dependencies = comment

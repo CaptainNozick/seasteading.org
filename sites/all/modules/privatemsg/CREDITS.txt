@@ -1,0 +1,6 @@
+This module was made by Marco Molinari <marco@porciletto.org>
+and is currently maintained by Tom Dobes <tomdobes@purdue.edu>.
+Some maintenance also done by Alan Harder <alan.harder@sun.com>.
+Almost whole concept from similar systems (for example phpbb).
+Documentation skeleton and some snippets from chatbox module by Steven Wittens. 
+Feel free to contact me about it!
