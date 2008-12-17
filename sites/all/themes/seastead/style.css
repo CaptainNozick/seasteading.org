@@ -1545,3 +1545,20 @@ ul.secondary
 	clear: both; 
 	visibility: hidden;
 }
+
+
+/****
+Forum list view
+****/
+.view-label-node-comment-statistics-last-comment-name {
+  display: inline;
+}
+.view-data-node-comment-statistics-last-comment-name {
+  margin-left: 5px;
+  display: inline;
+}
+.view-data-node-comment-statistics-last-comment-timestamp {
+  margin-left: 5px;
+  display: inline;
+}
+
