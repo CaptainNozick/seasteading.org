@@ -1,0 +1,24 @@
+// $Id: USERS.txt,v 1.1.2.1.2.3 2007/09/21 12:00:44 arto Exp $
+
+This lists some of the users of Boost, describing the setup of the website
+in question as well as providing rationale on how Boost benefits the site.
+It is hoped that the cases described here may serve as useful guides for new
+Boost users evaluating how to best implement static caching on their site.
+
+If you would like to add your website to this list, please contact the
+author at http://drupal.org/user/26089/contact, describing your site and
+setup. Try to keep the description to a paragraph or two, and don't forget
+to include your name and the URL to your website. Note that additions to
+this list are posted at the author's sole discretion, and submissions may be
+abridged or edited for grammar.
+
+  Arto Bendiken <http://bendiken.net/>
+    Personal website of the author. Boost is used to cache virtually every
+    page on the site, quite significantly improving response times despite
+    the sometimes sluggish shared hosting the site runs on. An additional
+    benefit provided by Boost is that when the backend MySQL database server
+    goes down, as happens now and then, the site still keeps on trucking
+    instead of just showing the Drupal database error page (dynamic features
+    such as posting comments obviously don't work until MySQL access is
+    restored, however).
+

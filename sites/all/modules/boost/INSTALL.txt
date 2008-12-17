@@ -1,0 +1,46 @@
+// $Id: INSTALL.txt,v 1.1.2.1.2.3 2007/09/21 12:00:44 arto Exp $
+
+REQUIREMENTS
+------------
+This version of Boost is designed for Drupal 4.7 running on a Unix platform.
+Drupal's clean URLs MUST be enabled and working properly.
+
+The `path' and `pathauto' modules are recommended.
+
+In order for the static files to be correctly expired, the Drupal cron job
+must be correctly setup to execute more often than, or as often as, the
+cache lifetime interval you specify.
+
+Since the static page caching is implemented with mod_rewrite directives,
+Apache version 1.3 or 2.x with mod_rewrite enabled is required (if Drupal's
+clean URLs work for you, you're fine; if not, get them working first).
+Other web servers, such as Lighttpd, are NOT supported at present.
+
+The `drush' module is required for (optional) command line usage.
+
+INSTALLATION
+------------
+1. Go to Administer >> Site configuration >> Clean URLs and ensure that
+   Drupal's clean URLs are enabled and working properly on your site.
+
+2. Copy all the module files into a subdirectory called modules/boost/
+   under your Drupal installation directory.
+
+3. Go to Administer >> Site building >> Modules and enable the Boost module.
+
+4. Go to Administer >> Site configuration >> Performance >> Boost to review
+   and change the module's configuration options to your liking.
+
+5. Go to Administer >> Site configuration >> Performance, specify the cache
+   directory (must be writable by the web server) and enable static caching.
+
+6. Log out from Drupal (or use another browser) and browse around your site
+   as the anonymous user. Ensure that static files are indeed being
+   generated into the Boost cache directory you specified above.
+
+7. IMPORTANT: replace your .htaccess file in the Drupal installation
+   directory with the file from modules/boost/htaccess/boosted.txt,
+   customizing the mod_rewrite rules to your particular setup if needed.
+   (If you fail to do this, static page caching will NOT work!)
+
+8. (See README.txt for information on submitting bug reports.)

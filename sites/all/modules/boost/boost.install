@@ -1,0 +1,27 @@
+<?php
+// $Id: boost.install,v 1.2.2.1.2.3 2007/09/21 12:00:44 arto Exp $
+
+/**
+ * @file
+ * Handles Boost module installation and upgrade tasks.
+ */
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Implementation of hook_install(). Installs the current version of the database schema.
+ */
+function boost_install() {
+  // Ensure that the module is loaded early in the bootstrap:
+  db_query("UPDATE {system} SET weight = -90 WHERE name = 'boost'");
+
+  // Forcibly disable Drupal's built-in SQL caching to prevent any conflicts of interest:
+  if (variable_get('cache', CACHE_DISABLED) != CACHE_DISABLED) {
+    variable_set('cache', CACHE_DISABLED);
+    drupal_set_message(t('Drupal standard page caching disabled by Boost.'));
+  }
+
+  drupal_set_message(t('Boost module successfully installed.'));
+}
+
+//////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,33 @@
+// $Id: TODO.txt,v 1.1.2.1.2.3 2007/09/21 12:00:44 arto Exp $
+
+This is a listing of known bugs, features that mostly work but are still
+somewhat in progress, features that are being considered or planned for
+implementation, and just miscellaneous far-out ideas that could, in
+principle, be implemented if one had the time and inclination to do so.
+
+(NOTE: there is no guarantee any of these items will, in fact, be
+implemented, nor should any possible scheduling indications be construed as
+promises under any circumstances. TANSTAAFL. If you absolutely need
+something implemented right now, please contact the developers to see if
+they're available for contract work, or if perhaps a modest donation could
+speed things along.)
+
+TODO: IN THE WORKS
+------------------
+* Finish up administration interface for pre-generating static files for all
+  pages on the Drupal site in one go.
+* Test interaction with other modules that also make use of ob_start().
+
+TODO: FUTURE IDEAS
+------------------
+* Add a node-specific cache lifetime setting.
+* Add admin-visible block for updating the cached copy of the current page.
+* Other web servers than Apache are not supported at the moment. This is due
+  to the way the cache dispatch is implemented using Apache mod_rewrite
+  directives in the .htaccess file. Lighttpd support would be desirable but
+  is not a high priority for the developer at present.
+* User-specific static page cache. Could conceivably be implemented based
+  on the existing user-cookie mechanism, though security would be a concern.
+* Don't delete the entire file system cache when Boost is disabled; just
+  rename the site's cache directory with the suffix `.disabled', speeding up
+  cache regeneration once the module is re-enabled?

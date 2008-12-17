@@ -1,0 +1,52 @@
+<?php
+// $Id: boost.drush,v 1.1.2.1.2.3 2007/09/21 12:00:44 arto Exp $
+
+/**
+ * @file
+ * Actions for managing the static page cache provided by the Boost module.
+ */
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Lists all files currently in the Boost static file system cache.
+ */
+function drush_boost_list() {
+  // TODO: implementation.
+}
+
+/**
+ * Expires all files, or all files matching a given path, from the static page cache.
+ */
+function drush_boost_expire($path = NULL) {
+  drush_op('boost_cache_expire', $path, TRUE);
+
+  if (DRUSH_VERBOSE) {
+    drush_print(empty($key) ? t('Boost static page cache fully cleared.') :
+      t("Boost cached pages like `%path' expired.", array('%path' => $path)));
+  }
+}
+
+/**
+ * Enables the Boost static page cache.
+ */
+function drush_boost_enable() {
+  drush_op('variable_set', 'boost', CACHE_ENABLED);
+
+  if (DRUSH_VERBOSE) {
+    drush_print(t('Boost static page cache enabled.'));
+  }
+}
+
+/**
+ * Disables the Boost static page cache.
+ */
+function drush_boost_disable() {
+  drush_op('variable_set', 'boost', CACHE_DISABLED);
+
+  if (DRUSH_VERBOSE) {
+    drush_print(t('Boost static page cache disabled.'));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////

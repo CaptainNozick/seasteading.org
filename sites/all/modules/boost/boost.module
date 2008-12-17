@@ -1,0 +1,331 @@
+<?php
+// $Id: boost.module,v 1.3.2.2.2.5 2007/09/30 19:10:01 arto Exp $
+
+/**
+ * @file
+ * Provides static page caching for Drupal.
+ */
+
+//////////////////////////////////////////////////////////////////////////////
+// BOOST SETTINGS
+
+define('BOOST_PATH',                 dirname(__FILE__));
+define('BOOST_FRONTPAGE',            drupal_get_normal_path(variable_get('site_frontpage', 'node')));
+
+define('BOOST_ENABLED',              variable_get('boost', CACHE_DISABLED));
+define('BOOST_FILE_PATH',            variable_get('boost_file_path', 'cache'));
+define('BOOST_FILE_EXTENSION',       variable_get('boost_file_extension', '.html'));
+define('BOOST_MAX_PATH_DEPTH',       10);
+define('BOOST_CACHEABILITY_OPTION',  variable_get('boost_cacheability_option', 0));
+define('BOOST_CACHEABILITY_PAGES',   variable_get('boost_cacheability_pages', ''));
+define('BOOST_FETCH_METHOD',         variable_get('boost_fetch_method', 'php'));
+define('BOOST_PRE_PROCESS_FUNCTION', variable_get('boost_pre_process_function', ''));
+define('BOOST_POST_UPDATE_COMMAND',  variable_get('boost_post_update_command', ''));
+define('BOOST_CRON_LIMIT',           variable_get('boost_cron_limit', 100));
+
+// This cookie is set for all logged-in users, so that they can be excluded
+// from caching (or, in the future, get a user-specific cached page):
+define('BOOST_COOKIE',               variable_get('boost_cookie', 'DRUPAL_UID'));
+
+// This line is appended to the generated static files; it is very useful
+// for troubleshooting (e.g. determining whether one got the dynamic or
+// static version):
+define('BOOST_BANNER',               variable_get('boost_banner', "<!-- Page cached by Boost at %cached_at, expires at %expires_at -->\n"));
+
+// This is needed since the $user object is already destructed in _boost_ob_handler():
+define('BOOST_USER_ID',              $GLOBALS['user']->uid);
+
+//////////////////////////////////////////////////////////////////////////////
+// BOOST INCLUDES
+
+require_once BOOST_PATH . '/boost.helpers.inc';
+require_once BOOST_PATH . '/boost.api.inc';
+
+//////////////////////////////////////////////////////////////////////////////
+// DRUPAL API HOOKS
+
+/**
+ * Implementation of hook_help(). Provides online user help.
+ */
+function boost_help($section) {
+  switch ($section) {
+    case 'admin/modules#name':
+      return t('boost');
+    case 'admin/modules#description':
+      return t('Provides a performance and scalability boost through caching Drupal pages as static HTML files.');
+    case 'admin/help#boost':
+      $file = drupal_get_path('module', 'boost') . '/README.txt';
+      if (file_exists($file))
+        return '<pre>' . implode("\n", array_slice(explode("\n", @file_get_contents($file)), 2)) . '</pre>';
+      break;
+    case 'admin/settings/boost':
+      return '<p>' . '</p>'; // TODO: add help text.
+  }
+}
+
+/**
+ * Implementation of hook_perm(). Defines user permissions.
+ */
+function boost_perm() {
+  return array('administer cache');
+}
+
+/**
+ * Implementation of hook_menu(). Defines menu items and page callbacks.
+ */
+function boost_menu($may_cache) {
+  $access = user_access('administer cache');
+  $items = array();
+  if ($may_cache) {
+    $items[] = array(
+      'path'  => 'admin/settings/performance/boost',
+      'title' => t('Boost'),
+      'description' => t('Enable or disable page caching for anonymous users and set CSS and JS bandwidth optimization options.'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('boost_settings'),
+      'access' => user_access('administer site configuration'),
+    );
+    // TODO: define menu actions for cache administration.
+  }
+  return $items;
+}
+
+/**
+ * Implementation of hook_init(). Performs page setup tasks.
+ */
+function boost_init() {
+  // Stop right here unless we're being called for an ordinary page request
+  if (strpos($_SERVER['PHP_SELF'], 'index.php') === FALSE)
+    return;
+
+  // TODO: check interaction with other modules that use ob_start(); this
+  // may have to be moved to an earlier stage of the page request.
+  if (!variable_get('cache', CACHE_DISABLED) && BOOST_ENABLED) {
+    // We only support GET requests by anonymous visitors:
+    global $user;
+    if (empty($user->uid) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+      // Make sure no query string (in addition to ?q=) was set, and that
+      // the page is cacheable according to our current configuration:
+      if (count($_GET) == 1 && boost_is_cacheable($_GET['q'])) {
+        // In the event of errors such as drupal_not_found(), GET['q'] is
+        // changed before _boost_ob_handler() is called. Apache is going to
+        // look in the cache for the original path, however, so we need to
+        // preserve it.
+        $GLOBALS['_boost_path'] = $_GET['q'];
+        ob_start('_boost_ob_handler');
+      }
+    }
+  }
+
+  // Executed when saving Drupal's settings:
+  if (!empty($_POST['edit']) && $_GET['q'] == 'admin/settings') {
+    // Forcibly disable Drupal's built-in SQL caching to prevent any conflicts of interest:
+    variable_set('cache', CACHE_DISABLED);
+
+    // TODO: handle 'offline' site maintenance settings.
+
+    $old = variable_get('boost', '');
+    if (!empty($_POST['edit']['boost'])) {
+      // Ensure the cache directory exists or can be created
+      file_check_directory($_POST['edit']['boost_file_path'], FILE_CREATE_DIRECTORY, 'boost_file_path');
+    }
+    else if (!empty($old)) { // the cache was previously enabled
+      if (boost_cache_expire_all())
+        drupal_set_message('Static cache files deleted.');
+    }
+  }
+}
+
+/**
+ * Implementation of hook_exit(). Performs cleanup tasks.
+ *
+ * For POST requests by anonymous visitors, this adds a dummy query string
+ * to any URL being redirected to using drupal_goto().
+ *
+ * This is pretty much a hack that assumes a bit too much familiarity with
+ * what happens under the hood of the Drupal core function drupal_goto().
+ *
+ * It's necessary, though, in order for any session messages set on form
+ * submission to actually show up on the next page if that page has been
+ * cached by Boost.
+ */
+function boost_exit($destination = NULL) {
+  // Check that hook_exit() was invoked by drupal_goto() for a POST request:
+  if (!empty($destination) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    // Check that we're dealing with an anonymous visitor. and that some
+    // session messages have actually been set during this page request:
+    global $user;
+    if (empty($user->uid) && ($messages = drupal_set_message())) {
+
+      // Check that the page we're redirecting to really necessitates
+      // special handling, i.e. it doesn't have a query string:
+      extract(parse_url($destination));
+      $path = ($path == base_path() ? '' : substr($path, strlen(base_path())));
+      if (empty($query)) {
+        // FIXME: call any remaining exit hooks since we're about to terminate?
+
+        // If no query string was previously set, add one just to ensure we
+        // don't serve a static copy of the page we're redirecting to, which
+        // would prevent the session messages from showing up:
+        $destination = url($path, 't=' . time(), $fragment, TRUE);
+
+        // Do what drupal_goto() would do if we were to return to it:
+        exit(header('Location: ' . $destination));
+      }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_form_alter(). Performs alterations before a form
+ * is rendered.
+ */
+function boost_form_alter($form_id, &$form) {
+  // Alter Drupal's settings form by hiding the default cache enabled/disabled control (which will now always default to CACHE_DISABLED), and add our own control instead.
+  if ($form_id == 'system_performance_settings') {
+    require_once BOOST_PATH . '/boost.admin.inc';
+    $form['page_cache'] = boost_system_settings_form($form['page_cache']);
+  }
+}
+
+/**
+ * Implementation of hook_cron(). Performs periodic actions.
+ */
+function boost_cron() {
+  if (!BOOST_ENABLED) return;
+
+  if (boost_cache_expire_all()) {
+    watchdog('boost', t('Expired stale files from static page cache.'), WATCHDOG_NOTICE);
+  }
+}
+
+/**
+ * Implementation of hook_comment(). Acts on comment modification.
+ */
+function boost_comment($comment, $op) {
+  if (!BOOST_ENABLED) return;
+
+  switch ($op) {
+    case 'insert':
+    case 'update':
+      // Expire the relevant node page from the static page cache to prevent serving stale content:
+      if (!empty($comment['nid']))
+        boost_cache_expire('node/' . $comment['nid'], TRUE);
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_nodeapi(). Acts on nodes defined by other modules.
+ */
+function boost_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  if (!BOOST_ENABLED) return;
+
+  switch ($op) {
+    case 'insert':
+    case 'update':
+    case 'delete':
+      // Expire all relevant node pages from the static page cache to prevent serving stale content:
+      if (!empty($node->nid))
+        boost_cache_expire('node/' . $node->nid, TRUE);
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_taxonomy(). Acts on taxonomy changes.
+ */
+function boost_taxonomy($op, $type, $term = NULL) {
+  if (!BOOST_ENABLED) return;
+
+  switch ($op) {
+    case 'insert':
+    case 'update':
+    case 'delete':
+      // TODO: Expire all relevant taxonomy pages from the static page cache to prevent serving stale content.
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_user(). Acts on user account actions.
+ */
+function boost_user($op, &$edit, &$account, $category = NULL) {
+  if (!BOOST_ENABLED) return;
+
+  global $user;
+  switch ($op) {
+    case 'login':
+      // Set special cookie to prevent logged-in users getting served pages from the static page cache.
+      $expires = ini_get('session.cookie_lifetime');
+      $expires = (!empty($expires) && is_numeric($expires) ? time() + (int)$expires : 0);
+      setcookie(BOOST_COOKIE, $user->uid, $expires, ini_get('session.cookie_path'), ini_get('session.cookie_domain'), ini_get('session.cookie_secure') == '1');
+      break;
+    case 'logout':
+      setcookie(BOOST_COOKIE, FALSE, time() - 86400, ini_get('session.cookie_path'), ini_get('session.cookie_domain'), ini_get('session.cookie_secure') == '1');
+      break;
+    case 'insert':
+      // TODO: create user-specific cache directory.
+      break;
+    case 'delete':
+      // Expire the relevant user page from the static page cache to prevent serving stale content:
+      if (!empty($account->uid))
+        boost_cache_expire('user/' . $account->uid);
+      // TODO: recursively delete user-specific cache directory.
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_settings(). Declares administrative settings for a module.
+ *
+ * @deprecated in Drupal 5.0.
+ */
+function boost_settings() {
+  require_once BOOST_PATH . '/boost.admin.inc';
+  return system_settings_form(boost_settings_form());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// OUTPUT BUFFERING CALLBACK
+
+/**
+ * PHP output buffering callback for static page caching.
+ *
+ * NOTE: objects have already been destructed so $user is not available.
+ */
+function _boost_ob_handler($buffer) {
+  // Ensure we're in the correct working directory, since some web servers (e.g. Apache) mess this up here.
+  chdir(dirname($_SERVER['SCRIPT_FILENAME']));
+
+  // Check the currently set content type; at present we can't deal with anything else than HTML.
+  if (_boost_get_content_type() == 'text/html') {
+    if (strlen($buffer) > 0) { // Sanity check
+      boost_cache_set($GLOBALS['_boost_path'], $buffer);
+    }
+  }
+
+  // Allow the page request to finish up normally
+  return $buffer;
+}
+
+/**
+ * Determines the MIME content type of the current page response based on
+ * the currently set Content-Type HTTP header.
+ *
+ * This should normally return the string 'text/html' unless another module
+ * has overridden the content type.
+ */
+function _boost_get_content_type($default = NULL) {
+  static $regex = '/^Content-Type:\s*([\w\d\/\-]+)/i';
+
+  // The last Content-Type header is the one that counts:
+  $headers = preg_grep($regex, explode("\n", drupal_set_header()));
+  if (!empty($headers) && preg_match($regex, array_pop($headers), $matches))
+    return $matches[1]; // found it
+
+  return $default;
+}
+
+//////////////////////////////////////////////////////////////////////////////
