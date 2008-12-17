@@ -112,6 +112,42 @@ DirectoryIndex index.html index.php
   #RewriteCond %{QUERY_STRING} ^mod=([^&]+)$
   #RewriteRule module.php index.php?q=%1 [L]
 
+
+  # Rewrite rules for static page caching provided by the Boost module:
+# BOOST START
+<IfModule mod_headers.c>
+Header add Expires "Sun, 19 Nov 1978 05:00:00 GMT"
+Header add Cache-Control "no-store, no-cache, must-revalidate, post-check=0, pre-check=0"
+</IfModule>
+<IfModule mod_mime.c>
+AddCharset utf-8 .html
+</IfModule>
+RewriteCond %{REQUEST_METHOD} ^GET$
+RewriteCond %{REQUEST_URI} ^/$
+RewriteCond %{QUERY_STRING} ^$
+RewriteCond %{HTTP_COOKIE} !DRUPAL_UID
+RewriteCond %{DOCUMENT_ROOT}/cache/%{SERVER_NAME}/0/index.html -f
+RewriteRule ^(.*)$ cache/%{SERVER_NAME}/0/index.html [L]
+RewriteCond %{REQUEST_METHOD} ^GET$
+RewriteCond %{REQUEST_URI} !^/cache
+RewriteCond %{REQUEST_URI} !^/user/login
+RewriteCond %{REQUEST_URI} !^/admin
+RewriteCond %{QUERY_STRING} ^$
+RewriteCond %{HTTP_COOKIE} !DRUPAL_UID
+RewriteCond %{DOCUMENT_ROOT}/cache/%{SERVER_NAME}/0%{REQUEST_URI} -d
+RewriteCond %{DOCUMENT_ROOT}/cache/%{SERVER_NAME}/0%{REQUEST_URI}/index.html -f
+RewriteRule ^(.*)$ cache/%{SERVER_NAME}/0/$1/index.html [L]
+RewriteCond %{REQUEST_METHOD} ^GET$
+RewriteCond %{REQUEST_URI} !^/cache
+RewriteCond %{REQUEST_URI} !^/user/login
+RewriteCond %{REQUEST_URI} !^/admin
+RewriteCond %{QUERY_STRING} ^$
+RewriteCond %{HTTP_COOKIE} !DRUPAL_UID
+RewriteCond %{DOCUMENT_ROOT}/cache/%{SERVER_NAME}/0%{REQUEST_URI}.html -f
+RewriteRule ^(.*)$ cache/%{SERVER_NAME}/0/$1.html [L]
+# BOOST END
+
+
   # Rewrite current-style URLs of the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
