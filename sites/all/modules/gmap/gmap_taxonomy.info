@@ -1,0 +1,10 @@
+; $Id: gmap_taxonomy.info,v 1.1.2.1 2007/12/29 05:33:06 bdragon Exp $
+name = GMap Taxonomy Markers
+description = Taxonomy based markers
+package = Location
+dependencies = gmap taxonomy
+; Information added by drupal.org packaging script on 2008-12-12
+version = "5.x-1.0"
+project = "gmap"
+datestamp = "1229117119"
+

@@ -1,0 +1,78 @@
+<?php
+// $Id: gmap_taxonomy.install,v 1.1.2.5 2008/10/02 17:32:45 bdragon Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function gmap_taxonomy_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {gmap_taxonomy_term} (
+        tid int(10) unsigned NOT NULL default '0',
+        marker varchar(32),
+        PRIMARY KEY tid(tid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */");
+      db_query("CREATE TABLE {gmap_taxonomy_node} (
+        nid int(10) unsigned NOT NULL default '0',
+        tid int(10) unsigned NOT NULL default '0',
+        marker varchar(32),
+        PRIMARY KEY nid(nid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */");
+      break;
+    case 'pgsql':
+      //@@@
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function gmap_taxonomy_uninstall() {
+  db_query('DROP TABLE {gmap_taxonomy_node}');
+  db_query('DROP TABLE {gmap_taxonomy_term}');
+}
+
+/**
+ * Track the tid that caused the association, so we can
+ * do fixups faster.
+ */
+function gmap_taxonomy_update_5001() {
+  $ret = array();
+  // Removed because we just kill the table and recreate it in update 5002 anyway.
+  return $ret;
+}
+
+/**
+ * Stop tracking vid, term_node associations are not revisioned in Drupal 5.
+ * See #295775.
+ */
+function gmap_taxonomy_update_5002() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      // Just drop the table. It's not worth diddling around with the keys.
+      $ret[] = update_sql("DROP TABLE {gmap_taxonomy_node}");
+      $ret[] = update_sql("CREATE TABLE {gmap_taxonomy_node} (
+        nid int(10) unsigned NOT NULL default '0',
+        tid int(10) unsigned NOT NULL default '0',
+        marker varchar(32),
+        PRIMARY KEY nid(nid),
+        INDEX nid(nid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */");
+      // Recreate the data.
+      // Useful for repopulating in bulk... Copy to hook_enable()?
+      $ret[] = update_sql("INSERT INTO {gmap_taxonomy_node} (nid, tid, marker) (SELECT t.nid, t.tid, g.marker FROM {term_node} t INNER JOIN {gmap_taxonomy_term} g ON t.tid = g.tid GROUP BY t.nid ORDER BY NULL)");
+      break;
+    case 'pgsql':
+      // This update will never be needed for pgsql, as it predates pgsql support.
+      break;
+  }
+  if (function_exists('views_invalidate_cache')) {
+    // Rub a horseshoe for good luck.
+    views_invalidate_cache();
+  }
+  return $ret;
+}

@@ -1,0 +1,10 @@
+; $Id: gmap_macro_builder.info,v 1.1.2.2 2007/06/18 23:06:44 dww Exp $
+name = GMap Macro Builder
+description = UI for building GMap macros.
+package = Location
+dependencies = gmap
+; Information added by drupal.org packaging script on 2008-12-12
+version = "5.x-1.0"
+project = "gmap"
+datestamp = "1229117119"
+

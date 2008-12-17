@@ -1,0 +1,255 @@
+<?php
+// $Id: gmap_views.module,v 1.1.2.28 2008/12/05 17:33:20 bdragon Exp $
+
+/**
+ * @file
+ * GMap Views: A Views Style plugin providing a GMap view.
+ */
+
+/**
+ * Implementation of hook_views_style_plugins().
+ */
+function gmap_views_views_style_plugins() {
+  return array(
+    'gmap' => array(
+      'name' => t('Gmap View'),
+      'theme' => 'views_view_gmap',
+      'needs_fields' => true,
+      'validate' => 'gmap_views_validate',
+    )
+  );
+}
+
+/**
+ * Implementation of hook_gmap().
+ */
+function gmap_views_gmap($op, &$map) {
+  switch ($op) {
+    case 'behaviors':
+      return array(
+        'fatmarkers' => array(
+          'title' => t('Views "fat" markers'),
+          'default' => FALSE,
+          'help' => t('Enabling this flag will pass the raw views data with a marker for use with custom manipulation code. Hook the preparemarker event to make use of this.'),
+          'internal' => TRUE,
+        ),
+      );
+    case 'pre_theme_map':
+      // Don't pass the gmap_view settings to the client.
+      unset($map['settings']['gmap_view']);
+      break;
+  }
+}
+
+/**
+ * Validate a GMap View.
+ * GMap Views requires one of the following:
+ * - Location: Lat and Location: Lon
+ * - Two columns, one titled t('Latitude'), one titled t('Longitude')
+ * - A module that can transform a field into lat, long coordinates
+ */
+function gmap_views_validate($type, $view, $form) {
+  $ids = _gmap_views_find_coords_ids($view);
+  if (!($ids['lat'] && $ids['lon']) && !(isset($ids['module']))) {
+    form_error($form["$type-info"][$type .'_type'],
+              t('GMap View requires: either "Location: Latitude" and "Location: Longitude" or a field titled "Latitude" and a field titled "Longitude"'));
+  }
+  return views_ui_plugin_validate_list($type, $view, $form);
+}
+
+/**
+ * Display the results of a view in a Google Map.
+ */
+function theme_views_view_gmap($view, $results) {
+  // Work when multiple views are displayed at once.
+  $mapid = "view_gmap_{$view->name}_{$view->build_type}";
+
+  // Fields are used to render the markers.
+  $fields = _views_get_fields();
+
+  // find the ids of the column we want to use
+  $point_ids = _gmap_views_find_coords_ids($view);
+
+  if (isset($view->gmap_macro) && $view->gmap_macro) {
+    $thismap = array(
+      '#map' => $mapid,
+      '#settings' => array_merge(gmap_defaults(), gmap_parse_macro($view->gmap_macro)),
+    );
+    if ($thismap['#settings']['behavior']['views_autocenter']) {
+      // Find the first valid location.
+      foreach ($results as $entry) {
+        $location = _gmap_views_get_lat_long_from_ids($entry, $point_ids);
+        if (($location['lat']) && ($location['lon'])) {
+          // Set default location for map
+          $thismap['#settings']['latitude'] = $location['lat'];
+          $thismap['#settings']['longitude'] = $location['lon'];
+          // Break loop because we have what we want.
+          break;
+        }
+      }
+    }
+  }
+  else if (!empty($view->gmap_map)) {
+    $thismap = $view->gmap_map;
+  }
+  else {
+    $thismap = array(
+      '#map' => $mapid,
+      '#settings' => gmap_defaults(),
+    );
+  }
+
+  $fatmarkers = (isset($thismap['#settings']['behavior']['fatmarkers']) && $thismap['#settings']['behavior']['fatmarkers']);
+
+  $markers = array();
+
+  if ($fatmarkers) {
+    $thismap['#settings']['viewfields'] = $view->field;
+    $datafields = array();
+    foreach ($view->field as $field) {
+      if ($fields[$field['id']]['visible'] !== FALSE) {
+        $datafields[] = $field['queryname'];
+      }
+    }
+  }
+
+  $markermode = $thismap['#settings']['markermode'];
+  $markertypes = variable_get('gmap_node_markers', array());
+
+  foreach ($results as $entry) {
+    $type = $entry->gmap_node_type;
+    $location = _gmap_views_get_lat_long_from_ids($entry, $point_ids);
+
+    if (($location['lat']) && ($location['lon'])) {
+      if ($fatmarkers) {
+        $data = array();
+        foreach ($view->field as $field) {
+          if ($fields[$field['id']]['visible'] !== FALSE) {
+            $data[] = views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $entry, $view);
+          }
+        }
+        $themarker = array(
+          'markername' => isset($markertypes[$type]) ? $markertypes[$type] : 'drupal',
+          'latitude' => $location['lat'],
+          'longitude' => $location['lon'],
+          'view' => array_values($data),
+        );
+        if (isset($entry->gmap_taxonomy_marker) && !empty($entry->gmap_taxonomy_marker)) {
+          $themarker['markername'] = $entry->gmap_taxonomy_marker;
+        }
+      }
+      else {
+        // Common
+        $themarker = array(
+          'markername' => isset($markertypes[$type]) ? $markertypes[$type] : 'drupal',
+          'latitude' => $location['lat'],
+          'longitude' => $location['lon']
+        );
+        if (isset($entry->gmap_taxonomy_marker) && !empty($entry->gmap_taxonomy_marker)) {
+          $themarker['markername'] = $entry->gmap_taxonomy_marker;
+        }
+        // Popup
+        if ($markermode == 1) {
+          // @@@ TODO: Switch to using views_theme sometime. Unfortunately, it changes the function prototype.. :-/
+          //$marker_popup = views_theme('gmap_views_marker_label', $view->name, $view, $fields, $entry);
+          $marker_popup = theme('gmap_views_marker_label', $view, $fields, $entry);
+
+          // add themed HTML to either text or tabs depending on whether or not
+          // it was an array.
+          if (is_array($marker_popup)) {
+            // Tabbed.
+            $themarker['tabs'] = $marker_popup;
+          }
+          else {
+            $themarker['text'] = $marker_popup;
+          }
+        }
+        // Link
+        else if ($markermode == 2) {
+          $themarker['link'] = url('node/'. $entry->nid);
+        }
+      }
+      if (isset($entry->node_title)) {
+        $themarker['opts']['title'] = $entry->node_title;
+      }
+
+      $markers[] = $themarker;
+    }
+  }
+  $thismap['#settings']['markers'] = $markers;
+  $output .= theme('gmap', $thismap);
+  return $output;
+}
+
+/**
+ * Theme a marker label.
+ */
+function theme_gmap_views_marker_label($view, $fields, $entry) {
+  $marker_label = '';
+  foreach ($view->field as $field) {
+    $marker_label .= '<div class="gmap-popup '. $field['field'] .'">'. views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $entry, $view) .'</div>';
+  }
+  return $marker_label;
+}
+
+/**
+ * Helper function to find a valid latitude and longitude in this field
+ */
+function _gmap_views_find_coords_ids($view) {
+  $ids = array();
+  $copy = (array) $view;
+  foreach ($copy['field'] as $key => $field) {
+    if (!is_numeric($key)) {
+      continue; // skip the 'count', etc.
+    }
+
+    // we check to see if the field is a location:lat field or titled Latitude
+    if ($field['id'] == 'location.latitude' || $field['label'] == t('Latitude')) {
+      $ids['lat'] = $field['queryname'];
+    }
+
+    if ($field['id'] == 'location.longitude' || $field['label'] == t('Longitude')) {
+      $ids['lon'] = $field['queryname'];
+    }
+
+    // see if any module will take on the task of adding lat-lon to the view
+    foreach (module_implements('gmap_views_handle_field') as $module) {
+      if ($res = module_invoke($module, 'gmap_views_handle_field', 'discover', $field)) {
+        $ids['module'] = array(
+          'module' => $module,
+          'field' => $field['queryname'],
+          'extra' => $res,
+        );
+      }
+    }
+  }
+
+  return $ids;
+}
+
+/**
+ * Helper function to find actual lat and lon values from the work done in _gmap_views_find_coords_ids
+ */
+function _gmap_views_get_lat_long_from_ids($entry, $ids) {
+  // during the discovery phase, a module registered that it could turn this entry into a lat-lon array
+  if ($ids['module']) {
+    $ids['entry'] = $entry;
+    return module_invoke($ids['module']['module'], 'gmap_views_handle_field', 'process', $ids);
+  }
+  // standard stuff, we can handle it
+  return array('lat' => $entry->{$ids['lat']}, 'lon' => $entry->{$ids['lon']});
+}
+
+/**
+ * Implementation of hook_views_query_alter().
+ * We need to add in the node type so we can determine markers.
+ */
+function gmap_views_query_alter(&$query, &$view, $summary, $level) {
+  if (($view->page && $view->page_type == 'gmap') || ($view->block && $view->block_type == 'gmap')) {
+    $query->add_field('type', 'node', 'gmap_node_type');
+    if (module_exists('gmap_taxonomy')) {
+      $query->ensure_table('gmap_taxonomy_node');
+      $query->add_field('marker', 'gmap_taxonomy_node', 'gmap_taxonomy_marker');
+    }
+  }
+}
