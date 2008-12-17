@@ -1,0 +1,11 @@
+; $Id: location_user.info,v 1.1.2.2 2008/12/05 18:16:00 bdragon Exp $
+name = User Locations
+description = Associate locations with users.
+dependencies = location
+package = Location
+
+; Information added by drupal.org packaging script on 2008-12-12
+version = "5.x-3.0"
+project = "location"
+datestamp = "1229117730"
+

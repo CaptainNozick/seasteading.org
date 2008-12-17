@@ -1,0 +1,13 @@
+; $Id: location_cck.info,v 1.1.2.1 2008/08/31 08:42:55 bdragon Exp $
+name = Location CCK
+description = Bla bla location cck stuff
+dependencies = location content
+package = CCK
+
+
+
+; Information added by drupal.org packaging script on 2008-12-12
+version = "5.x-3.0"
+project = "location"
+datestamp = "1229117730"
+

@@ -1,0 +1,112 @@
+<?php
+// $Id: location_generate.module,v 1.2 2008/07/07 20:30:23 bdragon Exp $
+
+/**
+ * @file
+ * Generate random locations.
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function location_generate_menu($may_cache) {
+  $items = array();
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/content/generate_location',
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('location_generate_form'),
+      'description' => t('Generate locations for nodes and/or users. Overwrites current locations!'),
+      'title' => t('Generate locations'),
+      'access' => user_access('administer nodes'),
+    );
+  }
+  return $items;
+}
+
+function location_generate_form() {
+  if (!db_result(db_query('SELECT COUNT(*) FROM {node}'))) {
+    drupal_set_message(t('No nodes found.  Create some nodes first.'));
+    return array();
+  }
+
+  $form['nodes'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Generate locations for nodes'),
+    '#default_value' => TRUE,
+  );
+
+  $form['users'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Generate locations for users'),
+    '#default_value' => TRUE,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Do it!'),
+  );
+
+  return $form;
+}
+
+function location_generate_form_submit($form_id, $form_values) {
+
+  if ($form_values['nodes']) {
+    $maxnid = db_result(db_query('SELECT MAX(nid) FROM {node}'));
+    $sources = array(LOCATION_LATLON_USER_SUBMITTED, LOCATION_LATLON_GEOCODED_APPROX, LOCATION_LATLON_GEOCODED_EXACT);
+
+    for ($nid = 1; $nid <= $maxnid; $nid++) {
+      if ($node = node_load($nid, NULL, TRUE)) {
+        $numlocs = rand(0, (int)variable_get('location_maxnum_'. $node->type, 0));
+        $node->locations = array();
+        for ($i = 0; $i < $numlocs; $i++) {
+          $node->locations[] = array(
+            //'name' => '',
+            //'street' => '',
+            //'additional' => '',
+            //'city' => '',
+            //'province' => '',
+            //'postal_code' => '',
+            //'country' => '',
+            'latitude' => rand(-60, 60),
+            'longitude' => rand(-180, 180),
+            'source' => $sources[rand(0, 2)],
+          );
+        }
+        if ($numlocs) {
+          $node = node_submit($node);
+          node_save($node);
+        }
+      }
+    }
+    drupal_set_message(t('Geodata was set for all nodes'));
+  }
+  if ($form_values['users']) {
+    $maxuid = db_result(db_query('SELECT MAX(uid) FROM {users}'));
+    $sources = array(LOCATION_LATLON_USER_SUBMITTED, LOCATION_LATLON_GEOCODED_APPROX, LOCATION_LATLON_GEOCODED_EXACT);
+
+    for ($uid = 1; $uid <= $maxuid; $uid++) {
+      if (db_result(db_query('SELECT COUNT(*) FROM {users} WHERE uid = %d', $uid))) {
+        db_query('DELETE FROM {location_instance} WHERE uid = %d', $uid);
+        $location = array(
+          //'name' => '',
+          //'street' => '',
+          //'additional' => '',
+          //'city' => '',
+          //'province' => '',
+          //'postal_code' => '',
+          //'country' => '',
+          'latitude' => rand(-60, 60),
+          'longitude' => rand(-180, 180),
+          'source' => $sources[rand(0, 2)],
+        );
+        $lid = location_save($location, TRUE);
+        if ($lid) {
+          db_query('INSERT INTO {location_instance} (uid, lid) VALUES (%d, %d)', $uid, $lid);
+        }
+      }
+    }
+    drupal_set_message(t('Geodata was set for all users'));
+  }
+}

@@ -1,0 +1,94 @@
+<?php
+// $Id: location_phone.install,v 1.7.2.1 2008/10/02 23:49:34 bdragon Exp $
+
+/**
+ * @file
+ * Installation routines.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function location_phone_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("
+      CREATE TABLE {location_phone} (
+        lid int(10) unsigned NOT NULL default '0',
+        phone varchar(31) default NULL,
+        PRIMARY KEY  (lid)
+      ) /*!40100 DEFAULT CHARACTER SET utf8 */;
+      ");
+      break;
+
+    case 'pgsql':
+      db_query("
+        CREATE TABLE {location_phone} (
+          lid int NOT NULL default '0' CHECK (lid >= 0),
+          phone varchar(31) default NULL,
+          PRIMARY KEY (lid)
+        )");
+      break;
+  }
+
+  // Change weight.
+  db_query("UPDATE {system} SET weight = 1 WHERE name = '%s' AND type = '%s'", 'location_phone', 'module');
+
+  drupal_set_message(t('Installed tables for module location_phone'));
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function location_phone_uninstall() {
+  db_query('DROP TABLE {location_phone}');
+}
+
+/**
+ * Location 3.0 update 1.
+ * Fix pgsql -- The table definition was broken.
+ */
+function location_phone_update_5300() {
+  $ret = array();
+  if ($GLOBALS['db_type'] == 'pgsql') {
+    // If the table wasn't created (i.e. error from previous install)
+    if (!db_table_exists('location_phone')) {
+      $ret[] = update_sql("
+        CREATE TABLE {location_phone} (
+          lid int NOT NULL default '0' CHECK (lid >= 0),
+          phone varchar(31) default NULL,
+          PRIMARY KEY (lid)
+        )");
+    }
+    else {
+      // If the table WAS created (i.e. user manually fixed bug and reinstalled), g/c the postal_code column.
+      // @@@ @TODO Drupal 6: Change to db_column_exists().
+      if (db_result(db_query("SELECT COUNT(pg_attribute.attname) FROM pg_class, pg_attribute WHERE pg_attribute.attrelid = pg_class.oid AND pg_class.relname = '{location_phone}' AND attname = 'postal_code'")) > 0) {
+        $ret[] = update_sql("ALTER TABLE {location_phone} DROP COLUMN postal_code");
+      }
+    }
+  }
+  return $ret;
+}
+
+/**
+ * Location 3.0 update 2.
+ * Change weight of module.
+ */
+function location_phone_update_5301() {
+  $ret = array();
+  // This update was moved to update 5302.
+  return $ret;
+}
+
+/**
+ * Location 3.0 update 2.
+ * Change weight of module.
+ */
+function location_phone_update_5302() {
+  $ret = array();
+  // Change weight.
+  $ret[] = update_sql("UPDATE {system} SET weight = 1 WHERE name = 'location_phone' AND type = 'module'");
+  return $ret;
+}

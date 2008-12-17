@@ -1,0 +1,104 @@
+<?php
+// $Id: location_user.module,v 1.1.2.3 2008/12/05 18:21:31 bdragon Exp $
+
+/**
+ * @file
+ * Associate locations with users.
+ */
+
+function location_user_perm() {
+  return array(
+    'administer user locations',
+    'set own user location',
+    'view own user location',
+    'view all user locations',
+  );
+}
+
+/**
+ * Alter the user_admin_settings form.
+ */
+function _location_user_settings_form_alter($form_id, &$form) {
+  $settings = variable_get('location_settings_user', array());
+
+
+  $form['location_settings_user'] = location_settings($settings);
+  $form['location_settings_user']['#title'] = t('User locations');
+
+  $form['location_settings_user']['form']['register'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Collect during registration'),
+    '#default_value' => isset($settings['form']['register']) ? $settings['form']['register'] : FALSE,
+    '#weight' => -5,
+  );
+}
+
+/**
+ * Implementation of hook_user().
+ */
+function location_user_user($op, &$edit, &$account, $category = NULL) {
+  global $user;
+
+  switch ($op) {
+    case 'load':
+      $account->locations = location_load_locations($account->uid, 'uid');
+      $account->location = count($account->locations) ? $account->locations[0] : array();
+      break;
+
+    case 'insert':
+    case 'update':
+      if (!empty($edit['locations'])) {
+        location_save_locations($edit['locations'], array('uid' => $account->uid));
+      }
+      unset($edit['locations']);
+      break;
+
+    case 'delete':
+      $locations = array();
+      location_save_locations($locations, array('uid' => $account->uid));
+      break;
+
+    case 'form':
+      if ($category == 'account') {
+        if ((($user->uid == $account->uid) && user_access('set own user location')) || user_access('administer user locations')) {
+          $settings = variable_get('location_settings_user', array());
+          $form['locations'] = location_form($settings, $account->locations);
+          return $form;
+        }
+      }
+      break;
+
+    case 'register':
+      $settings = variable_get('location_settings_user', array());
+      if (isset($settings['form']['register']) && $settings['form']['register']) {
+        $form['locations'] = location_form($settings, array());
+        return $form;
+      }
+      break;
+
+    case 'view':
+      if ((($user->uid == $account->uid) && user_access('view own user location')) || user_access('administer users') || user_access('view all user locations') || user_access('administer user locations')) {
+        if (variable_get('location_display_location', 1) && isset($account->locations) && count($account->locations)) {
+          $settings = variable_get('location_settings_user', array());
+          // @@@ Weight is not applicable on Drupal 5, or the documentation is incorrect. :(
+          $items[] = array(
+            'title' => t('Locations'),
+            'value' => drupal_render(location_display($settings, $account->locations)),
+            'class' => 'location',
+          );
+          return array(t('Location') => $items);
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function location_user_form_alter($form_id, &$form) {
+  if ($form_id == 'user_admin_settings') {
+    // Add user locations settings.
+    _location_user_settings_form_alter($form_id, $form);
+  }
+}
