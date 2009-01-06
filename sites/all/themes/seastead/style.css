@@ -706,9 +706,7 @@ ul.secondary
 	clear: both; 
 	visibility: hidden;
 }
-	#banner h2 {
-		display:none;
-	}
+
 /****************************************************************
 	banner-sub
 ****************************************************************/
@@ -737,66 +735,11 @@ ul.secondary
  .banner-strategic-areas {
 		background-image:url('images/banner_strategic-areas.jpg');
 	}
-/****************************************************************
-	banner .news
-****************************************************************/
-#banner .news{
-	float:right;
-	height:264px;
-	padding:0 20px 0 22px;
-	width:242px;
-	widt\h:200px;
-	overflow:auto;
-}
-	#banner .news ul {
-		margin:0;
-		padding:23px 0 0;
-	}
-		#banner .news ul li {
-			background:none;
-			border-bottom:1px solid #599cd8;
-			margin:0 0 6px;
-			line-height:1.2em;
-			padding:0;
-		}
-		#banner .news ul li.last {
-			border-bottom:none;
-		}
-			#banner .news ul li h4.date {
-				color:#fff;
-				font-size:9px;
-				font-weight:bold;
-				margin:0 0 2px;
-				line-height:1em;
-			}
-			#banner .news ul li h3.title {
-				color:#b3edf9;
-				font-size:12px;
-				font-weight:bold;
-				margin:0 0 5px;
-				line-height:1em;
-			}
-				#banner .news ul li h3.title a {
-					color:#b3edf9;
-				}
-			#banner .news ul li p {
-				color:#fff;
-				font-size:11px;
-				margin:0 0 6px;
-			}
-			#banner .news p.more {
-				color:#b3edf9;
-				font-size:11px;
-				font-weight:bold;
-				margin:0;
-				text-align:right;
-			}
-				#banner .news p.more a {
-					color:#b3edf9;
-				}
+
 /****************************************************************
 	content-home
 ****************************************************************/
+
 #content-home:after{
 	content: "."; 
 	display: block; 
@@ -808,123 +751,94 @@ ul.secondary
 	background: #fff url('images/bg_content-home.gif') 0 0 no-repeat;
 	padding:18px 2px 0;
 }
+
 /****************************************************************
-	key_areas
+	Key areas
 ****************************************************************/
-#key_areas {
-	float:left;
-	padding: 0 69px 0 20px;
-	width:251px;
-	widt\h:162px;
+
+#key-areas {
+	float: right;
+	padding: 18px;
+	width: 200px;
+	color: #ffffff;
 }
-	#block-menu-83 .content,
-	#block-menu-83 ul.menu,
-	#block-menu-83 ul.menu li,
-	.block-month .content,
-	.block-month ul,
-	.block-month ul li {
-		margin:0;
-		padding:0;
-	}
-		#block-menu-83 ul.menu li,
-		.block-month ul li,
-		.forum #block-menu-83 ul.menu li.menu-research
-		{
-			background: url('images/line_1.gif') 32px 100% no-repeat;
-		}
-		#content-home #block-menu-83 ul.menu li.menu-faq ,
-		#block-menu-83 ul.menu li.menu-about-tsi ,
-		#block-menu-83 ul.menu li.menu-press-releases,
-		#block-menu-83 ul.menu li.menu-wiki,
-		#block-menu-83 ul.menu li.menu-jobs-at-tsi,
-		#block-menu-83 ul.menu li.menu-research
-		{
-			background:none;
-		}
-		#block-menu-83 ul.menu li a,
-		.block-month ul li a{
-			background: url('images/arrow_1.gif') 0 7px no-repeat;
-			color:#0079b1;
-			display:block;
-			font-weight:bold;
-			padding:4px 0 4px 32px;
-		}
-		#block-menu-83 ul.menu li a:hover,
-		#block-menu-83 ul.menu li.active a,
-		.block-month ul li a:hover,
-		.block-month ul li.active a{
-			background: url('images/arrow_1.gif') 0 -109px no-repeat;
-			color:#828282;
-			text-decoration:none;
-		}
-			#block-menu-83 ul.menu li.active ul li a,
-			#block-menu-83 ul.menu li ul li a,
-			.block-month ul li ul li a{
-				background: url('images/arrow_2.gif') 32px 9px no-repeat;
-				color:#0079b1;
-				display:block;
-				font-weight:bold;
-				padding:4px 0 4px 45px;
-			}
-			#block-menu-83 ul.menu li ul li a:hover,
-			#block-menu-83 ul.menu li ul li.active a,
-			.block-month ul li ul li a:hover,
-			.block-month ul ul li li.active a{
-				background: url('images/arrow_2.gif') 32px 9px no-repeat;
-				color:#828282;
-			}
+
+#key-areas h2 {
+	font-size: 16px;
+	color: #b0edf9;
+}
+
+#key-areas ul {
+	padding-left: 20px;
+}
+
+#key-areas ul li {
+	list-style-type: disc;
+	background-image: none;
+	padding: 0;
+}
+
+#key-areas ul li a {
+	font-size: 13px;
+	color: #ffffff;
+}
 
 
 /****************************************************************
-	press_releases
+	Blocks
 ****************************************************************/
-#press_releases {
-	float:left;
-	padding: 0 17px 0 15px;
-	width:251px;
-	widt\h:219px;
+
+#center_left, #center_right	{
+	float: left;
+	width: 463px;
+	padding: 0 16px 16px 16px;
 }
-	/* #press_releases .header */
-	#press_releases .header {
-		position:relative;
-		padding:0 100px 0 0;
-	}
-	#press_releases .header .feed-icon {
-		color:#3399cc;
-		font-size:9px;
-		padding:0;
-		position:absolute;
-		right:5px;
-		top:0;
-	}
-	#press_releases .header .feed-icon:hover {
-		color:#ffa400;
-		text-decoration:none;
-	}
-		#press_releases .header .feed-icon img{
-			margin:0 0 0 3px;
-			vertical-align:middle;
-		}
-	/* #press_releases #block-views-press_releases */
-	#block-views-press_releases .content {
-		margin:0;
-		padding:0;
-	}
-	#block-views-press_releases .node h2 {
-		color:#0079b1;
-		font-size:12px;
-		font-weight:normal;
-		margin:-3px 0 4px;
-		padding:0;
-		position:relative;
-	}
-/****************************************************************
-	forum_topics
-****************************************************************/
-#forum
-{
+
+
+#block-views-active_topics,
+#block-views-press_releases,
+#block-views-recent_blog_posts,
+#block-block-3 {
+	display: none;
+}
+
+#block-block-3 object,
+#block-block-3 embed {
+	margin-top: 10px;
+}
+
+#center_left .header .feed-icon {
+	color:#3399cc;
+	font-size:9px;
+	padding:0;
+	position:absolute;
+	right:5px;
+	top:0;
+}
+
+#center_left .header .feed-icon:hover {
+	color:#ffa400;
+	text-decoration:none;
+}
+
+#center_left .header .feed-icon img{
+	margin:0 0 0 3px;
+	vertical-align:middle;
+}
+
+#block-views-press_releases .node h2 {
+	color:#0079b1;
+	font-size:12px;
+	font-weight:normal;
+	margin:-3px 0 4px;
+	padding:0;
 	position:relative;
 }
+
+#forum {
+	position:relative;
+}
+
 #forum a.rss
 {
 	position:absolute;
@@ -937,57 +851,53 @@ ul.secondary
 	right:0;
 	top:3px;
 }
-#forum_topics {
-	float:left;
-	padding: 0 22px 0 18px;
-	width:251px;
-	widt\h:211px;
+
+.forum .meta {
+	height:30px;
 }
-	.forum .meta
-	{
-		height:30px;
-	}
-	/* block-views-active_topics */
-	#block-views-active_topics {
-		position:relative;
-	}
-		#block-views-active_topics h2 {
-			padding-right:15px;
-		}
-		#block-views-active_topics .view-header p {
-			margin:0;
-			padding:0;
-		}
-		#block-views-active_topics .view-header a {
-			background: url('../../../../misc/feed.png') 0 0 no-repeat;
-			display:block;
-			height:16px;
-			position:absolute;
-			right:-5px;
-			top:2px;
-			width:16px;
-			z-index:100;
-		}
-		#block-views-active_topics .view-header span {
-			display:none;
-		}
-		#block-views-active_topics .item-list ul {
-			padding-top:2px;
-		}
-			#block-views-active_topics .item-list ul li {
-				margin-bottom:2px;
-				line-height:1.3em;
-			}
-				#block-views-active_topics .item-list ul li .view-item {
-					border-bottom:1px solid #c6e2ed;
-					padding-bottom:3px;
-				}
-				#block-views-active_topics .item-list ul li .last {
-					border-bottom:none;
-				}
+
+#block-views-active_topics {
+	position:relative;
+}
+#block-views-active_topics h2 {
+	padding-right:15px;
+}
+#block-views-active_topics .view-header p {
+	margin:0;
+	padding:0;
+}
+#block-views-active_topics .view-header a {
+	background: url('../../../../misc/feed.png') 0 0 no-repeat;
+	display:block;
+	height:16px;
+	position:absolute;
+	right:-5px;
+	top:2px;
+	width:16px;
+	z-index:100;
+}
+#block-views-active_topics .view-header span {
+	display:none;
+}
+#block-views-active_topics .item-list ul {
+	padding-top:2px;
+}
+#block-views-active_topics .item-list ul li {
+	margin-bottom:2px;
+	line-height:1.3em;
+}
+#block-views-active_topics .item-list ul li .view-item {
+	border-bottom:1px solid #c6e2ed;
+	padding-bottom:3px;
+}
+#block-views-active_topics .item-list ul li .last {
+	border-bottom:none;
+}
+
 /****************************************************************
 	forum_blogs
 ****************************************************************/
+
 #forum_blogs {
 	float:right;
 	padding: 0 12px 0 19px;

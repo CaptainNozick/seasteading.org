@@ -29,19 +29,10 @@
 		<?php print $header; ?>
 		
 		<div id="banner">
-			<h2><span>Mark Twain, 1800's: "Buy land. They've stopped making it"<br />The Seasteading Institute, 2008: Production Resuming.</span></h2>
-			
-			<?php if ($banner_blocks): ?>
-				<?=$banner_blocks ?>
-			<?php endif; ?>
-			
-		</div>
 		
-		<div id="content-home">
-			
-			<div id="key_areas">
-				<?php if ($sidebar_left): ?>
-					<?=$sidebar_left ?>
+			<div id="key-areas">
+				<?php if ($banner_blocks): ?>
+					<?=$banner_blocks ?>
 					<form action="http://groups.google.com/group/seasteading-announcements/boxsubscribe">
 						<p><strong>Join our mailing list</strong><br />
 							(1-2 messages per month):<br />
@@ -50,24 +41,24 @@
 				<?php endif; ?>
 			</div>
 			
-			<div id="press_releases">
+		</div>
+		
+		<div id="content-home">
+			
+			<div id="center_left">
 				<?php if ($center_left): ?>
 					<?=$center_left ?>
 				<?php endif; ?>
 			</div>
 			
-			<div id="forum_topics">
+			<div id="center_right">
 				<?php if ($center_right): ?>
 					<?=$center_right ?>
 				<?php endif; ?>
 			</div>
 			
-			<div id="forum_blogs">
-				<?php if ($sidebar_right): ?>
-					<?=$sidebar_right ?>
-				<?php endif; ?>
-			</div>
-			
+			<script type="text/javascript" src="<?=base_path() . path_to_theme() ?>/scripts/randomizer.js"></script>
+						
 		</div>
 		
 	</div>
