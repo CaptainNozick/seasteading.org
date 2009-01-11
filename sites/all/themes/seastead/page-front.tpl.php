@@ -44,17 +44,27 @@
 		</div>
 		
 		<div id="content-home">
+		
+			<div id="navigator">
+				<a href="javascript:prevItem()"><img src="<?php print base_path() . path_to_theme() ?>/images/go-left.png" /></a>
+				<span id="current-item">1</span>/3
+				<a href="javascript:nextItem()"><img src="<?php print base_path() . path_to_theme() ?>/images/go-right.png" /></a>
+			</div>
 			
 			<div id="center_left">
-				<?php if ($center_left): ?>
-					<?=$center_left ?>
-				<?php endif; ?>
+				<div id="center_left_inner">
+					<?php if ($center_left): ?>
+						<?=$center_left ?>
+					<?php endif; ?>
+				</div>
 			</div>
 			
 			<div id="center_right">
-				<?php if ($center_right): ?>
-					<?=$center_right ?>
-				<?php endif; ?>
+				<div id="center_right_inner">
+					<?php if ($center_right): ?>
+						<?=$center_right ?>
+					<?php endif; ?>
+				</div>
 			</div>
 			
 			<script type="text/javascript" src="<?=base_path() . path_to_theme() ?>/scripts/randomizer.js"></script>
