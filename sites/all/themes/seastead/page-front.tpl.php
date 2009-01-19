@@ -28,8 +28,14 @@
 		
 		<?php print $header; ?>
 		
-		<div id="banner">
+		<?php
+		$rnd_banner = rand(1,15);
+		?>
 		
+		<div id="banner" style="background-image: url('<?php print base_path() . path_to_theme() . '/images/banners/' . $rnd_banner?>.jpg')">
+		
+			<div id="key-areas-backing"></div>
+			
 			<div id="key-areas">
 				<?php if ($banner_blocks): ?>
 					<?=$banner_blocks ?>
