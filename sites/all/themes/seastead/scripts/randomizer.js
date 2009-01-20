@@ -5,7 +5,9 @@ currentitem = 1;
 totalitems = 3;
 itemwidth = 495;
 
-function nextItem() {
+allowplaying = true;
+
+function nextItem(clicked) {
 	if (currentitem < totalitems) {
 		for (i=1; i<=itemwidth; i++) {
 			setTimeout("document.getElementById('center_left').scrollLeft += 1;",i);
@@ -13,9 +15,10 @@ function nextItem() {
 		currentitem++;
 		document.getElementById('current-item').innerHTML = currentitem;
 	}
+	if (clicked) allowplaying = false;
 }
 
-function prevItem() {
+function prevItem(clicked) {
 	if (currentitem > 1) {
 		for (i=1; i<=itemwidth; i++) {
 			setTimeout("document.getElementById('center_left').scrollLeft -= 1;",i);
@@ -23,6 +26,7 @@ function prevItem() {
 		currentitem--;
 		document.getElementById('current-item').innerHTML = currentitem;
 	}
+	if (clicked) allowplaying = false;
 }
 
 rnd = (Math.floor((Math.random()*totalitems)));
@@ -30,23 +34,26 @@ document.getElementById('center_left').scrollLeft = itemwidth*rnd;
 currentitem = rnd+1;
 document.getElementById('current-item').innerHTML = currentitem;
 
+setInterval("changeItem();",15000);
+
 function changeItem() {
-	rnd = currentitem;
-	while (rnd == currentitem) {
-		rnd = (Math.floor((Math.random()*totalitems))) + 1;
-	}
-	diff = currentitem - rnd;
-	if (diff < 0) {
-		for (i=0; i>=diff; i--) {
-			nextItem();
+	if (allowplaying) {
+		rnd = currentitem;
+		while (rnd == currentitem) {
+			rnd = (Math.floor((Math.random()*totalitems))) + 1;
+		}
+		diff = currentitem - rnd;
+		if (diff < 0) {
+			for (i=0; i>=diff; i--) {
+				nextItem(false);
+			}
+		}
+		if (diff > 0) {
+			for (i=0; i<=diff; i++) {
+				prevItem(false);
+			}
 		}
 	}
-	if (diff > 0) {
-		for (i=0; i<=diff; i++) {
-			prevItem();	
-		}
-	}
-	document.getElementById('current-item').innerHTML = rnd;
 }
 
 // Banner
@@ -62,7 +69,6 @@ function changeBanner() {
 	newbanner.onload = function() {
 		el = document.getElementById("banner");
 		el.style.backgroundImage = "url('/sites/all/themes/seastead/images/banners/" + rndbanner + ".jpg')";
-		changeItem();
 	}
 	newbanner.src = '/sites/all/themes/seastead/images/banners/' + rndbanner + '.jpg';
 }
