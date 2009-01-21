@@ -750,7 +750,7 @@ ul.secondary
 	right: 0;
 	background-color: #ffffff;
 	opacity: 0.20;
-	filer: alpha(opacity=20);
+	filter: alpha(opacity=20);
 	z-index: 2;
 }
 

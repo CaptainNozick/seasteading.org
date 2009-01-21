@@ -66,11 +66,7 @@ td.menu-disabled {
 }
 
 .clr,
-#content-home,
-.clear-block,
 #block-user-0 form a.register,
-#key_areas .menu li,
-#key_areas .menu li a,
 .item-list ul li,
 #interact-menu ul li a,
 .content-body .box,
@@ -82,45 +78,40 @@ td.menu-disabled {
 #content-wrapper-1,
 #block-menu-2 ul.menu li,
 #block-menu-2 ul.menu a,
-#block-menu-83 ul.menu li a,
 .block-month ul li a,
-#node-form .link-field-row,
-#banner
+#node-form .link-field-row
 {
-	height:1px;
+        height:1px;
 }
 #block-user-0 form a.register span {
-	float:left;
+        float:left;
 }
 .forum #content-wrapper {
-	height: 1px;
-	margin: 0 -3px 0 207px;
+        height: 1px;
+        margin: 0 -3px 0 207px;
 }
 #block-menu-2 .content {
-	height:28px;
+        height:28px;
 }
 #content-wrapper-1 .post .links ul {
-	padding:5px 0;
+        padding:5px 0;
 }
 #content-wrapper-1 .post .meta {
-	padding:5px 0 4px;
+        padding:5px 0 4px;
 }
 #content-1{
-	height:1px;
+        height:1px;
 
 }
 #block-menu-2 ul.menu li{
-	vertical-align:top;
+        vertical-align:top;
 }
 #block-user-0 {
-	float:none;
+        float:none;
 }
-#banner .news ul {
-	padding-top:18px;
-}
-#banner .news ul li h4.date {
-	margin:0;
-}
-#banner .news ul li h3.title {
-	margin:0 0 3px;
+
+#key-areas ul li {
+	margin: 0;
+	padding: 0;
+        line-height: 10px;
 }
