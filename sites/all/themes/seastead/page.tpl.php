@@ -89,9 +89,7 @@
 				<h2><span>Strategic Areas</span></h2>
 			</div>
 		<?php elseif( arg(0) == 'user' && ( is_numeric(arg(1)) && ( !arg(2) || arg(2) == 'edit' ) ) || arg(1) == 'password' || arg(1) == 'register' ) : // Strategic areas ?>
-			<div id="banner">
-				<h2><span>Mark Twain, 1800's: "Buy land. They've stopped making it"<br />The Seasteading Institute, 2008: Production Resuming.</span></h2>
-			</div>
+			
 		<?php elseif ($at_forum || $menu_root_title == 'Interact') : ?>
 			<div id="banner-sub" class="banner-interact">
 				<h2><span>Interact</span></h2>
