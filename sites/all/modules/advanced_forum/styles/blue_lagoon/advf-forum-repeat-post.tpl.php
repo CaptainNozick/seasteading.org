@@ -1,5 +1,5 @@
 <?php
-// $Id: advf-forum-repeat-post.tpl.php,v 1.6 2008/11/18 02:30:07 michellec Exp $
+// $Id: advf-forum-repeat-post.tpl.php,v 1.7 2008/12/07 06:05:46 michellec Exp $
 
 /**
  * @file advf-forum-repeat-post.tpl.php
@@ -15,7 +15,7 @@
  */
 ?>
 
-<div class="forum-post-header clearfix">
+<div class="forum-post-header clear-block">
   <?php print $reply_link; ?>
   
   <div class="reply-count">
@@ -23,6 +23,6 @@
     
     <?php if (!empty($new_posts)): ?>
       (<?php print $new_posts; ?>)
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>

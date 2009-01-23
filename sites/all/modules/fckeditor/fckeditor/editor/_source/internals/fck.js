@@ -409,7 +409,11 @@ var FCK =
 			FCK.EditorDocument.detachEvent("onselectionchange", Doc_OnSelectionChange ) ;
 		}
 
-		FCKTempBin.Reset();
+		FCKTempBin.Reset() ;
+
+		// Bug #2469: SelectionData.createRange becomes undefined after the editor
+		// iframe is changed by FCK.SetData().
+		FCK.Selection.Release() ;
 
 		if ( FCK.EditMode == FCK_EDITMODE_WYSIWYG )
 		{

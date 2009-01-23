@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Tarpas tarp langelių",
 DlgTableCellPad		: "Trapas nuo langelio rėmo iki teksto",
 DlgTableCaption		: "Antraštė",
 DlgTableSummary		: "Santrauka",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Langelio savybės",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Viršų",
 DlgCellVerAlignMiddle	: "Vidurį",
 DlgCellVerAlignBottom	: "Apačią",
 DlgCellVerAlignBaseline	: "Apatinę liniją",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Eilučių apjungimas",
 DlgCellCollSpan		: "Stulpelių apjungimas",
 DlgCellBackColor	: "Fono spalva",

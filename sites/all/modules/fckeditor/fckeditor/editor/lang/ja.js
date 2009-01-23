@@ -308,6 +308,11 @@ DlgTableCellSpace	: "セル内余白",
 DlgTableCellPad		: "セル内間隔",
 DlgTableCaption		: "ｷｬﾌﾟｼｮﾝ",
 DlgTableSummary		: "テーブル目的/構造",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "セル プロパティ",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "上",
 DlgCellVerAlignMiddle	: "中央",
 DlgCellVerAlignBottom	: "下",
 DlgCellVerAlignBaseline	: "ベースライン",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "縦幅(行数)",
 DlgCellCollSpan		: "横幅(列数)",
 DlgCellBackColor	: "背景色",

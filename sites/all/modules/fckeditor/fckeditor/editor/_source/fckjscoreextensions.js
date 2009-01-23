@@ -148,13 +148,6 @@ String.prototype.Replace = function( regExp, replacement, thisObj )
 		return this.replace( regExp, replacement ) ;
 }
 
-Array.prototype.AddItem = function( item )
-{
-	var i = this.length ;
-	this[ i ] = item ;
-	return i ;
-}
-
 Array.prototype.IndexOf = function( value )
 {
 	for ( var i = 0 ; i < this.length ; i++ )

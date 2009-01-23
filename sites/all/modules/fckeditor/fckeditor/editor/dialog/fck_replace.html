@@ -142,7 +142,7 @@ CharacterCursor.prototype =
 		}
 
 		this._textNode = curNode ;
-		this._offset = curNode.length - 1 ;
+		this._offset = curNode && curNode.length - 1 ;
 		return crossed ;
 	},
 
@@ -420,6 +420,8 @@ function GetMatchWord()
  */
 function CheckIsWordSeparator( c )
 {
+	if ( !c )
+		return true;
 	var code = c.charCodeAt( 0 );
 	if ( code >= 9 && code <= 0xd )
 		return true;

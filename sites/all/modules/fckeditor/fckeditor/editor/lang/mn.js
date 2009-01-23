@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Нүх хоорондын зай (spacing)",
 DlgTableCellPad		: "Нүх доторлох(padding)",
 DlgTableCaption		: "Тайлбар",
 DlgTableSummary		: "Тайлбар",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Хоосон зайн шинж чанар",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Дээд тал",
 DlgCellVerAlignMiddle	: "Дунд",
 DlgCellVerAlignBottom	: "Доод тал",
 DlgCellVerAlignBaseline	: "Baseline",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Нийт мөр (span)",
 DlgCellCollSpan		: "Нийт багана (span)",
 DlgCellBackColor	: "Фонны өнгө",

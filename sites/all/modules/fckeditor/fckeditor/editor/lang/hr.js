@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Prostornost ćelija",
 DlgTableCellPad		: "Razmak ćelija",
 DlgTableCaption		: "Naslov",
 DlgTableSummary		: "Sažetak",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Svojstva ćelije",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Gornje",
 DlgCellVerAlignMiddle	: "Srednišnje",
 DlgCellVerAlignBottom	: "Donje",
 DlgCellVerAlignBaseline	: "Bazno",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Spajanje redova",
 DlgCellCollSpan		: "Spajanje kolona",
 DlgCellBackColor	: "Boja pozadine",

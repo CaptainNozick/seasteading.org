@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Interspacigo de Ĉeloj",
 DlgTableCellPad		: "Ĉirkaŭenhava Plenigado",
 DlgTableCaption		: "Titolo",
 DlgTableSummary		: "Summary",	//MISSING
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Atributoj de Celo",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Supre",
 DlgCellVerAlignMiddle	: "Centre",
 DlgCellVerAlignBottom	: "Malsupre",
 DlgCellVerAlignBaseline	: "Je Malsupro de Teksto",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Linioj Kunfanditaj",
 DlgCellCollSpan		: "Kolumnoj Kunfanditaj",
 DlgCellBackColor	: "Fono",

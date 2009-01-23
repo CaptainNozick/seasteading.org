@@ -136,7 +136,7 @@ FCKDomRangeIterator.prototype =
 						// The found boundary must be set as the next one at this
 						// point. (#1717)
 						if ( nodeName != 'br' )
-							this._NextNode = FCKDomTools.GetNextSourceNode( currentNode, true, null, lastNode ) ;
+							this._NextNode = FCKDomTools.GetNextSourceNode( currentNode, true, null, lastNode ) || currentNode ;
 					}
 
 					closeRange = true ;

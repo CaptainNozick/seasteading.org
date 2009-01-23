@@ -94,7 +94,7 @@ var FCKDialog = ( function()
 				TopWindow : topWindow
 			}
 
-			FCK.ToolbarSet.CurrentInstance.Selection.Save() ;
+			FCK.ToolbarSet.CurrentInstance.Selection.Save( true ) ;
 
 			// Calculate the dialog position, centering it on the screen.
 			var viewSize = FCKTools.GetViewPaneSize( topWindow ) ;

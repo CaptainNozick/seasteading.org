@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Spaziatura celle",
 DlgTableCellPad		: "Padding celle",
 DlgTableCaption		: "Intestazione",
 DlgTableSummary		: "Indice",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Proprietà cella",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "In Alto",
 DlgCellVerAlignMiddle	: "Centrato",
 DlgCellVerAlignBottom	: "In Basso",
 DlgCellVerAlignBaseline	: "Linea base",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Righe occupate",
 DlgCellCollSpan		: "Colonne occupate",
 DlgCellBackColor	: "Colore sfondo",

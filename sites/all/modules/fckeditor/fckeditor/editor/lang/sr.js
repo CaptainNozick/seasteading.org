@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Ћелијски простор",
 DlgTableCellPad		: "Размак ћелија",
 DlgTableCaption		: "Наслов табеле",
 DlgTableSummary		: "Summary",	//MISSING
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Особине ћелије",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Горње",
 DlgCellVerAlignMiddle	: "Средина",
 DlgCellVerAlignBottom	: "Доње",
 DlgCellVerAlignBaseline	: "Базно",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Спајање редова",
 DlgCellCollSpan		: "Спајање колона",
 DlgCellBackColor	: "Боја позадине",

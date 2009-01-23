@@ -2,3 +2,9 @@
 name = Comment RSS
 description = Provides RSS feeds for comments
 dependencies = comment
+
+; Information added by drupal.org packaging script on 2008-10-06
+version = "5.x-2.x-dev"
+project = "commentrss"
+datestamp = "1223294550"
+

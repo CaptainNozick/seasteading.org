@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Cellavstånd",
 DlgTableCellPad		: "Cellutfyllnad",
 DlgTableCaption		: "Rubrik",
 DlgTableSummary		: "Sammanfattning",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Cellegenskaper",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Topp",
 DlgCellVerAlignMiddle	: "Mitten",
 DlgCellVerAlignBottom	: "Nederkant",
 DlgCellVerAlignBaseline	: "Underst",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Radomfång",
 DlgCellCollSpan		: "Kolumnomfång",
 DlgCellBackColor	: "Bakgrundsfärg",

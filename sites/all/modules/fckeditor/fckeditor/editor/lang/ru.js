@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Промежуток (spacing)",
 DlgTableCellPad		: "Отступ (padding)",
 DlgTableCaption		: "Заголовок",
 DlgTableSummary		: "Резюме",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Свойства ячейки",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Сверху",
 DlgCellVerAlignMiddle	: "Посередине",
 DlgCellVerAlignBottom	: "Снизу",
 DlgCellVerAlignBaseline	: "По базовой линии",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Диапазон строк (span)",
 DlgCellCollSpan		: "Диапазон колонок (span)",
 DlgCellBackColor	: "Цвет фона",

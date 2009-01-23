@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Espaiat de cel·les",
 DlgTableCellPad		: "Encoixinament de cel·les",
 DlgTableCaption		: "Títol",
 DlgTableSummary		: "Resum",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Propietats de la cel·la",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Top",
 DlgCellVerAlignMiddle	: "Middle",
 DlgCellVerAlignBottom	: "Bottom",
 DlgCellVerAlignBaseline	: "Baseline",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Rows Span",
 DlgCellCollSpan		: "Columns Span",
 DlgCellBackColor	: "Color de fons",

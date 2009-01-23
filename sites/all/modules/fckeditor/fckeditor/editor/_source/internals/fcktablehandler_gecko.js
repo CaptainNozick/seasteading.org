@@ -48,7 +48,7 @@ FCKTableHandler.GetSelectedCells = function()
 		else
 			oCell = oRange.startContainer.childNodes[ oRange.startOffset ] ;
 
-		if ( oCell.tagName.Equals( 'TD', 'TH' ) )
+		if ( oCell.nodeName.Equals( 'TD', 'TH' ) )
 			aCells[aCells.length] = oCell ;
 	}
 

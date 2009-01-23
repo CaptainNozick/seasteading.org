@@ -55,6 +55,7 @@ var FCKLanguageManager = FCK.Language =
 		hi		: 'Hindi',
 		hr		: 'Croatian',
 		hu		: 'Hungarian',
+		is		: 'Icelandic',
 		it		: 'Italian',
 		ja		: 'Japanese',
 		km		: 'Khmer',

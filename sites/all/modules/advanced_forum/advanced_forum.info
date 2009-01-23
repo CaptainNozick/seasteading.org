@@ -2,3 +2,9 @@
 name = Advanced Forum
 description = Enables the look and feel of other popular forum software.
 dependencies = forum
+
+; Information added by drupal.org packaging script on 2008-12-13
+version = "5.x-1.0-alpha16"
+project = "advanced_forum"
+datestamp = "1229142303"
+

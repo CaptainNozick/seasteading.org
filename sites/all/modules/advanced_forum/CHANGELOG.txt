@@ -1,6 +1,31 @@
-$Id: CHANGELOG.txt,v 1.61 2008/11/18 02:01:38 michellec Exp $
+$Id: CHANGELOG.txt,v 1.70 2008/12/12 23:45:52 michellec Exp $
 
 ****************************** DRUPAL 5 BRANCH ********************************
+
+December 12, 2008
+-----------------
+#330000 and #328800 by Michelle: Redid image handling to ensure all images have alt text. Also made it possible for link images to be picked up automatically if they have a file name that matches the link key.
+#344697 by Michelle: Added permission to view statistics and also broke out statistics into its own template.
+
+December 11, 2008
+-----------------
+NOISSUE by Michelle: Fixed up author pane template comments and added facebook_status variable.
+#343848 by Michelle: Added variable for fasttoggle to author pane.
+
+December 8, 2008
+-----------------
+#320635 by Michelle: Added logic to 'treat as forum post' to account for reply pages. CSS is now loaded whenever AF determines the content is to be treated as a forum post.
+#320635 by Michelle: Improvements on theming reply pages, including using a seperate template for previews.
+#340149 by mverdier, Michelle: Fixed 'open_basedir restriction' error that occurs when using Zen on D5 without using a subtheme.
+#338268 by marcingy: Added option to set length of abbreviated topic title on forum overview.
+#338268 by Michelle: Added option to set 'time ago' cutoff.
+#303563 by Michelle: Clear readpath when marking read. (Outside module integration.)
+#339982 by Michelle: Fixed bug with comment wrapper template not loading.
+
+December 7, 2008
+-----------------
+#334850 by Michelle: Zen bypasses some needed code for loading the author pane files. This ensures the files get loaded.
+#339890 by Michelle: Fixed short script opener in advf-forum-repeat-post.tpl.php (500 errors on paged threads)
 
 November 17, 2008
 -----------------
@@ -285,7 +310,7 @@ March 22, 2008 -- ALPHA 6
 --------------
 Fixed remaining issues with advanced_forum_get_all_last_topics (I hope!)
 Updated README.txt and CHANGELOG.txt
-Fixed $Id: CHANGELOG.txt,v 1.61 2008/11/18 02:01:38 michellec Exp $ at the tops of all the files.
+Fixed $Id: CHANGELOG.txt,v 1.70 2008/12/12 23:45:52 michellec Exp $ at the tops of all the files.
 
 March 18, 2008
 --------------

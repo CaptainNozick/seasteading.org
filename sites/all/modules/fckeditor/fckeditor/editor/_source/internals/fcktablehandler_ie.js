@@ -25,7 +25,7 @@ FCKTableHandler.GetSelectedCells = function()
 {
 	if ( FCKSelection.GetType() == 'Control' )
 	{
-		var td = FCKSelection.MoveToAncestorNode( 'TD' ) ;
+		var td = FCKSelection.MoveToAncestorNode( ['TD', 'TH'] ) ;
 		return td ? [ td ] : [] ;
 	}
 

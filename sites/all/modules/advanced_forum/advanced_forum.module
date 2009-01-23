@@ -1,5 +1,5 @@
 <?php
-// $Id: advanced_forum.module,v 1.112 2008/11/12 03:49:12 michellec Exp $
+// $Id: advanced_forum.module,v 1.122 2008/12/12 23:45:52 michellec Exp $
 
 /**
  * @file
@@ -12,7 +12,8 @@
  * Implementation of hook_perm().
  */
 function advanced_forum_perm() {
-  return array('administer advanced forum');
+  return array('administer advanced forum',
+    'view forum statistics');
 }
 
 /**
@@ -45,10 +46,6 @@ function advanced_forum_menu($may_cache) {
                'access' => user_access('administer advanced forum'),
     );
 
-  }
-  elseif (arg(0) == 'forum') {
-    // Add the CSS & JS since we know we're on a page that needs them
-    advanced_forum_drupal_adds();
   }
 
   return $items;
@@ -116,6 +113,24 @@ function advanced_forum_settings_page() {
     '#default_value' => variable_get('advanced_forum_use_topic_navigation', 0),
     '#description' => t('Core forum gets the next and previous topics and shows links to them under the top post. This is turned off by default as the query has performance issues and the placement of the links is poor.'),
   );
+ 
+  // Title length max
+  $form['advanced_forum_topic_title_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Number of characters to display for the topic title.'),
+    '#size' => 5,
+    '#description' => t('Used on main forum page. Enter 0 to use the full title.'),
+    '#default_value' => variable_get('advanced_forum_topic_title_length', 15),
+  );
+
+  // Time ago cutoff
+  $form['advanced_forum_time_ago_cutoff'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Number of hours before switching to "time ago" in displays..'),
+    '#size' => 5,
+    '#description' => t('Will show actual date posted until this cutoff and then switch to time ago.'),
+    '#default_value' => variable_get('advanced_forum_time_ago_cutoff', 48),
+  );
 
   // Send our form to Drupal to make a settings page
   return system_settings_form($form);
@@ -147,8 +162,11 @@ function _advanced_forum_load_preprocessors() {
     return;
   }
 
-  // forum.inc is the extension on the includes such as contact.forum.inc
+  // author-pane.inc is the extension on the includes such as contact.author-pane.inc
   advanced_forum_include('author-pane.inc');
+
+  // Added for modules that add things outside of the author pane.
+  advanced_forum_include('adv_process.inc');
 }
 
 /**
@@ -200,6 +218,10 @@ function theme_author_pane($account) {
   $variables['account'] = $account;
   $variables['image_path'] = advanced_forum_path_to_images();
 
+  // Make sure the preprocess .inc files get loaded. This is mostly for Zen
+  // which naughtily bypasses the API and misses this.
+  _advanced_forum_load_preprocessors();
+  
   // Call our preprocess function to create all the variables
   advanced_forum_call_preprocess('author_pane', $variables);
 
@@ -229,6 +251,19 @@ function phptemplate_forum_display($forums, $topics, $parents, $tid, $sortby, $f
   // Set the template file
   $forum_style = advanced_forum_get_current_style();
   return _phptemplate_callback('advf_forums', $variables, array("$forum_style/advf-forums"));
+}
+
+/**
+ * Implementation of theme_advf_forum_statistics().
+ */
+function phptemplate_advf_forum_statistics() {
+
+  // Pass the parameters into our preprocess function
+  advanced_forum_call_preprocess('advf_forum_statistics', $variables);
+
+  // Set the template file
+  $forum_style = advanced_forum_get_current_style();
+  return _phptemplate_callback("advf_forum_statistics", $variables, array("$forum_style/advf-forum-statistics"));
 }
 
 /**
@@ -373,7 +408,7 @@ function _advanced_forum_adjust_node_links(&$variables) {
     $reply_link = $variables['node']->links['comment_add'];
 
     if (variable_get('advanced_forum_button_links', 1)) {
-      $reply_link['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'post-reply.png');
+      $reply_link['title'] = advanced_forum_theme_image('post-reply.png', t('Post reply'));
       $reply_link['html'] = TRUE;
     }
     else {
@@ -382,25 +417,8 @@ function _advanced_forum_adjust_node_links(&$variables) {
     $variables['reply_link'] = theme('links', array('topic_reply' => $reply_link), array('class' => 'forum-links'));
   }
 
-  // Iconify common links (optional to avoid translation issues)
-  if (variable_get('advanced_forum_button_links', 1)) {
-    if (!empty($variables['node']->links['comment_add']['title'])) {
-      $variables['node']->links['comment_add']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'reply.png');
-      $variables['node']->links['comment_add']['html'] = TRUE;
-    }
-    if (!empty($variables['node']->links['quote']['title'])) {
-      $variables['node']->links['quote']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'quote.png');
-      $variables['node']->links['quote']['html'] = TRUE;
-    }
-    if (!empty($variables['node']->links['edit']['title'])) {
-      $variables['node']->links['edit']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'edit.png');
-      $variables['node']->links['edit']['html'] = TRUE;
-    }
-    if (!empty($variables['node']->links['delete']['title'])) {
-      $variables['node']->links['delete']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'delete.png');
-      $variables['node']->links['delete']['html'] = TRUE;
-    }
-  }
+  // Change links over to buttons when possible and wanted.
+  _advanced_forum_buttonify_links($variables['node']->links);
 
   // Remake the links with our changes
   $variables['links'] = theme('links', $variables['node']->links, array('class' => 'links inline forum-links'));
@@ -471,24 +489,7 @@ function advanced_forum_preprocess_comment(&$variables) {
     }
 
       // Iconify common links (optional to avoid translation issues)
-      if (variable_get('advanced_forum_button_links', 1)) {
-        if (!empty($links['comment_reply']['title'])) {
-          $links['comment_reply']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'reply.png');
-          $links['comment_reply']['html'] = TRUE;
-        }
-        if (!empty($links['quote']['title'])) {
-          $links['quote']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'quote.png');
-          $links['quote']['html'] = TRUE;
-        }
-        if (!empty($links['comment_edit']['title'])) {
-          $links['comment_edit']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'edit.png');
-          $links['comment_edit']['html'] = TRUE;
-        }
-        if (!empty($links['comment_delete']['title'])) {
-          $links['comment_delete']['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'delete.png');
-          $links['comment_delete']['html'] = TRUE;
-        }
-      }
+      _advanced_forum_buttonify_links($links);
 
       // Remake the links with our changes
       $variables['links'] = theme('links', $links, array('class' => 'links forum-links'));
@@ -529,7 +530,7 @@ function advanced_forum_preprocess_comment_wrapper(&$variables) {
 
   if (!empty($reply_link)) {
     if (variable_get('advanced_forum_button_links', 1)) {
-      $reply_link['title'] = theme('image', advanced_forum_path_to_images() . '/' . 'post-reply.png');
+      $reply_link['title'] = advanced_forum_theme_image('post-reply.png', t('Post reply'));
       $reply_link['html'] = TRUE;
     }
     else {
@@ -573,16 +574,12 @@ function template_preprocess_author_pane(&$variables) {
   // Online status
   $variables['last_active'] = format_interval(time() - $account->access);
   if (round((time()-$account->access)/60) < 15) {
-    $variables['online_icon'] = theme('image', advanced_forum_path_to_images() . '/user-online.png', t('User is online'), t('User is online'), NULL, TRUE);
+    $variables['online_icon'] = advanced_forum_theme_image('user-online.png', t('User is online'));
     $variables['online_status'] = t('Online');
  }
   else {
-    $variables['online_icon'] = theme('image',
-      advanced_forum_path_to_images() . '/user-offline.png',
-      t('User offline. Last seen @time ago.', array('@time' => $variables['last_active'])),
-      t('User offline. Last seen @time ago.', array('@time' => $variables['last_active'])),
-      NULL,
-      TRUE);
+    $variables['online_icon'] = advanced_forum_theme_image('user-offline.png',
+      t('User offline. Last seen @time ago.', array('@time' => $variables['last_active'])));
     $variables['online_status'] = t('Offline');
   }
 }
@@ -605,13 +602,13 @@ function advanced_forum_preprocess_forums(&$variables) {
     // To avoid translation issues, make the button version optional
     if (variable_get('advanced_forum_button_links', 1)) {
       if (isset($variables['links']['forum'])) {
-        $title_image = theme('image', advanced_forum_path_to_images() . '/' . 'new-topic.png');
+        $title_image = advanced_forum_theme_image('new-topic.png', t('New topic'));
         $variables['links']['forum']['title'] = $title_image;
         $variables['links']['forum']['html'] = TRUE;
       }
 
       if (isset($variables['links']['poll'])) {
-        $title_image = theme('image', advanced_forum_path_to_images() . '/' . 'new-poll.png');
+        $title_image = advanced_forum_theme_image('new-poll.png', t('New poll'));
         $variables['links']['poll']['title'] = $title_image;
         $variables['links']['poll']['html'] = TRUE;
       }
@@ -632,7 +629,7 @@ function advanced_forum_preprocess_forums(&$variables) {
 
     // To avoid translation issues, make the button version optional
     if (variable_get('advanced_forum_button_links', 1)) {
-      $title_image = theme('image', advanced_forum_path_to_images() . '/' . 'mark-read.png');
+      $title_image = advanced_forum_theme_image('mark-read.png', t('Mark read'));
       $variables['links']['markasread'] = array('title' => $title_image, 'href' => $link, 'html' => TRUE);
       $variables['links_orig']['markasread'] = array('title' => $title_image, 'href' => $link, 'html' => TRUE);
     }
@@ -641,6 +638,27 @@ function advanced_forum_preprocess_forums(&$variables) {
       $variables['links_orig']['markasread'] = array('title' => $title, 'href' => $link);
     }
   }
+}
+
+/**
+ * Preprocesses template variables for the forum statistics template.
+ */
+function advanced_forum_preprocess_advf_forum_statistics(&$variables) {
+  $variables['template_files'][] = 'advf-forum-statistics';
+
+  $variables['topics'] = advanced_forum_statistics_topics();
+  $variables['posts'] = advanced_forum_statistics_comments() + $variables['topics'];
+  $variables['users'] = advanced_forum_statistics_users();
+
+  $authenticated_users = advanced_forum_statistics_online_users();
+  $variables['online_users'] = implode(', ', $authenticated_users);
+  $variables['current_users'] = count($authenticated_users);
+  $variables['current_guests'] = sess_count(time() - variable_get('user_block_seconds_online', 900));
+  $variables['current_total'] = $variables['current_users'] + $variables['current_guests'];
+
+  $latest_user = advanced_forum_statistics_latest_user();
+  $variables['latest_user_name'] = $latest_user['name'];
+  $variables['latest_user_id'] = $latest_user['uid'];
 }
 
 /**
@@ -714,10 +732,10 @@ function advanced_forum_preprocess_forum_list(&$variables) {
 
     // If there are new topics/posts, change the icon
     if ($forum->new_topics || $forum->new_posts) {
-       $variables['forums'][$id]->icon = theme('image', advanced_forum_path_to_images() . '/forum-folder-new-posts.png');
+       $variables['forums'][$id]->icon = advanced_forum_theme_image('forum-folder-new-posts.png', t('New posts folder'));
     }
     else {
-       $variables['forums'][$id]->icon = theme('image', advanced_forum_path_to_images() . '/forum-folder.png');
+       $variables['forums'][$id]->icon = advanced_forum_theme_image('forum-folder.png', t('Folder'));
     }
 
     // Make container description more accessable
@@ -726,19 +744,9 @@ function advanced_forum_preprocess_forum_list(&$variables) {
     }
   }
 
-  $variables['topics'] = advanced_forum_statistics_topics();
-  $variables['posts'] = advanced_forum_statistics_comments() + $variables['topics'];
-  $variables['users'] = advanced_forum_statistics_users();
-
-  $authenticated_users = advanced_forum_statistics_online_users();
-  $variables['online_users'] = implode(', ', $authenticated_users);
-  $variables['current_users'] = count($authenticated_users);
-  $variables['current_guests'] = sess_count(time() - variable_get('user_block_seconds_online', 900));
-  $variables['current_total'] = $variables['current_users'] + $variables['current_guests'];
-
-  $latest_user = advanced_forum_statistics_latest_user();
-  $variables['latest_user_name'] = $latest_user['name'];
-  $variables['latest_user_id'] = $latest_user['uid'];
+  if (user_access('view forum statistics')) {
+    $variables['forum_statistics'] = theme('advf_forum_statistics');
+  } 
 }
 
 /**
@@ -759,15 +767,23 @@ function advanced_forum_preprocess_forum_submitted(&$variables) {
     $query = comment_new_page_count($num_comments, $new_replies, $node);
 
     // Format the node title with a link
-    $short_topic_title = truncate_utf8($variables['topic']->node_title, 15, TRUE, TRUE);
+    $title_length = variable_get('advanced_forum_topic_title_length', 15);
+    if ($title_length == 0) {
+      $short_topic_title = $variables['topic']->node_title;
+    }
+    else {
+      $short_topic_title = truncate_utf8($variables['topic']->node_title, $title_length, TRUE, TRUE);
+    }    
+
     $fragment = ($new_replies) ? 'new' : NULL;
     $variables['topic_link'] = l($short_topic_title, "node/$nid", NULL, $query, $fragment);
   }
 
-  // For items posted more than 48 hours ago, offer an actual date.
+  // For items posted more than $cutoff hours ago, offer an actual date.
+  $cutoff = variable_get('advanced_forum_time_ago_cutoff', 48) * 60 * 60;
   if (isset($variables['topic']->timestamp)) {
       $timestamp = $variables['topic']->timestamp;
-      if (time() - $timestamp > 172800) {
+      if (time() - $timestamp > $cutoff) {
         $variables['date_posted'] = format_date($timestamp, 'small');
       }
   }
@@ -875,6 +891,8 @@ function advanced_forum_preprocess_forum_icon(&$variables) {
  */
 function advanced_forum_page($tid = 0) {
   drupal_add_css(drupal_get_path('module', 'forum') .'/forum.css');
+  _advanced_forum_add_files();
+  
   $forum_per_page = variable_get('forum_per_page', 25);
   $sortby = variable_get('forum_order', 1);
 
@@ -987,6 +1005,11 @@ function advanced_forum_markasread() {
     $args = array($user->uid, time(), NODE_NEW_LIMIT, NODE_NEW_LIMIT, $current_forum_id);
     db_query($sql, $args);
 
+    // Readpath integration
+    if (module_exists('readpath')) {
+      readpath_clear_readpath();
+    }
+    
     drupal_set_message(t('All content in this forum has been marked as read'));
     drupal_goto('forum/'. $current_forum_id);
   }
@@ -1015,6 +1038,11 @@ function advanced_forum_markasread() {
 
     db_query($sql, $args);
 
+    // Readpath integration
+    if (module_exists('readpath')) {
+      readpath_clear_readpath();
+    }
+    
     drupal_set_message(t('All forum content been marked as read'));
     drupal_goto('forum');
   }
@@ -1051,12 +1079,13 @@ function advanced_forum_path_to_style() {
     // and potentially may exist in other themes with subthemes.
     init_theme();
     if (function_exists("path_to_subtheme")) {
-      $style_path = path_to_subtheme() . '/' . $style;
+      $path_to_subtheme = path_to_subtheme();
+      $style_path = $path_to_subtheme . '/' . $style;
     }
 
     // If we had no luck finding the style in a subtheme, find the style path
     // the normal way.
-    if (empty($style_path) || !file_exists($style_path)) {
+    if (empty($path_to_subtheme) || empty($style_path) || !file_exists($style_path)) {
       $style_path = path_to_theme() . '/' . $style;
     }
   }
@@ -1077,6 +1106,64 @@ function advanced_forum_path_to_images() {
   return $image_path;
 }
 
+/** 
+ * Wrapper around theme_image that automatically includes the path.
+ */
+function advanced_forum_theme_image($image_file, $alt = NULL, $title = NULL) {
+  $image = advanced_forum_path_to_images() . "/$image_file";
+  
+  if ($title = NULL) {
+    $title = $alt;
+  }
+  if (file_exists($image)) {
+    return theme('image', $image, $alt, $title);
+  }
+  else {
+    return false;
+  }
+}
+
+function _advanced_forum_buttonify_links(&$links) {
+  $buttonify = variable_get('advanced_forum_button_links', 1);
+  
+  if ($buttonify) {
+    foreach ($links as $link_key => $link) {
+      switch ($link_key) {
+        // First, take care of the special cases
+        case 'comment_add':
+          $links[$link_key]['title'] = advanced_forum_theme_image('reply.png', t('reply'));
+          $links[$link_key]['html'] = TRUE;
+          break;
+          
+        case 'comment_reply':
+          $links[$link_key]['title'] = advanced_forum_theme_image('reply.png', t('reply'));
+          $links[$link_key]['html'] = TRUE;
+          break;
+
+        case 'comment_edit':
+          $links[$link_key]['title'] = advanced_forum_theme_image('edit.png', t('edit'));
+          $links[$link_key]['html'] = TRUE;
+          break;
+          
+        case 'comment_delete':
+          $links[$link_key]['title'] = advanced_forum_theme_image('delete.png', t('delete'));
+          $links[$link_key]['html'] = TRUE;
+          break;        
+        
+        default:
+          // For all other links, attempt to buttonify by key name.
+          $image = advanced_forum_theme_image($link_key . '.png', $link['title']);
+   
+          if ($image) {
+            // If we found an image, use it. Otherwise leave the title alone.
+            $links[$link_key]['title'] = $image;
+            $links[$link_key]['html'] = TRUE;
+          }
+      }
+    }
+  }
+}
+
 /**
  * This function returns true if the node/comment should be themed and
  * otherwise treated as a forum post.
@@ -1095,8 +1182,6 @@ function advanced_forum_treat_as_forum_post($hook, $variables) {
     if (($variables['node']->type == 'forum') && (arg(0) == 'node' && is_numeric(arg(1)) && arg(1) == $variables['node']->nid|| arg(0) == 'comment')) {
       $forum_node_id = $variables['node']->nid;
 
-      // Add the CSS & JS since we know we're on a node that needs them
-      advanced_forum_drupal_adds();
       $decision = TRUE;
     }
     else {
@@ -1107,7 +1192,7 @@ function advanced_forum_treat_as_forum_post($hook, $variables) {
     }
   }
 
-  if ($hook == 'comment' or $hook == 'comment-wrapper') {
+  if ($hook == 'comment') {
     if (isset($forum_node_id) && ($variables['comment']->nid == $forum_node_id)) {
       // We already know this comment is either part of a forum thread
       // or that comments on this thread are known exceptions.
@@ -1122,12 +1207,26 @@ function advanced_forum_treat_as_forum_post($hook, $variables) {
         // This site wants all comments to use the forum comment template
         $forum_node_id = $variables['comment']->nid;
 
-        // Add the CSS & JS since we know we're on a comment that needs them
-        advanced_forum_drupal_adds();
         $decision = TRUE;
       }
+      else {
+        // If we are on a comment reply page, check if the node/comment gets styled.
+        if (arg(0) == 'comment' && arg(1) == 'reply') {
+          $nid = arg(2);
+          $variables['node'] = node_load($nid);
+          $decision = advanced_forum_treat_as_forum_post('node', $variables);
+        }
+      } 
     }
   }
+  
+  if ($hook == 'comment-wrapper') {
+    if (isset($forum_node_id) && ($variables['node']->nid == $forum_node_id)) {
+      // We only want to use our comment wrapper if we are on a node that 
+      // passed the tests.
+      $decision = TRUE;
+    }
+  }  
 
   // Call a hook with our decisions and the available information. If it returns
   // a number, override our decision and set the static variable to that number.
@@ -1141,11 +1240,32 @@ function advanced_forum_treat_as_forum_post($hook, $variables) {
     $decision = TRUE;
   }
 
+  if ($decision) {
+    _advanced_forum_add_files();
+  }
+  
   return $decision;
 }
 
 
 // GENERAL UTILITY FUNCTIONS *************************************************/
+
+/**
+ * Adds extra files needed when we have a post that is to be treated as a forum
+ * post. Mostly CSS but could be JS and others in the future.
+ */
+function _advanced_forum_add_files() {
+  // This could get called more than once on a page and we only need to do it
+  // once.
+  static $added;
+  
+  if (!$added) {
+    $added = TRUE;
+    $style_directory = advanced_forum_path_to_style();
+    drupal_add_css("$style_directory/advanced_forum-structure.css" );
+    drupal_add_css("$style_directory/advanced_forum.css" );
+  }
+}
 
 /**
  * Holds the node ID of the thread we are on.
@@ -1341,18 +1461,6 @@ function advanced_forum_get_forum_list($tid = 0) {
   $forums = taxonomy_get_tree($vid, $tid);
 
   return $forums;
-}
-
-/**
- * Adds the needed CSS and JS.
- *
- * These are pulled into this function because there was some interference with
- * other modules when they were in the menu hook.
- */
-function advanced_forum_drupal_adds() {
-  $style_directory = advanced_forum_path_to_style();
-  drupal_add_css("$style_directory/advanced_forum-structure.css" );
-  drupal_add_css("$style_directory/advanced_forum.css" );
 }
 
 // STATISTICS ****************************************************************/

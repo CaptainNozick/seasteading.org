@@ -1,5 +1,5 @@
 <?php
-// $Id: advf-forum-list.tpl.php,v 1.13 2008/11/18 02:30:07 michellec Exp $
+// $Id: advf-forum-list.tpl.php,v 1.14 2008/12/12 23:45:52 michellec Exp $
 
 /**
  * @file advf-forum-list.tpl.php
@@ -103,23 +103,6 @@
   </tbody>
 </table>
 
-<div id="forum-statistics">
-  <div id="forum-statistics-header"><?php print t('What\'s Going On?'); ?></div>
-
-  <div id="forum-statistics-active-header" class="forum-statistics-sub-header">
-    <?php print t('Currently active users: !current_total (!current_users users and !current_guests guests)', array('!current_total' => $current_total, '!current_users' => $current_users, '!current_guests' => $current_guests)); ?>
-  </div>
-
-  <div id="forum-statistics-active-body" class="forum-statistics-sub-body">
-    <?php print $online_users; ?>
-  </div>
-
-  <div id="forum-statistics-statistics-header" class="forum-statistics-sub-header">
-    <?php print t('Statistics'); ?>
-  </div>
-
-  <div id="forum-statistics-statistics-body" class="forum-statistics-sub-body">
-    <?php print t('Topics: !topics, Posts: !posts, Users: !users', array('!topics' => $topics, '!posts' => $posts, '!users' => $users)); ?>
-    <br /><?php print t('Welcome to our latest member, !user', array('!user' => l($latest_user_name, 'user/' . $latest_user_id))); ?>
-  </div>
-</div>
+<?php if (!empty($forum_statistics)): ?>
+  <?php print $forum_statistics; ?>
+<?php endif; ?>

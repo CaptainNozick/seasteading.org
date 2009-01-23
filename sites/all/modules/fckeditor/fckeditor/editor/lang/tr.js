@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Izgara kalınlığı",
 DlgTableCellPad		: "Izgara yazı arası",
 DlgTableCaption		: "Başlık",
 DlgTableSummary		: "Özet",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Hücre Özellikleri",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Tepe",
 DlgCellVerAlignMiddle	: "Orta",
 DlgCellVerAlignBottom	: "Alt",
 DlgCellVerAlignBaseline	: "Taban Çizgisi",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Satır Kapla",
 DlgCellCollSpan		: "Sütun Kapla",
 DlgCellBackColor	: "Arka Plan Rengi",

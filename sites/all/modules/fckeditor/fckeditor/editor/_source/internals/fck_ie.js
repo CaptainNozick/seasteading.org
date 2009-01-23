@@ -136,7 +136,7 @@ FCK.InitializeBehaviors = function( dontReturn )
 
 	this.EditorDocument.attachEvent("ondblclick", Doc_OnDblClick ) ;
 
-	this.EditorDocument.attachEvent("onbeforedeactivate", function(){ FCKSelection.Save( true ) ; } ) ;
+	this.EditorDocument.attachEvent("onbeforedeactivate", function(){ FCKSelection.Save() ; } ) ;
 
 	// Catch cursor selection changes.
 	this.EditorDocument.attachEvent("onselectionchange", Doc_OnSelectionChange ) ;

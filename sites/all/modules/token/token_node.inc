@@ -1,5 +1,5 @@
 <?php
-// $Id: token_node.inc,v 1.3.2.21 2007/10/28 16:10:41 greggles Exp $
+// $Id: token_node.inc,v 1.3.2.22 2008/04/09 02:17:55 greggles Exp $
 
 /**
  * Implementation of hook_token_values()
@@ -94,6 +94,9 @@ function node_token_values($type, $object = NULL, $options = array()) {
             // pull it out of the db here.
             if (!isset($term->name) || !isset($term->tid)) {
               $vid = db_result(db_query("SELECT t.vid FROM {term_node} r INNER JOIN {term_data} t ON r.tid = t.tid INNER JOIN {vocabulary} v ON t.vid = v.vid WHERE r.nid = %d ORDER BY v.weight, t.weight, t.name LIMIT 1", $object->nid));
+              if (!$vid) {
+                continue;
+              }
               $term = db_fetch_object(db_query("SELECT t.tid, t.name FROM {term_data} t INNER JOIN {term_node} r ON r.tid = t.tid WHERE t.vid = %d AND r.nid = %d ORDER BY weight LIMIT 1", $vid, $object->nid));
               $term->vid = $vid;
             }
@@ -199,7 +202,7 @@ function book_token_values($type, $object = NULL, $options = array()) {
     $node = $object;
 
     $tokens = array();
-    if ($node->parent) {
+    if (!empty($node->parent)) {
       $path = book_location($node);
       $tokens['book'] = check_plain($path[0]->title);
       $tokens['book-raw'] = $path[0]->title;

@@ -1,4 +1,17 @@
-$Id: CHANGELOG.txt,v 1.1.2.2.2.56 2008/11/25 09:06:00 wwalc Exp $
+$Id: CHANGELOG.txt,v 1.1.2.2.2.63 2008/12/12 23:25:26 wwalc Exp $
+
+-- 2008-12-12 version 5.x-2.x-dev
+* #338923 Improved description of security setting
+* #336915 Gracefully degrade when not finding a textbox
+* FCKeditor module now doesn to require "." in the include_path to work
+* #321844 Fixed: FCKeditor and Image Assist not working together
+
+-- 2008-12-04 version 5.x-2.x-dev
+* Fixed problems with detecting valid input format
+* #342155 Added webform fields to the default exclusion list
+
+-- 2008-12-01 version 5.x-2.x-dev
+* #321818 Fixed: FCKeditor not displaying on any posts except initial ones
 
 -- 2008-11-25 version 5.x-2.x-dev
 * #336753 Fixed: All text disappears

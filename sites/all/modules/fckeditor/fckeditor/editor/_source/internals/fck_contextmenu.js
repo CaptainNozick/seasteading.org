@@ -337,6 +337,9 @@ function FCK_ContextMenu_OnBeforeOpen()
 
 function FCK_ContextMenu_OnItemClick( item )
 {
-	FCK.Focus() ;
+	// IE might work incorrectly if we refocus the editor #798
+	if ( !FCKBrowserInfo.IsIE )
+		FCK.Focus() ;
+
 	FCKCommands.GetCommand( item.Name ).Execute( item.CustomData ) ;
 }

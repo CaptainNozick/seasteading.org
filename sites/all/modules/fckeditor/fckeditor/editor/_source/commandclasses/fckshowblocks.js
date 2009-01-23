@@ -56,9 +56,12 @@ FCKShowBlockCommand.prototype.Execute = function()
 	else
 	{
 		var focus = FCK.EditorWindow.getSelection().focusNode ;
-		if ( focus.nodeType != 1 )
-			focus = focus.parentNode ;
-		FCKDomTools.ScrollIntoView( focus, false ) ;
+		if ( focus )
+		{
+			if ( focus.nodeType != 1 )
+				focus = focus.parentNode ;
+			FCKDomTools.ScrollIntoView( focus, false ) ;
+		}
 	}
 
 	FCK.Events.FireEvent( 'OnSelectionChange' ) ;

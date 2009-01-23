@@ -1,4 +1,4 @@
-// $Id: fckeditor.utils.js,v 1.1.4.19 2008/11/06 15:28:15 wwalc Exp $
+// $Id: fckeditor.utils.js,v 1.1.4.21 2008/12/12 20:28:45 wwalc Exp $
 var fckIsRunning = new Array;
 var fckIsLaunching = new Array;
 var fckLaunchedTextareaId = new Array;
@@ -20,7 +20,7 @@ function Toggle( js_id, textareaID, textTextarea, TextRTE,  xss_check )
 			$(".img_assist-button").hide();
 			
       if (xss_check && $('#' + textareaID).attr('class').indexOf("filterxss2") != -1) {
-        $.post(Drupal.settings.basePath + 'fckeditor/xss', {
+        $.post(Drupal.settings.basePath + 'index.php?q=fckeditor/xss', {
             text: $('#' + textareaID).val(),
             'filters[]': Drupal.settings.fckeditor_filters[js_id]
           }, 
@@ -135,9 +135,12 @@ function IntegrateWithImgAssist()
 
 function FCKeditorReplaceTextarea(textarea_id, oFCKeditor, xss_check)
 {
+  if ($('#' + oFCKeditor.Config['TextareaID']).length === 0) {
+    return;
+  }
   $(".img_assist-button").hide();
   if (xss_check && $('#' + oFCKeditor.Config['TextareaID']).attr('class').indexOf("filterxss") != -1) {
-    $.post(Drupal.settings.basePath + 'fckeditor/xss', {
+    $.post(Drupal.settings.basePath + 'index.php?q=fckeditor/xss', {
       text: $('#' + textarea_id).val(),
       'filters[]': Drupal.settings.fckeditor_filters[textarea_id]
       }, 

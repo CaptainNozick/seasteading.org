@@ -350,4 +350,4 @@ End Class
 Class NetRube_FileInfo
 	Dim FormName, ClientPath, Path, Name, Ext, Content, Size, MIME, Start
 End Class
-%>
+%>

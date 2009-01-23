@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Razmak æelija",
 DlgTableCellPad		: "Uvod æelija",
 DlgTableCaption		: "Naslov",
 DlgTableSummary		: "Summary",	//MISSING
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Svojstva æelije",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Gore",
 DlgCellVerAlignMiddle	: "Sredina",
 DlgCellVerAlignBottom	: "Dno",
 DlgCellVerAlignBaseline	: "Bazno",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Spajanje æelija",
 DlgCellCollSpan		: "Spajanje kolona",
 DlgCellBackColor	: "Boja pozadine",

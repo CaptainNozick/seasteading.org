@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Cell spasieering",
 DlgTableCellPad		: "Cell buffer",
 DlgTableCaption		: "Beskreiwing",
 DlgTableSummary		: "Opsomming",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Cell eienskappe",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Bo",
 DlgCellVerAlignMiddle	: "Middel",
 DlgCellVerAlignBottom	: "Onder",
 DlgCellVerAlignBaseline	: "Baseline",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Rei strekking",
 DlgCellCollSpan		: "Kolom strekking",
 DlgCellBackColor	: "Agtergrond Kleur",

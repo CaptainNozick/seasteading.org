@@ -311,7 +311,7 @@ FCKUnlinkCommand.prototype.GetState = function()
 	return state ;
 }
 
-FCKVisitLinkCommand = function()
+var FCKVisitLinkCommand = function()
 {
 	this.Name = 'VisitLink';
 }

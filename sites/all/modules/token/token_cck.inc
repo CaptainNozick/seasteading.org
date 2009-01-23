@@ -1,5 +1,5 @@
 <?php
-// $Id: token_cck.inc,v 1.1.2.9 2007/10/16 14:37:59 greggles Exp $
+// $Id: token_cck.inc,v 1.1.2.10 2008/02/23 12:12:39 greggles Exp $
 
 
 // Two helper functions that generate appropriate tokens for CCK-added fields.
@@ -222,7 +222,7 @@ if (module_exists('imagefield')) {
 
 
 
-if (module_exists('date')) {
+if (module_exists('date') && !function_exists('date_token_list')) {
   function date_token_list($type = 'all') {
     if ($type == 'field' || $type == 'all') {
       $tokens = array();

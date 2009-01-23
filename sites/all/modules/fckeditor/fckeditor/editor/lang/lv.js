@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Rūtiņu atstatums",
 DlgTableCellPad		: "Rūtiņu nobīde",
 DlgTableCaption		: "Leģenda",
 DlgTableSummary		: "Anotācija",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Rūtiņas īpašības",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Augša",
 DlgCellVerAlignMiddle	: "Vidus",
 DlgCellVerAlignBottom	: "Apakša",
 DlgCellVerAlignBaseline	: "Pamatrindā",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Rindu pārnese",
 DlgCellCollSpan		: "Kolonnu pārnese",
 DlgCellBackColor	: "Fona krāsa",

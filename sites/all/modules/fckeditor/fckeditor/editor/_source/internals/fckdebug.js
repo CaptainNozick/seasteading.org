@@ -32,7 +32,7 @@ var FCKDebug =
 
 		try
 		{
-			this._GetWindow().Output( message, color ) ;
+			this._GetWindow().Output( message, color, noParse ) ;
 		}
 		catch ( e ) {}	 // Ignore errors
 	},

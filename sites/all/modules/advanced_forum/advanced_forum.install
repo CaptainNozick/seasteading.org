@@ -5,7 +5,7 @@
  * Installation code for Advanced Forum.
  */
 
-// $Id: advanced_forum.install,v 1.11 2008/11/12 03:49:12 michellec Exp $
+// $Id: advanced_forum.install,v 1.13 2008/12/08 22:11:30 michellec Exp $
 
 function advanced_forum_install() {
   db_query("UPDATE {system} SET weight = 10 WHERE name = 'advanced_forum'");
@@ -42,11 +42,6 @@ function advanced_forum_update_5003() {
 }
 
 function advanced_forum_update_5004() {
-  // Clean up old unused variables.
-  $ret = array();
-  $ret[] =  variable_del('advanced_forum_themedir');
-  $ret[] =  variable_del('advforum_topic_pager_max');
-  $ret[] =  variable_del('advanced_forum_collapse_defaults');
-  return $ret;
+/* Removed variable clean up because it caused false fails. */
 }
 

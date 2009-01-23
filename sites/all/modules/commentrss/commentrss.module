@@ -97,6 +97,16 @@ function commentrss_menu($may_cache) {
         'type' => MENU_CALLBACK
       );
     }
+		
+		/**** Added by Kamil Pelka on 01/14/2009 // START ****/
+		$items[] = array(
+			'path' => 'crss/vocab',
+			'title' => '',
+			'callback' => 'commentrss_feed_vocab',
+			'access' => user_access('access comments'),
+			'type' => MENU_CALLBACK
+		);
+		/**** Added by Kamil Pelka on 01/14/2009 // END ****/
     
     // If user could access these feeds.
     if (user_access('access comments')) {
@@ -257,12 +267,32 @@ function commentrss_feed_node($nid = NULL) {
  */
 function commentrss_feed_term($tid = NULL) {
   if (isset($tid) && is_numeric($tid) && ($term = taxonomy_get_term($tid))) {
-    // Filter with specific term ID.
+		/**** Added by Kamil Pelka on 01/17/2009 // START ****/
+		$term_children = array_keys(taxonomy_get_children($tid,$term->vid));
+		$q = '';
+		if (count($term_children) > 0) {
+			$term_ids = array();
+			$q = '(';
+			$count = 1;
+			foreach($term_children as $term_id) {
+				$q .= 'r.tid = %d';
+				if ($count != count($term_children)) $q .= ' OR ';
+				$term_ids[] = $term_id;
+				$count++;
+			}
+			$q .= ') AND';
+		} else {
+			$q = 'r.tid = %d AND';
+			$term_ids = $term->tid;
+		}
+		/**** Added by Kamil Pelka on 01/17/2009 // END ****/
+		
+		// Filter with specific term ID.
     $items = commentrss_format_items(
       'DISTINCT(n.nid)',
       'INNER JOIN {term_node} r ON n.nid = r.nid',
-      'r.tid = %d AND',
-      $term->tid
+      $q, /**** Modified by Kamil Pelka on 01/17/2009 // END ****/
+      $term_ids /**** Modified by Kamil Pelka on 01/17/2009 // END ****/
     );
     // Fill channel information based on term details.
     $channel = array(
@@ -281,6 +311,59 @@ function commentrss_feed_term($tid = NULL) {
   }
   drupal_not_found();
 }
+
+/**** Added by Kamil Pelka on 01/14/2009 // START ****/
+
+/**
+ * Publish a feed for all comments with a specified vocabulary.
+ * To be used only on Forum
+ */
+function commentrss_feed_vocab($vid = NULL) {
+  if (isset($vid) && is_numeric($vid) && ($vocab = taxonomy_get_vocabulary($vid)) && $vocab->module == 'forum') {
+		// build list of term ids to check
+		$tree = taxonomy_get_tree($vid);
+		$tids = array();
+		foreach ($tree as $term) {
+			if ($term->parents[0] != 0) $tids[] = $term->tid; // make sure we're not including forum containers
+		}
+
+		$q = '(';
+		$count = 1;
+		foreach($tids as $term_id) {
+			$q .= 'r.tid = %d';
+			if ($count != count($tids)) $q .= ' OR ';
+			$term_ids[] = $term_id;
+			$count++;
+		}
+		$q .= ') AND';
+
+		
+		// Filter with specific term ID.
+    $items = commentrss_format_items(
+      'DISTINCT(n.nid)',
+      'INNER JOIN {term_node} r ON n.nid = r.nid',
+      $q,
+      $term_ids 
+    );
+    // Fill channel information based on term details.
+    $channel = array(
+      'title' => t(
+        '@site - Comments for "@term"',
+        array(
+          '@site' => check_plain(variable_get('site_name', 'Drupal')),
+          '@term' => check_plain($vocab->name)
+        )
+      ),
+      'description' => t('Comments for the @term', array('@term' => $vocab->name)),
+      'link' => url('forum', NULL, NULL, TRUE),
+    );
+    commentrss_format_feed($items, $channel);
+    return NULL;
+  }
+  drupal_not_found();
+}
+
+/**** Added by Kamil Pelka on 01/14/2009 // END ****/
 
 // == API functions ============================================================
 
@@ -345,14 +428,39 @@ function commentrss_format_items($nidselector, $joins = '', $where = '', $param 
 
   // Build SQL query from the passed elements.
   $SQL = 'SELECT '. $nidselector .', c.cid, c.subject, c.comment, c.timestamp, c.uid, c.name, c.format, u.name username, n.title FROM {node} n '. $joins .' INNER JOIN {comments} c ON c.nid = n.nid INNER JOIN {users} u ON c.uid = u.uid WHERE '. $where .' n.status = 1 AND c.status = %d ORDER BY c.timestamp DESC';
-
-  // Add passed query parameter; plus we are looking for published comments.
-  $params = isset($param) ? array($param) : array();
+	
+	// Add passed query parameter; plus we are looking for published comments.
+  if (isset($param)) { /**** Modified by Kamil Pelka on 01/17/2009 // END ****/
+		if (!is_array($param)) {
+			$params = array($param);
+		} else {
+			$params = $param;
+		}
+	} else {
+		$params = array();
+	}
   $params[] = COMMENT_PUBLISHED;
 
   // Use query rewriting for node level access permission support.
   $comments = db_query_range(db_rewrite_sql($SQL), $params, COMMENT_PUBLISHED, 0, variable_get('feed_default_items', 10));
+	
+	/**** Added by Kamil Pelka on 01/14/2009 // START ****/
+	
+	$c_count = db_num_rows(db_query($SQL,$params)); 
+	$comments_per_page = _comment_get_display_setting('comments_per_page');
+	
+	/**** Added by Kamil Pelka on 01/14/2009 // END ****/
+	
   while ($comment = db_fetch_object($comments)) {
+		
+		/**** Added by Kamil Pelka on 01/14/2009 // START ****/
+		
+		$last_display_page = ceil($c_count / $comments_per_page);
+		$last_pager_page = $last_display_page - 1;
+		if ($last_pager_page < 0) $last_pager_page = 0;
+		
+		/**** Added by Kamil Pelka on 01/14/2009 // END ****/
+	
     if (!empty($comment->username)) {
       // Username takes precedence. The comment's name attribute should only
       // be filled in anyway if it was an anonymous comment with submitter
@@ -379,7 +487,10 @@ function commentrss_format_items($nidselector, $joins = '', $where = '', $param 
         'attributes' => array('isPermaLink' => 'false')
       )
     );
-    $link = url('node/'. $comment->nid, NULL, 'comment-'. $comment->cid, TRUE);
+		
+		
+    //$link = url('node/'. $comment->nid, NULL, 'comment-chujchuj'. $comment->cid, TRUE); 
+		$link = url('node/'. $comment->nid, 'page='.$last_pager_page, 'comment-'. $comment->cid, TRUE);  // modified by Kamil Pelka on 01/14/2009
 
     // Build up item content with node title if required.
     $content = '';
@@ -392,6 +503,9 @@ function commentrss_format_items($nidselector, $joins = '', $where = '', $param 
     // was validated previously and the visitor might not have access to that,
     // so skip the format validation in check_markup() itself.
     $items .= format_rss_item($comment->subject, $link, $content, $extra);
+		
+		$c_count--;// Added by Kamil Pelka on 01/14/2009
+		
   }
   return $items;
 }

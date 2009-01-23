@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Cellemarg",
 DlgTableCellPad		: "Cellepolstring",
 DlgTableCaption		: "Tittel",
 DlgTableSummary		: "Sammendrag",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Celleegenskaper",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Topp",
 DlgCellVerAlignMiddle	: "Midten",
 DlgCellVerAlignBottom	: "Bunn",
 DlgCellVerAlignBaseline	: "Bunnlinje",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Radspenn",
 DlgCellCollSpan		: "Kolonnespenn",
 DlgCellBackColor	: "Bakgrunnsfarge",

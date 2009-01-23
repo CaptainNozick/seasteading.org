@@ -22,6 +22,7 @@
 %>
 <%
 function CombinePaths( sBasePath, sFolder)
+	sFolder = replace(sFolder, "\", "/")
 	CombinePaths =  RemoveFromEnd( sBasePath, "/" ) & "/" & RemoveFromStart( sFolder, "/" )
 end function
 
@@ -151,7 +152,7 @@ End Function
 Function IsAllowedType( resourceType )
 	Dim oRE
 	Set oRE	= New RegExp
-	oRE.IgnoreCase	= True
+	oRE.IgnoreCase	= False
 	oRE.Global		= True
 	oRE.Pattern		= "^(" & ConfigAllowedTypes & ")$"
 
