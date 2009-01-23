@@ -32,22 +32,74 @@ function phptemplate_body_class($sidebar_left, $sidebar_right) {
  * @return a string containing the breadcrumb output.
  */
 function phptemplate_breadcrumb($breadcrumb) {
+	
 	if (!empty($breadcrumb)) {
-		return '<div class="breadcrumb">'. implode(' › ', $breadcrumb) .'</div>';
+
+		// We need a special BC for forum topics and blog
+		if (arg(0) == 'node' || (arg(0) == 'comment' && arg(1) == 'reply') ) {
+			
+			if (arg(0) == 'node') {
+				$node = node_load(arg(1)); // let's load the current node
+			} else {
+				$node = node_load(arg(2)); // commented node
+			}
+			
+			if ($node->type == 'forum') { // is it a forum topic?
+				$breadcrumb[] = l('Forums','forum');
+				$par = array_keys($node->taxonomy); // ok, let's get the immediate parent term TID
+				$par_tid = $par[0];
+				$all_pars = taxonomy_get_parents_all($par_tid);
+				$all_pars = array_reverse($all_pars);
+				foreach($all_pars as $this_par) {
+					$breadcrumb[] = l($this_par->name,drupal_get_path_alias('forum/'.$this_par->tid));
+				}
+				if (arg(0) == 'comment' && arg(1) == 'reply') $breadcrumb[] = l($node->title,drupal_get_path_alias('node/'.$node->nid));
+			} 
+			
+		} elseif (arg(0) == 'blog') {
+			
+			$breadcrumb[] = l('Stay in Touch','stay-in-touch');
+			
+		} elseif (arg(0) == 'month') {
+			
+			$breadcrumb[] = l('Stay in Touch','stay-in-touch');
+			$breadcrumb[] = l('Captain\'s Blog','stay-in-touch/blog');
+			
+		} elseif (arg(0) == 'taxonomy') {
+			
+			$this_term = taxonomy_get_term(arg(2));
+			if ($this_term->vid == 2) {
+				$breadcrumb[] = l('Stay in Touch','stay-in-touch');
+				$breadcrumb[] = l('Captain\'s Blog Tags','stay-in-touch/blog');
+			}
+			
+		} 
+		return implode(' <span>&gt</span> ', $breadcrumb);
 	}
 }
 
 /**
  * Allow themable wrapping of all comments.
  */
-function phptemplate_comment_wrapper($content, $type = null) {
+function phptemplate_comment_wrapper($content, $type = null, $n = null) {
 	static $node_type;
+	static $node;
+
 	if (isset($type)) $node_type = $type;
+	if (isset($n)) $node = $n;
+
+	if ($node_type == 'forum' && module_exists('advanced_forum')) {
+		$variables = array();
+		$variables['node'] = $node;
+		$variables['content'] = $content;
+		advanced_forum_preprocess_comment_wrapper($variables);
+		$forum_style = advanced_forum_get_current_style();
+		return _phptemplate_callback('advf-comment-wrapper', $variables, array("$forum_style/advf-comment-wrapper")); 
+	}
 
 	if (!$content || $node_type == 'forum') {
 		return '<div id="comments">'. $content . '</div>';
-	}
-	else {
+	} else {
 		return '<div id="comments"><h2 class="comments">'. t('Comments') .'</h2>'. $content .'</div>';
 	}
 }
@@ -56,6 +108,12 @@ function phptemplate_comment_wrapper($content, $type = null) {
  * Override or insert PHPTemplate variables into the templates.
  */
 function _phptemplate_variables($hook, $vars) {
+
+	if (module_exists('advanced_forum')) {
+		$vars = advanced_forum_addvars($hook, $vars);
+		return $vars;
+  }
+	
 	if ($hook == 'page') {
 
 		if ($secondary = menu_secondary_local_tasks()) {
@@ -70,6 +128,7 @@ function _phptemplate_variables($hook, $vars) {
 		}
 		return $vars;
 	}
+	
 	return array();
 }
 
@@ -355,12 +414,52 @@ function phptemplate_views_rss_feed_recent_blog_posts_rss($view, $nodes, $type) 
 	exit; 
 }
 
+/*
+	Override forumTracker display
+*/
+
+function phptemplate_views_view_table_forumTracker($view, $nodes, $type) {
+	$fields = _views_get_fields();
+	$comments_per_page = _comment_get_display_setting('comments_per_page');
+
+	foreach ($nodes as $node) {
+		$row = array();
+		foreach ($view->field as $field) {
+			if ($fields[$field['id']]['visible'] !== FALSE) {
+				if($field['field'] == 'comment_count') {
+					$count = db_result(db_query('SELECT COUNT(c.cid) FROM {comments} c WHERE c.nid=%d', $node->nid));
+					// Find the ending point. The pager URL is always 1 less than
+					// the number being displayed because the first page is 0.
+					$last_display_page = ceil($count / $comments_per_page);
+
+					$last_pager_page = $last_display_page - 1;
+					if ($last_pager_page < 0) $last_pager_page = 0;
+
+					$cell['data'] = $node->node_comment_statistics_comment_count.'<br />';
+					//$cell['data'] .= l('new', 'node/'.$node->nid, array(), 'page='.$last_pager_page.'#new');
+					$cell['data'] .= advanced_forum_first_new_post_link($node, $count);
+					$cell['class'] = "view-field ". views_css_safe('view-field-'. $field['queryname']);
+					$row[] = $cell;
+				} else {
+					$cell['data'] = views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $node, $view);
+					$cell['class'] = "view-field ". views_css_safe('view-field-'. $field['queryname']);
+					$row[] = $cell;
+				}
+			}
+		}
+		$rows[] = $row;
+	}
+	return theme('table', $view->table_header, $rows);
+}
+
 
 /*
 	Override default forum display
 */
 
-function phptemplate_forum_display($forums, $topics, $parents, $tid, $sortby, $forum_per_page) {
+/*
+
+function seasteading_forum_display($forums, $topics, $parents, $tid, $sortby, $forum_per_page) {
 	global $user;
 	// forum list, topics list, topic browser and 'add new topic' link
 
@@ -425,3 +524,5 @@ function phptemplate_forum_display($forums, $topics, $parents, $tid, $sortby, $f
 
 	return $output;
 }
+
+*/
