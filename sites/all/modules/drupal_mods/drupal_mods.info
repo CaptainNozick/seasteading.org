@@ -1,0 +1,4 @@
+; $Id$
+name = Drupal Mods
+description = Various modifications required by Seasteading project.
+package = Custom

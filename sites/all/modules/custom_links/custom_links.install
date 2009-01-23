@@ -1,0 +1,61 @@
+<?php
+// $Id: custom_links.install,v 1.1.4.1 2007/02/28 08:32:54 eaton Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function custom_links_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {custom_link} (
+        lid int unsigned NOT NULL auto_increment,
+        link_key varchar(64) NOT NULL default '',
+        title varchar(255) NOT NULL default '',
+        path varchar(255) NOT NULL default '',
+        node_type varchar(64) default '',
+        author_perm varchar(64) default '',
+        viewer_perm varchar(64) default '',
+        check_html tinyint NOT NULL default 1,
+        display tinyint NOT NULL default 2,
+        query varchar(255) default '',
+        fragment varchar(255) default '',
+        PRIMARY KEY (lid)
+      ) /*!40100 DEFAULT CHARACTER SET UTF8 */ ");
+      break;
+    case 'pgsql':
+      db_query("CREATE TABLE {custom_link} (
+        lid serial CHECK (nid >= 0),
+        link_key varchar(64) NOT NULL default '',
+        title varchar(255) NOT NULL default '',
+        path varchar(255) NOT NULL default '',
+        node_type varchar(64) default '',
+        author_perm varchar(64) default '',
+        viewer_perm varchar(64) default '',
+        check_html smallint NOT NULL default 1,
+        display smallint NOT NULL default 2
+      )");
+      db_query("CREATE INDEX {custom_link}_lid_idx ON {custom_link} (lid)");
+      break;
+  }
+}
+
+function custom_links_update_1() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {custom_link} ADD fragment varchar(255)");
+      $ret[] = update_sql("ALTER TABLE {custom_link} ADD query varchar(255)");
+      break;
+    case 'pgsql':
+      db_add_column($ret, 'custom_link', 'fragment', 'varchar', array('default' => ''));
+      db_add_column($ret, 'custom_link', 'query', 'varchar', array('default' => ''));
+      break;
+  }
+  return $ret;
+}
+
+function custom_links_uninstall() {
+  db_query('DROP TABLE {custom_link}');
+} 

@@ -1,0 +1,348 @@
+<?php
+// $Id: custom_links.module,v 1.4.2.2 2007/02/28 08:32:54 eaton Exp $
+
+/**
+ * Implementation of hook_menu().
+ */
+function custom_links_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $access = user_access('administer custom links');
+    $items[] = array(
+      'path' => 'admin/build/custom_links',
+      'title' => t('Custom links'),
+      'description' => t('Add custom links to specific content types.'),
+      'callback' => 'custom_links_page',
+      'access' => $access
+    );
+
+    $items[] = array(
+      'path' => 'admin/build/custom_links/add',
+      'title' => t('Add custom link'),
+      'type' => MENU_CALLBACK,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('custom_links_form'),
+      'access' => $access
+    );
+
+    $items[] = array(
+      'path' => 'admin/build/custom_links/edit',
+      'title' => t('Edit custom link'),
+      'type' => MENU_CALLBACK,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('custom_links_form'),
+      'access' => $access
+    );
+  }
+
+  return $items;
+}
+
+function custom_links_link($type, $node = NULL, $teaser = FALSE) {
+  if ($type == 'node') {
+    return _custom_links_build_links($node, $teaser);
+  }
+}
+
+function custom_links_perm() {
+  return array('administer custom links');
+}
+
+/**
+ * Implementation of hook_block().
+ *
+ * Generates a block with links for the current node.
+ */
+function custom_links_block($op = 'list', $delta = 0) {
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('Custom node links');
+    return $blocks;
+  }
+  else if ($op == 'view' && arg(0) == 'node' && is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+    $links = _custom_links_build_links($node, FALSE, TRUE);
+    if (count($links)) {
+      $block['subject'] = t('Links');
+      $block['content'] = theme('custom_links_block', $links);
+      return $block;
+    }
+  }
+}
+
+function _custom_links_build_links($node, $teaser = FALSE, $block = FALSE) {
+  $links = array();
+  $custom_links = _custom_links_load_all_links();
+
+  foreach ($custom_links as $link) {
+    if ($block && $link->display != 3) {
+      continue;
+    }
+    if (($link->display == 0 && $teaser) || ($link->display == 1 && !$teaser)) {
+      continue;
+    }
+    if ($link->node_type && $node->type != $link->node_type) {
+      continue;
+    }
+    if ($link->viewer_perm && !user_access($link->viewer_perm)) {
+      continue;
+    }
+    if ($link->author_perm) {
+      $author = user_load(array('uid' => $node->uid));
+      if (!user_access($link->author_perm, $author)) {
+        continue;
+      }
+    }
+
+    $links[$link->link_key]['title'] = $link->title;
+    if (!empty($link->path)) {
+      $links[$link->link_key]['href'] = $link->path;
+    }
+    if (!empty($link->query)) {
+      $links[$link->link_key]['query'] = $link->query;
+    }
+    if (!empty($link->fragment)) {
+      $links[$link->link_key]['fragment'] = $link->fragment;
+    }
+
+    if (module_exists('token')) {
+      $links[$link->link_key] = token_replace($links[$link->link_key], 'node', $node);
+    }
+
+    $links[$link->link_key]['html'] = $link->check_html;
+  }
+  return $links;
+}
+
+// Lists all current custom links, and provides a link to the edit page.
+function custom_links_page() {
+  $links = _custom_links_load_all_links(TRUE);
+
+  $header = array(t('key'), t('link'), '');
+
+  $rows = array();
+  foreach ($links as $link) {
+    $row = array();
+    $row[] = $link->link_key;
+    $row[] =  $link->title;
+    $row[] =  l(t('edit'), 'admin/build/custom_links/edit/' . $link->lid);
+    $rows[] = $row;
+  }
+  if (count($rows) == 0) {
+    $rows[] = array(array('data' => t('No custom links have been defined.'), 'colspan' => 3));
+  }
+  
+  $rows[] = array(array('data' => l(t('Add a new custom link'), 'admin/build/custom_links/add'), 'colspan' => 3));
+
+
+  return theme('table', $header, $rows);
+}
+
+
+// Displays an edit form for a custom link record.
+function custom_links_form() {
+  global $base_url;
+
+  $lid = arg(4);
+  if (isset($lid)) {
+    $link = _custom_links_load_link($lid);
+    $form['lid'] = array(
+      '#type' => 'hidden',
+      '#value' => $lid,
+    );
+  }
+
+  $form['link'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Link details'),
+  );
+
+  $form['link']['link_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link key'),
+    '#description' => t('A unique string to identify this link. It will also be used as the CSS ID of the link in the final HTML.'),
+    '#default_value' => $lid ? $link->link_key : NULL
+  );
+
+  $form['link']['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#required' => TRUE,
+    '#description' => t("The visible text of the link seen by the user."),
+    '#default_value' => $lid ? $link->title : NULL
+  );
+
+  $form['link']['check_html'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Title uses HTML'),
+    '#return_value' => 1,
+    '#default_value' => $lid ? $link->check_html : 0
+  );
+
+  $form['link']['path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path'),
+    '#description' => t("The Drupal path for the link. (!sample_url)", array('!sample_url' => $base_url.'/<u><b>node/1</b></u>#comment')),
+    '#default_value' => $lid ? $link->path : NULL
+  );
+
+  $form['link']['querystring'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Querystring'),
+    '#description' => t("The optional querystring for the link. (!sample_url)", array('!sample_url' => $base_url.'/article?<u><b>id=1</b></u>')),
+    '#default_value' => $lid ? $link->query : NULL
+  );
+
+  $form['link']['fragment'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Anchor'),
+    '#description' => t("The optional HTML anchor for the link. (!sample_url)", array('!sample_url' => $base_url.'/node/1<u><b>#comment</b></u>')),
+    '#default_value' => $lid ? $link->fragment : NULL
+  );
+
+  $form['help'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Placeholder tokens'),
+    '#description' => t("The following placeholder tokens can be used in paths, titles, querystrings, and anchors. they will be replaced with the appropriate values."),
+  );
+
+  if (module_exists('token')) {
+    $form['help']['tokens'] = array(
+      '#value' => theme('token_help', 'node'),
+    );
+  }
+  else {
+    $form['help']['#description'] = t("To use dynamic placeholder tokens in your paths and titles (the ID or title of the current node, for example), download and install the <a href='@token'>Token module</a> from Drupal.org.", array('@token' => 'http://www.drupal.org/project/token'));
+    $form['help']['#collapsible'] = FALSE;
+    $form['help']['#collapsed'] = FALSE;
+  }
+
+  $form['filters'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Link conditions'),
+  );
+
+  $modes = array(
+    0 => t('In full node views'),
+    1 => t('In teaser node views'),
+    2 => t('In both teaser and full node views'),
+    3 => t('In a sidebar block'),
+  );
+  $form['filters']['display'] = array(
+    '#type' => 'select',
+    '#title' => t('Display'),
+    '#options' => $modes,
+    '#default_value' => $lid ? $link->display : 2,
+  );
+
+  $options['*all*'] = t('All node types');
+  foreach (node_get_types('names') as $type => $name) {
+    $options[$type] = $name;
+  }
+  $form['filters']['node_type'] = array(
+    '#type' => 'select',
+    '#title' => t('Node type'),
+    '#options' => $options,
+    '#description' => t('If selected, the link will only be added to nodes of this type.'),
+    '#default_value' => $lid ? $link->node_type : NULL,
+  );
+
+  $form['filters']['author_perm'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Author permission restriction'),
+    '#description' => t('A specific permission that the <i>author</i> of the node must have for the link to be added.'),
+    '#default_value' => $lid ? $link->author_perm : NULL
+  );
+
+  $form['filters']['viewer_perm'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Viewer permission restriction'),
+    '#description' => t('A specific permission that the <i>viewer</i> of the node must have for the link to be added.'),
+    '#default_value' => $lid ? $link->viewer_perm : 'access content'
+  );
+
+  $form['buttons']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  if ($lid) {
+    $form['buttons']['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete'),
+    );
+  }
+
+  return $form;
+}
+
+function custom_links_form_validate($form_id, $form_values) {
+  if (strpos($form_values['link_key'], array(' ', '#', '.', '%', '^')) !== FALSE) {
+    form_set_error('link][link_key', t('The link key may not contain spaces or punctuation.'));
+  }
+}
+
+function custom_links_form_submit($form_id, $form_values) {
+  if ($form_values['op'] == t('Delete')) {
+    _custom_links_delete_link($form_values['lid']);
+  }
+  else {
+    $link = (object)$form_values;
+    if ($link->node_type == '*all*') {
+      $link->node_type = '';
+    }
+    $link->query = $link->querystring;
+    _custom_links_save_link($link);
+  }
+  return 'admin/build/custom_links';
+}
+
+function _custom_links_load_link($lid) {
+  $sql = 'SELECT * FROM {custom_link} WHERE lid = %d';
+  $result = db_query($sql, $lid);
+  $link = db_fetch_object($result);
+  return $link;
+}
+
+function _custom_links_load_all_links($refresh = FALSE) {
+  static $links;
+  if ($refresh || !isset($links)) {
+    $sql = 'SELECT * FROM {custom_link}';
+    $result = db_query($sql);
+
+    $links = array();
+    while($link = db_fetch_object($result)) {
+      $links[] = $link;
+    }
+  }
+  return $links;
+}
+
+function _custom_links_save_link($link = NULL) {
+  if (isset($link->lid)) {
+    $sql  = "UPDATE {custom_link} SET";
+    $sql .= " link_key = '%s', title = '%s', path = '%s', node_type = '%s', author_perm = '%s', viewer_perm = '%s', check_html = %d, display = %d, query = '%s', fragment = '%s'";
+    $sql .= " WHERE lid = %d";
+    
+    db_query($sql, $link->link_key, $link->title, $link->path,
+      $link->node_type, $link->author_perm, $link->viewer_perm, $link->check_html, $link->display, $link->query, $link->fragment, $link->lid);
+  }
+  else {
+    $sql  = "INSERT INTO {custom_link}";
+    $sql .= " (link_key, title, path, node_type, author_perm, viewer_perm, check_html, display, query, fragment)";
+    $sql .= " VALUES ('%s',  '%s',  '%s',  '%s',  '%s',  '%s', %d, %d, '%s', '%s')";
+    
+    db_query($sql, $link->link_key, $link->title, $link->path,
+      $link->node_type, $link->author_perm, $link->viewer_perm, $link->check_html, $link->display, $link->query, $link->fragment);
+  }
+}
+
+function _custom_links_delete_link($lid) {
+  $sql = 'DELETE FROM {custom_link} WHERE lid = %d';
+  db_query($sql, $lid);
+}
+
+function theme_custom_links_block($links) {
+  return theme('links', $links);
+}

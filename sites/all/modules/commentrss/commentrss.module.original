@@ -1,0 +1,397 @@
+<?php
+// $Id: commentrss.module,v 1.12.2.2.4.5 2008/10/06 10:29:15 goba Exp $
+
+/**
+ * @file
+ *   Publishes RSS feeds for comments.
+ */
+
+/**
+ * Disable site comment feed.
+ */
+define('COMMENTRSS_SITE_DISABLED', 0);
+
+/**
+ * Expose site feed on front page only.
+ */
+define('COMMENTRSS_SITE_FRONT_PAGE', 1);
+
+/**
+ * Expose site feed on front page and main content (/node) page too.
+ */
+define('COMMENTRSS_SITE_FRONT_AND_NODE_PAGE', 2);
+
+/**
+ * Expose site feed on all pages.
+ */
+define('COMMENTRSS_SITE_ALL_PAGES', 3);
+
+// == Core hooks ===============================================================
+
+/**
+ * Implementation of hook_help().
+ */
+function commentrss_help($section) {
+  $output = '';
+  switch ($section) {
+    case 'admin/help#commentrss':
+      $output = '<p>'. t('The commentrss module provides RSS feeds for comments. Comment feeds are published on pages which often also provide a feed of nodes. Some types of comment feeds may be disabled if they are not needed.') .'</p>';
+      $output .= '<p>'. t('If comment feeds are enabled for individual nodes then a "wfw:commentRss" element is added to node feeds (based on <a href="@wfw">the Well Formed Web Comment API</a> specification) so that aggregators may discover the corresponding comment feed.', array('@wfw' => 'http://wellformedweb.org/CommentAPI/')) .'</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function commentrss_menu($may_cache) {
+  $items = array();
+  if ($may_cache) {
+    // Copy of menu item from system.module.
+    $items[] = array(
+      'path' => 'admin/content/rss-publishing/default',
+      'title' => t('General settings'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+    );
+    // Tab for RSS publishing settings.
+    $items[] = array(
+      'path' => 'admin/content/rss-publishing/commentrss',
+      'title' => t('Comment RSS settings'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => 'commentrss_admin_settings',
+      'access' => user_access('administer site configuration'),
+      'weight' => 10,
+      'type' => MENU_LOCAL_TASK,
+    );
+  }
+  else {
+    // Add comment rss paths based on settings dynamically.
+    if (variable_get('commentrss_site', COMMENTRSS_SITE_FRONT_PAGE)) {
+      // Base callback for RSS handling, site wide RSS.
+      $items[] = array(
+        'path' => 'crss',
+        'title' => '',
+        'callback' => 'commentrss_feed_site',
+        'access' => user_access('access comments'),
+        'type' => MENU_CALLBACK
+      );
+    }
+    if (variable_get('commentrss_node', TRUE)) {
+      // Callback for content RSS handling.
+      $items[] = array(
+        'path' => 'crss/node',
+        'title' => '',
+        'callback' => 'commentrss_feed_node',
+        'access' => user_access('access comments'),
+        'type' => MENU_CALLBACK
+      );
+    }
+    if (variable_get('commentrss_term', FALSE)) {
+      // Base callback for RSS handling.
+      $items[] = array(
+        'path' => 'crss/term',
+        'title' => '',
+        'callback' => 'commentrss_feed_term',
+        'access' => user_access('access comments'),
+        'type' => MENU_CALLBACK
+      );
+    }
+    
+    // If user could access these feeds.
+    if (user_access('access comments')) {
+      // Expose site feed based on settings.
+      switch (variable_get('commentrss_site', COMMENTRSS_SITE_FRONT_PAGE)) {
+        case COMMENTRSS_SITE_DISABLED:
+          // No comment RSS feed for site.
+          break;
+        case COMMENTRSS_SITE_FRONT_PAGE:
+          if (!drupal_is_front_page()) {
+            // Only break if not front page.
+            break;
+          }
+        case COMMENTRSS_SITE_FRONT_AND_NODE_PAGE:
+          if (!drupal_is_front_page() || ($_GET['q'] != 'node')) {
+            // Only break if not front page and not node page.
+            break;
+          }
+        case COMMENTRSS_SITE_ALL_PAGES:
+          // Either we need to expose for all pages, or code was falling through
+          // to this point. We should expose the feed in any case.
+          drupal_add_feed(
+            url('crss'),
+            t('@site - All comments', array('@site' => variable_get('site_name', 'Drupal')))
+          );
+          break;
+      }
+  
+      // Expose node feed on node view page.
+      if ((arg(0) == 'node') && is_numeric($nid = arg(1)) && is_null(arg(2)) &&
+          variable_get('commentrss_node', TRUE) && ($node = node_load($nid)) &&
+          ($node->comment != COMMENT_NODE_DISABLED)) {
+          
+        drupal_add_feed(
+          url('crss/node/'. $node->nid),
+          t('Comments for "@title"', array('@title' => $node->title))
+        );
+      }
+      
+      // Expose term feed on term view page.
+      if ((arg(0) == 'taxonomy') && (arg(1) == 'term') && is_numeric($tid = arg(2)) &&
+          variable_get('commentrss_term', FALSE) && ($term = taxonomy_get_term($tid))) {
+   
+        drupal_add_feed(
+          url('crss/term/'. $term->tid),
+          t('Comments for category "@title"', array('@title' => $term->name))
+        );
+      }
+    }
+    
+  }
+  return $items;
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function commentrss_nodeapi(&$node, $op) {
+  if ($op == 'rss item') {
+    // Add a wfw:commentRss element to node feed entries if:
+    //  - node comments are enabled for the node
+    //  - comment feeds for individual nodes are enabled
+    if ($node->comment != COMMENT_NODE_DISABLED && variable_get('commentrss_node', TRUE)) {
+      return array(
+        array(
+          'key' => 'wfw:commentRss',
+          'attributes' => array('xmlns:wfw' => 'http://wellformedweb.org/CommentAPI/'),
+          'value' => url('crss/node/'. $node->nid, NULL, NULL, TRUE)
+        )
+      );
+    }
+  }
+}
+
+// == Menu callbacks ===========================================================
+
+/**
+ * Menu callback; displays the commentrss module settings page.
+ */
+function commentrss_admin_settings() {
+  $form['commentrss_site'] = array(
+    '#type' => 'radios',
+    '#title' => t('Enable aggregated feed for comments on all content on the entire website, and expose on pages'),
+    '#options' => array(
+      COMMENTRSS_SITE_DISABLED => t('Disabled'),
+      COMMENTRSS_SITE_FRONT_PAGE => t('Enabled, expose only on front page'),
+      COMMENTRSS_SITE_FRONT_AND_NODE_PAGE => t('Enabled, expose on front page and <a href="@url">default content listing</a> page', array('@url' => url('node'))),
+      COMMENTRSS_SITE_ALL_PAGES => t('Enabled, expose on all pages'),
+    ),
+    '#description' => t('Where should the site comment feed be exposed, if at all enabled. If enabled, feed will be accessible at @url.', array('@url' => url('crss', NULL, NULL, TRUE))),
+    '#default_value' => variable_get('commentrss_site', COMMENTRSS_SITE_FRONT_PAGE),
+  );
+  $form['commentrss_node'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable individual comment feeds for each post on the website'),
+    '#description' => t('Feeds will be accessible on @url type of URLs.', array('@url' => url('crss/node/...', NULL, NULL, TRUE))),
+    '#default_value' => variable_get('commentrss_node', TRUE),
+  );
+  $form['commentrss_term'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable individual comment feeds for each taxonomy term listing on the website'),
+    '#description' => t('Feeds will be accessible at @url type of URLs. Only supports one term, no composition.', array('@url' => url('crss/term/...', NULL, NULL, TRUE))),
+    '#default_value' => variable_get('commentrss_term', FALSE),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Publish a feed for all comments on the site.
+ */
+function commentrss_feed_site($param = NULL) {
+  if (!isset($param)) {
+    // Filter with all nodes. Only accessible if there was no param (so
+    // that we are not falling back from some specific but not matched item).
+    $items = commentrss_format_items('n.nid');
+    commentrss_format_feed($items);
+    return NULL;
+  }
+  drupal_not_found();
+}
+
+/**
+ * Publish a feed for all comments of a specified node.
+ */
+function commentrss_feed_node($nid = NULL) {
+  global $base_url;
+
+  if (isset($nid) && is_numeric($nid) && ($node = node_load($nid)) && ($node->comment != COMMENT_NODE_DISABLED)) {
+    // Filter with this specific node.
+    $items = commentrss_format_items(
+      'n.nid',
+      '',
+      'n.nid = %d AND',
+      $node->nid,
+      FALSE
+    );
+    // Fill channel information based on node details.
+    $channel = array(
+      'title' => t(
+        '@site - Comments for "@title"',
+        array(
+          '@site' => check_plain(variable_get('site_name', 'Drupal')),
+          '@title' => check_plain($node->title)
+        )
+      ),
+      'description' => t('Comments for "@title"', array('@title' => $node->title)),
+      'link' => url('node/'. $node->nid, NULL, NULL, TRUE),
+    );
+    commentrss_format_feed($items, $channel);
+    return NULL;
+  }
+  drupal_not_found();
+}
+
+/**
+ * Publish a feed for all comments with a specified term.
+ */
+function commentrss_feed_term($tid = NULL) {
+  if (isset($tid) && is_numeric($tid) && ($term = taxonomy_get_term($tid))) {
+    // Filter with specific term ID.
+    $items = commentrss_format_items(
+      'DISTINCT(n.nid)',
+      'INNER JOIN {term_node} r ON n.nid = r.nid',
+      'r.tid = %d AND',
+      $term->tid
+    );
+    // Fill channel information based on term details.
+    $channel = array(
+      'title' => t(
+        '@site - Comments for "@term"',
+        array(
+          '@site' => check_plain(variable_get('site_name', 'Drupal')),
+          '@term' => check_plain($term->name)
+        )
+      ),
+      'description' => t('Comments for the category "@term"', array('@term' => $term->name)),
+      'link' => url('taxonomy/term/'. $term->tid, NULL, NULL, TRUE),
+    );
+    commentrss_format_feed($items, $channel);
+    return NULL;
+  }
+  drupal_not_found();
+}
+
+// == API functions ============================================================
+
+/**
+ * Format and print a complete comment feed.
+ *
+ * @param $items
+ *   XML fragment for the items. @see commentrss_format_items()
+ * @param $channel
+ *   Associative array of channel information. Name of tags to include
+ *   with value of tag values to add.
+ * @param $namespaces
+ *   Associative array of namespace arguments to add. Keyed by namespace
+ *   argument name to add, for example 'xmlns:dc', with the value of the
+ *   namespace URI such as http://purl.org/dc/elements/1.1/ in this case. 
+ */
+function commentrss_format_feed($items, $channel = array(), $namespaces = array()) {
+  global $base_url, $locale;
+  
+  $channel_defaults = array(
+    'version'     => '2.0',
+    'title'       => t('@site_name - Comments', array('@site_name' => variable_get('site_name', 'Drupal'))),
+    'link'        => $base_url,
+    'description' => t('Comments'),
+    'language'    => $locale
+  );
+  $channel = array_merge($channel_defaults, $channel);
+  $namespaces = array_merge(array('xmlns:dc' => 'http://purl.org/dc/elements/1.1/'), $namespaces);
+  
+  $output = '<?xml version="1.0" encoding="utf-8"?>'."\n";
+  $output .= '<rss version="'. $channel['version'] .'" xml:base="'. $base_url .'"'. drupal_attributes($namespaces) .">\n";
+  $output .= format_rss_channel($channel['title'], $channel['link'], $channel['description'], $items, $channel['language']);
+  $output .= "</rss>\n";
+
+  drupal_set_header('Content-Type: application/rss+xml; charset=utf-8');
+  print $output;
+}
+
+/**
+ * Format RSS for comments on the nodes selected by the given SQL selector.
+ *
+ * All parameters are expected to be properly sanitized, and used directly
+ * in the SQL query, except $param which is value for a placeholder in $where.
+ *
+ * @param $nidselector
+ *    SQL fragment to select node IDs.
+ * @param $joins
+ *   SQL fragment to inject in the JOINs segment.
+ * @param $where
+ *   Filtering SQL fragment.
+ * @param $param
+ *   Single parameter to use with an optional placeholder in the $where clause.
+ * @param $include_node_title
+ *   Include node title above comment body.
+ * @return
+ *   Formatted XML of RSS items generated.
+ */
+function commentrss_format_items($nidselector, $joins = '', $where = '', $param = NULL, $include_node_title = TRUE) {
+  global $base_url;
+
+  $items = '';
+
+  // Build SQL query from the passed elements.
+  $SQL = 'SELECT '. $nidselector .', c.cid, c.subject, c.comment, c.timestamp, c.uid, c.name, c.format, u.name username, n.title FROM {node} n '. $joins .' INNER JOIN {comments} c ON c.nid = n.nid INNER JOIN {users} u ON c.uid = u.uid WHERE '. $where .' n.status = 1 AND c.status = %d ORDER BY c.timestamp DESC';
+
+  // Add passed query parameter; plus we are looking for published comments.
+  $params = isset($param) ? array($param) : array();
+  $params[] = COMMENT_PUBLISHED;
+
+  // Use query rewriting for node level access permission support.
+  $comments = db_query_range(db_rewrite_sql($SQL), $params, COMMENT_PUBLISHED, 0, variable_get('feed_default_items', 10));
+  while ($comment = db_fetch_object($comments)) {
+    if (!empty($comment->username)) {
+      // Username takes precedence. The comment's name attribute should only
+      // be filled in anyway if it was an anonymous comment with submitter
+      // details enabled.
+      $comment->name = $comment->username;
+    }
+    if (empty($comment->name)) {
+      // Fall back on anonymous name if no other name was specified.
+      $comment->name = variable_get('anonymous', 'Anonymous');
+    }
+    
+    $extra = array(
+      array(
+        'key' => 'pubDate',
+        'value' => date('r', $comment->timestamp)
+      ),
+      array(
+        'key' => 'dc:creator',
+        'value' => $comment->name
+      ),
+      array(
+        'key' => 'guid',
+        'value' => 'comment ' . $comment->cid . ' at ' . $base_url,
+        'attributes' => array('isPermaLink' => 'false')
+      )
+    );
+    $link = url('node/'. $comment->nid, NULL, 'comment-'. $comment->cid, TRUE);
+
+    // Build up item content with node title if required.
+    $content = '';
+    if ($include_node_title) {
+      $content = '<p>'. t('In reply to <a href="@url">@title</a>', array('@url' => url('node/'. $comment->nid), '@title' => $comment->title)) .":</p>\n\n";
+    }
+    $content .= check_markup($comment->comment, $comment->format, FALSE);
+    
+    // Format RSS item with input format used on comment. The format
+    // was validated previously and the visitor might not have access to that,
+    // so skip the format validation in check_markup() itself.
+    $items .= format_rss_item($comment->subject, $link, $content, $extra);
+  }
+  return $items;
+}

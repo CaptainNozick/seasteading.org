@@ -1,0 +1,9 @@
+!!! WARNING !!!
+
+Some of these modules had to be hacked in order to achieve certain effect required by Seasteading Institute!
+
+Whenever a module has been modified, the original file has been saved as [modulename].module.original. Also, comments within the modified file should indicate what was changed.
+
+Currently, following modules have been changed:
+
+- CommentRSS

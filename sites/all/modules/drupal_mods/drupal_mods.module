@@ -1,0 +1,40 @@
+<?php
+// $Id$
+
+/**
+*	Altering default forms
+*/
+
+function drupal_mods_form_alter($form_id, &$form) {
+	global $user;
+	
+	// Search form
+	if ($form_id == 'search_form' && arg(1) == 'node') {
+		global $_GET;
+		if ($_GET['m'] == 'e') $form['advanced']['#collapsed'] = 0; // expand advanced search form when GET var "m" is set to "e"
+	}
+	
+	//if (isset($form['#node']) && $form['#node']->type .'_node_form' == $form_id) {
+	if ($form_id == 'comment_form') {
+		$nid = $form['nid']['#value'];
+		$cid = db_result(db_query("SELECT max(c.cid) FROM {comments} c"));
+		$cid++; // probable next id
+		$count = db_result(db_query('SELECT COUNT(c.cid) FROM {comments} c WHERE c.nid=%d', $nid));
+		$count++; // number of comments after adding this new one
+		$comments_per_page = _comment_get_display_setting('comments_per_page');
+		$last_display_page = ceil($count / $comments_per_page);
+		$last_pager_page = $last_display_page - 1;
+		if ($last_pager_page <= 0) {
+			$form['#redirect'] = array('node/'. $nid, NULL, "comment-".$cid);
+		} else {
+			$form['#redirect'] = array('node/'. $nid, 'page='.$last_pager_page, 'comment-'.$cid);
+		}
+	}
+
+	/*print 'Form ID:'.$form_id.'<br />';
+	print '<pre>';
+	print_r($form);
+	print '</pre>';*/
+}
+
+?>

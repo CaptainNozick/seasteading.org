@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2004-11-30 11:33+0100\n"
+"Last-Translator: MicheleF <michele@drupalitalia.org>\n"
+"Language-Team: Italian <michele@drupalitalia.it>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: c:\moduli\quote.module:10
+msgid "Allows users to quote other posts."
+msgstr "Consente agli utenti di citare i messaggi degli altri."
+
+#: c:\moduli\quote.module:18
+msgid "You may quote other posts using [quote] tags."
+msgstr "Puoi citare i messaggi degli altri utilizzando le etichette [quote]."
+
+#: c:\moduli\quote.module:27;30;0
+msgid "quote"
+msgstr "citazione"
+
+#: c:\moduli\quote.module:27
+msgid "Start your new comment with a quote from this post."
+msgstr "Inizia il tuo commento con una citazione da questo messaggio."
+
+#: c:\moduli\quote.module:30
+msgid "Start your reply with a quote from this comment."
+msgstr "Inizia la tua risposta con una citazione da questo commento."
+
+#: c:\moduli\quote.module:84
+msgid "Quote filter"
+msgstr "Filtro citazione"
+
+#: c:\moduli\quote.module:86
+msgid "Converts [quote] tags into &lt;div&gt; tags. Must apply after HTML filters."
+msgstr "Converte le etichette [quote] in etichette &lt;div&gt; . Da applicare dopo i filtri HTML."
+
+#: c:\moduli\quote.module:98
+msgid "wrote:"
+msgstr "ha scritto:"
+
+#: c:\moduli\quote.module:99
+msgid "Quote:"
+msgstr "Citazione:"
+
