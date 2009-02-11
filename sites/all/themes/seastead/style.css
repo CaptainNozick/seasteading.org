@@ -906,12 +906,17 @@ ul.secondary
 
 #block-views-active_topics,
 #block-views-press_releases,
-#block-views-recent_blog_posts {
+#block-views-recent_blog_posts,
+#block-block-4 {
 	float: left;
 	width: 463px;
 	height: 243px;
 	margin: 16px;
 	position: relative;
+}
+
+#block-block-4 {
+	margin: 8px 14px 14px 14px;
 }
 
 #center_left .header .feed-icon {

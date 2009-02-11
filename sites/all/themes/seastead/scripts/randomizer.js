@@ -2,7 +2,7 @@
 // Bottom left content box
 
 currentitem = 1;
-totalitems = 3;
+totalitems = 4;
 itemwidth = 495;
 
 allowplaying = true;
