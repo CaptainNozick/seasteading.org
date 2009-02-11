@@ -53,7 +53,7 @@
 		
 			<div id="navigator">
 				<a href="javascript:prevItem(true)"><img src="<?php print base_path() . path_to_theme() ?>/images/go-left.png" /></a>
-				<span id="current-item">1</span>/3
+				<span id="current-item">1</span>/4
 				<a href="javascript:nextItem(true)"><img src="<?php print base_path() . path_to_theme() ?>/images/go-right.png" /></a>
 			</div>
 			
