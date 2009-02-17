@@ -327,6 +327,10 @@ ul.secondary li.active a
 	margin:0;
 	text-align:left;
 }
+#center_left_inner .block .more-link
+{
+	text-align:right;
+}
 
 ul.links li {
 	padding:0 0 0 1em;
@@ -352,6 +356,10 @@ ul li.expanded
 	list-style-image:none;
 	margin:0 0 3px;
 	padding:0 0 0 23px;
+}
+#center_left_inner ul li
+{
+	background:none;
 }
 
 .node-form .standard
@@ -579,6 +587,7 @@ ul.secondary
 		margin:0 1px 0 0;
 		position: relative;
 		text-indent:-10000px;
+		z-index:1000;
 	}
 	#block-menu-2 ul.menu li:hover ul {
 		display: block;
@@ -821,7 +830,7 @@ ul.secondary
 	z-index: 2;
 }
 
-#key-areas {
+#root #key-areas {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -831,24 +840,37 @@ ul.secondary
 	color: #ffffff;
 }
 
-#key-areas h2 {
+#root #key-areas #block-menu-83 .content
+{
+	margin:0.5em 0;
+}
+#root #key-areas #block-menu-83 h2 {
 	font-size: 16px;
 	color: #b0edf9;
 }
 
-#key-areas ul {
+#root #key-areas #block-menu-83 ul {
 	padding-left: 20px;
 }
 
-#key-areas ul li {
+#root #key-areas #block-menu-83 ul li {
 	list-style-type: disc;
 	background-image: none;
+	margin:0 0 3px;
 	padding: 0;
 }
 
-#key-areas ul li a {
+#root #key-areas #block-menu-83 ul li a {
+	background:0;
 	font-size: 13px;
+	font-weight:normal;
 	color: #ffffff;
+	padding:0;
+}
+#root #key-areas form input
+{
+	margin:5px 0 0;
+	vertical-align:middle;
 }
 
 /****************************************************************
@@ -904,7 +926,10 @@ ul.secondary
 }
 
 
-#block-views-active_topics,
+#block-views-active_topics
+{
+	position: relative;
+}
 #block-views-press_releases,
 #block-views-recent_blog_posts,
 #block-block-4 {
