@@ -38,9 +38,9 @@ function phptemplate_breadcrumb($breadcrumb) {
 		// We need a special BC for forum topics and blog
 		if (arg(0) == 'node' || (arg(0) == 'comment' && arg(1) == 'reply') ) {
 			
-			if (arg(0) == 'node') {
+			if (arg(0) == 'node' && is_numeric(arg(1))) {
 				$node = node_load(arg(1)); // let's load the current node
-			} else {
+			} elseif (is_numeric(arg(2))) {
 				$node = node_load(arg(2)); // commented node
 			}
 			
