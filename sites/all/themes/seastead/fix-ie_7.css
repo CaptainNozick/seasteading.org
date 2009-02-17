@@ -1,6 +1,6 @@
 .clr,
 #block-menu-2 .content,
-#content-home,
+/*#content-home,*/
 .clear-block,
 #content-wrapper,
 .content-body .box,
@@ -11,7 +11,7 @@
 #block-menu-2 ul.menu li,
 #block-menu-2 ul.menu a,
 #node-form .link-field-row,
-#banner,
+/*#banner,*/
 #content-wrapper .post-info,
 #content-wrapper .forum-post-header,
 .forum #content-wrapper-1
@@ -24,9 +24,7 @@
 #content-wrapper-1 .post .meta {
 	padding:5px 0 4px;
 }
-#content-1{
-	height:1px;
-}
+
 #block-menu-2 ul.menu li{
 	vertical-align:top;
 }
