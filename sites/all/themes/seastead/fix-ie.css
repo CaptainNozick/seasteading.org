@@ -66,7 +66,7 @@ td.menu-disabled {
 }
 
 .clr,
-#content-home,
+/*#content-home,*/
 .clear-block,
 #block-user-0 form a.register,
 #key_areas .menu li,
@@ -85,7 +85,7 @@ td.menu-disabled {
 #block-menu-83 ul.menu li a,
 .block-month ul li a,
 #node-form .link-field-row,
-#banner,
+/*#banner,*/
 #content-wrapper .post-info,
 #content-wrapper .forum-post-header
 {
@@ -147,4 +147,10 @@ td.menu-disabled {
 	margin: 0;
 	padding: 0;
 	line-height: 10px;
+}
+ul.forum-links.subscriptions li, 
+#forum ul.forum-links.subscriptions li
+{
+	background:none !important;
+	padding:0;
 }
