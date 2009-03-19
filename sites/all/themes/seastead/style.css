@@ -932,11 +932,12 @@ ul.secondary
 }
 #block-views-press_releases,
 #block-views-recent_blog_posts,
-#block-block-4 {
+#block-block-4,
+#block-views-active_topics {
 	float: left;
 	width: 463px;
 	height: 243px;
-	margin: 16px;
+	padding: 16px;
 	position: relative;
 }
 
@@ -949,8 +950,8 @@ ul.secondary
 	font-size:9px;
 	padding:0;
 	position:absolute;
-	right:5px;
-	top:0;
+	right:21px;
+	top:16px;
 }
 
 #center_left .header .feed-icon:hover {
