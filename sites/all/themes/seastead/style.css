@@ -1017,8 +1017,8 @@ ul.secondary
 	display:block;
 	height:16px;
 	position:absolute;
-	right:-5px;
-	top:2px;
+	right:21px;
+	top:16px;
 	width:16px;
 	z-index:100;
 }
@@ -1147,8 +1147,8 @@ ul.secondary
 	display:block;
 	height:16px;
 	position:absolute;
-	right:-5px;
-	top:2px;
+	right:21px;
+	top:16px;
 	width:16px;
 	z-index:100;
 }
