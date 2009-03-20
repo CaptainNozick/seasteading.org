@@ -1,8 +1,13 @@
-
 // Bottom left content box
 
 currentitem = 1;
-totalitems = 3;
+totalitems = 4;
+if (typeof(jQuery) == 'function') { //well, just in case...
+	if ($('#center_left_inner').length) {
+		totalitems = $('#center_left_inner div.block').length;
+	}
+}
+console.log(totalitems);
 itemwidth = 495;
 
 allowplaying = true;
