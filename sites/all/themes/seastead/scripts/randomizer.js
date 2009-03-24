@@ -7,7 +7,6 @@ if (typeof(jQuery) == 'function') { //well, just in case...
 		totalitems = $('#center_left_inner div.block').length;
 	}
 }
-console.log(totalitems);
 itemwidth = 495;
 
 allowplaying = true;
