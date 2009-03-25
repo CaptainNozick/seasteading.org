@@ -941,8 +941,13 @@ ul.secondary
 	position: relative;
 }
 
-#block-block-4 {
-	margin: 8px 14px 14px 14px;
+#block-block-4 
+{
+	/*margin: 8px 14px 14px 14px;*/
+}
+#block-block-4 p
+{
+	margin:0;
 }
 
 #center_left .header .feed-icon {
