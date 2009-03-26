@@ -154,3 +154,5 @@ ul.forum-links.subscriptions li,
 	background:none !important;
 	padding:0;
 }
+#block-menu-2 ul.menu{display:inline; }
+#block-menu-2 ul.menu li{ display:inline;}

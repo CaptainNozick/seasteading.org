@@ -39,3 +39,9 @@
 	padding: 0;
 	line-height: 10px;
 }
+
+#block-menu-2 ul.menu {display:inline-block;}
+#block-menu-2 ul.menu{display:inline; }
+#block-menu-2 ul.menu li{display:inline-block}
+#block-menu-2 ul.menu li{ display:inline;}
+#block-menu-2 ul.menu a{ display:inline-block;}

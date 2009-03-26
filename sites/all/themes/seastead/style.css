@@ -553,6 +553,7 @@ ul.secondary
 /****************************************************************
 	block-menu-2
 ****************************************************************/
+
 #block-menu-2 .content,
 #block-menu-2 ul.menu,
 #block-menu-2 ul.menu li {
@@ -571,15 +572,20 @@ ul.secondary
 }
 #block-menu-2 .content {
 	margin:0 0 3px;
+	position:relative;
+	text-align:center;
 }
 #block-menu-2 ul.menu {
 	background: url('images/bg_menu_ul.gif') 0 0 repeat-x;
 	height:28px;
-	float:left;
-	margin:0;
+	position:relative;
+	margin:0 auto;
+	padding:0 0 0 1px;
+	display:table;
 }
 	#block-menu-2 ul.menu li {
 		float:left;
+		display:table-cell;
 		list-style:none;
 		background-position: 50% 0;
 		background-repeat:no-repeat;
@@ -588,6 +594,7 @@ ul.secondary
 		position: relative;
 		text-indent:-10000px;
 		z-index:1000;
+		text-align:left;
 	}
 	#block-menu-2 ul.menu li:hover ul {
 		display: block;
@@ -633,6 +640,23 @@ ul.secondary
 		width:169px;
 		margin:0;
 	}
+	#block-menu-2 ul.menu li.menu-the-mission,
+	#block-menu-2 ul.menu li.menu-the-mission a {
+		background-image: url("images/bg_menu-mission.gif");
+		width:148px;
+	}
+	#block-menu-2 ul.menu li.menu-the-organization,
+	#block-menu-2 ul.menu li.menu-the-organization a {
+		background-image: url("images/bg_menu-organization.gif");
+		width:184px;
+	}
+	#block-menu-2 ul.menu li.menu-the-community,
+	#block-menu-2 ul.menu li.menu-the-community a {
+		background-image: url("images/bg_menu-community.gif");
+		width:168px;
+	}
+
+
 	#block-menu-2 ul.menu li a {
 		background-position: 50% 0;
 		display: block;
@@ -658,6 +682,9 @@ ul.secondary
 			position: absolute;
 			padding: 0 0 0 1px;
 			top: 28px;
+			margin:0;
+			height:28px;
+			
 		}
 		#block-menu-2 ul.menu li.menu-contribute ul li a {
 			width:190px;
@@ -674,6 +701,7 @@ ul.secondary
 			position:relative;
 			width:100% !important;
 			text-indent:0;
+			
 		}
 		#block-menu-2 ul.menu li ul li:hover ul {
 			display: block;
@@ -1900,3 +1928,9 @@ Forum list view
   display: inline;
 }
 
+/* Admin menu */
+#root #admin_menu
+{
+	z-index:10000;
+	display:none;
+}
