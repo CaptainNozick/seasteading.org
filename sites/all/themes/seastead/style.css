@@ -750,6 +750,18 @@ ul.secondary
 					background-position: none !important;
 					background-repeat:none !important;
 				}
+				#block-menu-2 ul.menu li ul li.menu-about-tsi ul li a,
+				#block-menu-2 ul.menu li ul li.menu-about-tsi ul li a:hover {
+					background-image: none !important;
+					background-position: none !important;
+					background-repeat:none !important;
+				}
+				#block-menu-2 ul.menu li ul li.menu-strategic-areas ul li a,
+				#block-menu-2 ul.menu li ul li.menu-strategic-areas ul li a:hover {
+					background-image: none !important;
+					background-position: none !important;
+					background-repeat:none !important;
+				}
 
 /****************************************************************
 	Footer
