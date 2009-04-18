@@ -1,0 +1,10 @@
+; $Id: user_badges.info,v 1.1.2.2 2008/12/06 13:31:47 nunoveloso18 Exp $
+name = User badges
+description = Enables assignment of graphical badges to users and roles.
+dependencies = upload
+
+; Information added by drupal.org packaging script on 2007-06-19
+version = "5.x-1.x-dev"
+project = "user_badges"
+datestamp = "1182212765"
+

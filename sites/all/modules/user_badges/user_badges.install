@@ -1,0 +1,148 @@
+<?php
+// $Id: user_badges.install,v 1.1.4.6 2009/01/06 17:48:17 nunoveloso18 Exp $
+
+/**
+ * @file
+ * @brief User Badges install file
+ * 
+ * This file contains all the installation functions of the tables and variables 
+ * used by the module.
+ *
+ * @author Jeff Robbins (jjeff), http://drupal.org/user/17190
+ * @author Chad Phillips (hunmonk), http://drupal.org/user/22079
+ * @author Heine Deelstra (Heine), http://drupal.org/user/17943
+ * @author Nuno Veloso (nunoveloso18), http://drupal.org/user/80656
+ *
+ * @warning For more information on licensing, read the LICENCE.txt file.
+ *
+ */
+
+
+/**
+ * Implementation of hook_install()
+ */
+function user_badges_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {user_badges_badges} (
+        bid int(10) NOT NULL default '0',
+        name varchar(50) NOT NULL default '',
+        image varchar(80) NOT NULL default '',
+        weight int(2) NOT NULL default '0',
+        href VARCHAR(80) default ''
+      )");
+
+      db_query("CREATE TABLE {user_badges_product} (
+        bid int(10) NOT NULL default '0',
+        nid int(10) NOT NULL default '0'
+      )");
+
+      db_query("CREATE TABLE {user_badges_roles} (
+        rid int(10) NOT NULL default '0',
+        bid int(10) NOT NULL default '0'
+      )");
+
+      db_query("CREATE TABLE {user_badges_user} (
+        uid int(10) NOT NULL default '0',
+        bid int(10) NOT NULL default '0',
+        type varchar(20) NOT NULL default ''
+      )");
+
+      break;
+    case 'pgsql':
+      db_query("CREATE TABLE {user_badges_badges} (
+        bid int NOT NULL default '0',
+        name varchar(50) NOT NULL default '',
+        image varchar(80) NOT NULL default '',
+        weight int NOT NULL default '0',
+        href VARCHAR(80) NULL default '',
+        PRIMARY KEY (bid)
+      ); ");
+
+      db_query("CREATE SEQUENCE {user_badges_badges}_seq");
+
+      db_query("CREATE TABLE {user_badges_product} (
+        bid int NOT NULL default '0',
+        nid int NOT NULL default '0'
+      ); ");
+
+      db_query("CREATE TABLE {user_badges_roles} (
+        rid int NOT NULL default '0',
+        bid int NOT NULL default '0'
+      ); ");
+
+      db_query("CREATE TABLE {user_badges_user} (
+        uid int NOT NULL default '0',
+        bid int NOT NULL default '0',
+        type varchar(20) NOT NULL default ''
+      ); ");
+
+      break;
+    default:
+      break;
+  }
+}
+
+
+/**
+ * Implementation of hook_update_N()
+ * new DB structure
+ */
+function user_badges_update_1() {
+  $done = array();
+
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $done[] = db_query('
+        ALTER TABLE {user_badges_badges}
+        ADD href VARCHAR(80) default "" 
+        AFTER weight
+      ');
+      $done[] = db_query('
+        ALTER TABLE {user_badges_badges} 
+        ADD PRIMARY KEY (bid)
+      ');
+      break;
+    case 'pgsql':
+      $done[] = db_query('
+        ALTER TABLE {user_badges_badges} ADD COLUMN href VARCHAR(80)
+      ');
+      $done[] = db_query('
+        ALTER TABLE {user_badges_badges} ALTER COLUMN href SET DEFAULT ""
+      ');
+      break;
+    default:
+      break;
+  }
+  
+  return $done;
+  
+}
+
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function user_badges_uninstall() {
+  // Delete files.
+  $dir = file_create_path('badges');
+  if ($dir) {
+    $files = file_scan_directory($dir, '.*\.(gif|jpg|jpeg|png)', array('.', '..', 'CVS'), 0, FALSE);
+    foreach ($files as $file) {
+      file_delete($file->filename);
+    }
+  }
+  
+  // Delete the badges directory.  
+  if (file_exists($dir)) {
+    rmdir($dir);
+  }
+
+  // Remove database tables.
+  db_query("DROP TABLE {user_badges_badges}");
+  db_query("DROP TABLE {user_badges_roles}");
+  db_query("DROP TABLE {user_badges_user}");
+  db_query("DROP TABLE {user_badges_product}");
+}
