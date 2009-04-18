@@ -109,11 +109,27 @@ function phptemplate_comment_wrapper($content, $type = null, $n = null) {
  */
 function _phptemplate_variables($hook, $vars) {
 
+  switch ($hook) {
+  /*
+    case 'node':
+      if (module_exists('user_titles')) {
+        $vars['user_title'] = user_titles_get_user_title($vars['node']->uid);
+        $vars['user_title_image'] = user_titles_get_user_image($vars['node']->uid);
+      }
+   */
+    case 'comment':
+      if (module_exists('user_titles')) {
+        $vars['user_title'] = user_titles_get_user_title($vars['comment']->uid);
+        $vars['user_title_image'] = user_titles_get_user_image($vars['comment']->uid);
+      }
+  }
+
 	if (module_exists('advanced_forum')) {
 		$vars = advanced_forum_addvars($hook, $vars);
 		return $vars;
-  }
-	
+  } 
+
+
 	if ($hook == 'page') {
 
 		if ($secondary = menu_secondary_local_tasks()) {

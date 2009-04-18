@@ -10,7 +10,16 @@
     <span class="new"><?php print drupal_ucfirst($new) ?></span>
   <?php endif; ?>
 
-  <?php print $picture ?>
+  <?php
+    if ($user_title) {
+      print "user title stuff<br>";
+      print $user_title;
+      print $user_title_image;
+      print "end user title stuff<br>";
+    } else {
+      print $picture;
+    }
+  ?>
 
     <h3><?php print $title ?></h3>
 

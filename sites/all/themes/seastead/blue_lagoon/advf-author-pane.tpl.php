@@ -59,6 +59,10 @@
         <div class="author-pane-line author-title"> <?php print $user_title; ?> </div>
       <?php endif; ?>
 
+      <?php if (!empty($user_title_image)): ?>
+        <div class="author-pane-line author-title-image"> <?php print $user_title_image; ?> </div>
+      <?php endif; ?>
+
       <?php if (!empty($user_badges)): ?>
         <div class="author-pane-line author-badges"> <?php print $user_badges;  ?> </div>
       <?php endif; ?>
