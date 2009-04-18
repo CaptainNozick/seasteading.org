@@ -6,7 +6,7 @@
 				<?php print(t('Logged in as:'))?> <?php print l($user->name,'user/'.$user->uid); ?> | <?php print l((t('log out')),"logout"); ?>
 			</div>
 		<?php else : ?>
-			<form action="<?=base_path()?>user/login/?destination=node" method="post" id="user-login-form" accept-charset="UTF-8">
+			<form action="<?=base_path()?>user/login/?<?=drupal_get_destination()?>" method="post" id="user-login-form" accept-charset="UTF-8">
 				<div>
 					<!--<input type="hidden" name="edit[destination]" value="user" />-->
 					<a href="<?php print base_path() ?>user/register" title="Register" class="register"><span>Register</span></a>
