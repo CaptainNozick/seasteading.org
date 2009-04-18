@@ -521,6 +521,18 @@ function user_titles_get_posts($uid) {
 }
 
 /**
+ * Fetch a user title by name
+ *
+ * @param $name
+ *   The name of the title to find
+ */
+function user_titles_get_title_by_name($name) {
+  $result = db_fetch_array(db_query("SELECT * FROM {user_titles} WHERE title = '%s'", $name));
+  return $result;
+}
+
+
+/**
  * Calculate a title based upon the number of posts.
  *
  * @param $posts
@@ -590,7 +602,8 @@ function user_titles_get_user_title_info($account) {
   }
 
   if (!empty($account->user_title)) {
-    return array('title' => $account->user_title);
+    //return array('title' => $account->user_title);
+    return user_titles_get_title_by_name($account->user_title);
   }
   return user_titles_get_title(user_titles_get_posts($account->uid));
 }
