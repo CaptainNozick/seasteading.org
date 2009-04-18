@@ -1,0 +1,69 @@
+/* $Id: admin.css,v 1.5.4.3 2008/12/19 05:13:48 agileware Exp $ */
+
+table#user-titles-settings {
+  width: auto;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+table#user-titles-add {
+  width: auto;
+  margin-top: 10px;
+  padding-top: 0;
+}
+
+th.num-posts,
+td.num-posts {
+  padding-right: 3px; 
+  padding-left: 3px;
+  width: 3em;
+}
+
+td.user-title,
+th.user-title {
+  width: 10em;
+}
+
+div.top {
+  float: left;
+  width: 96%;
+  padding: 0 5px;
+  margin-bottom: 15px;
+}
+
+div.title-table {
+  float: right;
+  width: 56%;
+  padding: 0 5px;
+}
+
+div.settings {
+  width: 40%;
+  float: left;
+  padding: 0 5px;
+}
+
+div.right div.form-checkboxes div.form-item {
+  width: 10em;
+  float: left;
+  padding: 0 1px;
+  margin: 0 2px;
+}
+
+div.description {
+  clear: left;
+}
+
+div.clearer {
+  clear: both;
+  height: 0;
+}
+
+table#user-titles-settings img.title-delete {
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+legend {
+  font-weight: bold;
+}

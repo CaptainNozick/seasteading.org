@@ -1,0 +1,34 @@
+
+User Titles defines a hook function other modules can define. It is:
+
+hook_user_titles($op, $uid = NULL)
+  Use this function to describe what point scheme your module defines
+  for User Titles.
+
+  $op: The operation to be acted upon
+    'register'
+      Return module name so that module can be called later
+
+    'name'
+      Return translated pretty module name for display
+      Example:
+        return t('Dollars donated');
+
+    'description'
+      Return translated description for module's point scheme
+      Example:
+        return t('Points based on dollars donated');
+
+    'units'
+      Return short, capitalized name of what these points are.
+      Example:
+        return t('Dollars');
+
+    'url'
+      Drupal menu path to module's help or admin page to be displayed.
+      Example:
+        return "admin/help/donate";
+
+    'get'
+      Return number of points for $uid
+

@@ -1,0 +1,779 @@
+<?php
+// $Id: user_titles.module,v 1.15.2.5 2009/01/07 02:02:21 agileware Exp $
+/**
+ * @file user_titles.module
+ * Allows assignment of titles to a user based upon the number of posts the
+ * user has made.
+ */
+
+define('DEFAULT_IMAGE_DIR', 'user-titles-images');
+
+/**
+ * Implementation of hook_help
+ */
+function user_titles_help($section) {
+  switch ($section) {
+    case 'admin/user/user-titles':
+      return t('Click "Save" to change settings or use the "Add title" tab to add a new title.');
+  }
+}
+
+/**
+ * Implementation of hook_perm
+ */
+function user_titles_perm() {
+  return array('administer user titles');
+}
+
+/**
+ * Implementation of hook_menu
+ */
+function user_titles_menu($may_cache) {
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/user/user-titles',
+      'title' => t('User titles'),
+      'description' => t('Configure user titles and number of posts required.'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('user_titles_settings_form'),
+      'access' => user_access('administer user titles'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+    $items[] = array(
+      'path' => 'admin/user/user-titles/list',
+      'title' => t('List'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10
+    );
+    $items[] = array(
+      'path' => 'admin/user/user-titles/add/title',
+      'title' => t('Add title'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('user_titles_title_form'),
+      'access' => user_access('administer user titles'),
+      'type' => MENU_LOCAL_TASK
+    );
+    $items[] = array(
+      'path' => 'admin/user/user-titles/edit/title',
+      'title' => t('Edit title'),
+      'callback' => 'user_titles_edit_title',
+      'access' => user_access('administer user titles'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
+      'path' => 'admin/user/user-titles/delete/title',
+      'title' => t('Remove title'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('user_titles_delete_title_form'),
+      'access' => user_access('administer user titles'),
+      'type' => MENU_CALLBACK
+    );
+  }
+
+  return $items;
+}
+
+/**
+ * Determines what the current hook module implementation is, or '' if
+ * using built-in version. Ensures the module is loaded too.
+ */
+function user_titles_hook_module() {
+  $module = variable_get('user_titles_hook_module', $default = 'user_titles');
+  if (module_exists($module)) {
+    return $module;
+  }
+  else {
+    return $default;
+  }
+}
+
+/**
+ * Form to determine titles and levels.
+ */
+function user_titles_settings_form() {
+  $form = array();
+
+  $types = user_titles_get_allowed_types();
+
+  foreach (node_get_types() as $type => $info) {
+    $nodes[$type] = $info->name;
+  }
+
+  $hook_module  = user_titles_hook_module();
+  $hook_modules = module_invoke_all('user_titles', 'register');
+
+
+  $form['settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Settings',
+  );
+
+  $form['settings']['hook_module'] = array(
+    '#type' => 'radios',
+    '#title' => 'Point scheme',
+    '#default_value' => $hook_module,
+    '#options' => array(),
+    '#attributes' => array('class' => 'user-titles-hook-module'),
+  );
+  foreach ($hook_modules as $module) {
+    $form['settings']['hook_module']['#options'][$module] = array(
+      'name'        => $name = module_invoke($module, 'user_titles', 'name'),
+      'description' => module_invoke($module, 'user_titles', 'description'),
+      'url'         => module_invoke($module, 'user_titles', 'url'),
+    );
+    $name_index[$module] = $name;
+  }
+
+  array_multisort($name_index, SORT_ASC, SORT_STRING, $form['settings']['hook_module']['#options']);
+
+  // Implementation of user_titles' default behavior
+  $form['settings']['types'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Counted node types'),
+    '#description' => t('Only the checked node types will be counted'),
+    '#options' => $nodes,
+    '#default_value' => $types,
+    '#disabled' => $hook_module !== 'user_titles',
+    '#attributes' => array('class' => 'user-titles-types'),
+  );
+  $form['settings']['types_disabled'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $hook_module !== 'user_titles',
+  );
+
+  // Directory to save images
+  $form['settings']['image_dir'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image directory'),
+    '#description' => t('Subdirectory in the directory %dir where images will be stored.', array('%dir' => file_directory_path() .'/')),
+    '#default_value' => variable_get('user_titles_image_dir', DEFAULT_IMAGE_DIR),
+    '#size' => 35,
+    '#attributes' => array('class' => 'user-titles-image-dir'),
+  );
+
+  $form['settings']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+
+  $titles = user_titles_get_titles();
+
+  $form['titles'] = array('#tree' => TRUE);
+
+  foreach ($titles as $i => $title) {
+    $form['titles'][$i]['value'] = array(
+      '#type' => 'markup',
+      '#value' => $title['value'],
+    );
+    $form['titles'][$i]['title'] = array(
+      '#type' => 'markup',
+      '#value' => $title['title'],
+    );
+    $form['titles'][$i]['image'] = array(
+      '#type' => 'markup',
+      '#value' => theme('user_titles_image', $title['image'], $title['image_title']),
+    );
+    $form['titles'][$i]['tid'] = array(
+      '#type' => 'hidden',
+      '#value' => $title['tid'],
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Theme function for the user title settings form.
+ */
+function theme_user_titles_settings_form($form) {
+  $path = drupal_get_path('module', 'user_titles');
+  drupal_add_css("$path/admin.css");
+
+  $units = module_invoke(user_titles_hook_module(), 'user_titles', 'units');
+  $header = array(
+    array('data' => $units, 'class' => 'num-posts'),
+    array('data' => t('Title'), 'class' => 'user-title'),
+    array('data' => t('Image'), 'class' => 'user-title-image'),
+    array('data' => t('Operations'), 'colspan' => 2),
+  );
+
+  $rows = array();
+  foreach (element_children($form['titles']) as $key) {
+    // set a reference so that the drupal_render gets remembered.
+    unset($elem);
+    $elem = &$form['titles'][$key];
+
+    $rows[] = array(
+      array('data' => drupal_render($elem['value']), 'class' => 'num-posts'),
+      array('data' => drupal_render($elem['title']), 'class' => 'user-title'),
+      array('data' => drupal_render($elem['image']), 'class' => 'user-title-image'),
+      drupal_render($elem['tid']),
+      'edit' => l(t('edit'), "admin/user/user-titles/edit/title/" . $elem['tid']['#value']),
+      'delete' => l(t('delete'), "admin/user/user-titles/delete/title/" . $elem['tid']['#value']),
+    );
+  }
+
+  $output = '<div class="title-table">';
+  $output .= theme('table', $header, $rows, array('id' => 'user-titles-settings'));
+  $output .= '</div>';
+
+  // Properly format hook_module
+  foreach ($form['settings']['hook_module']['#options'] as $module => $info) {
+    if ($info['url']) {
+      $name = l($info['name'], $info['url']);
+    }
+    else {
+      $name = check_plain($info['name']);
+    }
+    // drupal_render uses this area, not the original
+    $form['settings']['hook_module'][$module]['#title'] = '<strong>'. $name .'</strong><div class="description">'. $info['description'] .'</div>';
+  }
+
+  $output .= '<div class="settings">';
+  $output .= drupal_render($form['settings']);
+  $output .= '</div>';
+
+  $output .= '<div class="clearer">&nbsp;</div>';
+  $output .= drupal_render($form);
+  return $output;
+}
+
+/**
+ * Implementation of hook_submit().
+ * Submit the user titles setting form.
+ */
+function user_titles_settings_form_submit($form_id, $form_values) {
+  // If they change the allowed types, wipe the existing counts so each one will be fresh.
+  $types = user_titles_get_allowed_types();
+  if ($types != $form_values['types']) {
+    db_query("TRUNCATE {user_titles_posts}");
+  }
+
+  if (!$form_values['types_disabled']) {
+    user_titles_set_allowed_types(array_keys(array_filter($form_values['types'])));
+  }
+
+  variable_set('user_titles_hook_module', $form_values['hook_module']);
+  variable_set('user_titles_image_dir', $form_values['image_dir']);
+
+  $image_path = file_create_path(variable_get('user_titles_image_dir', DEFAULT_IMAGE_DIR));
+  file_check_directory($image_path, 1, 'image_dir');
+
+  drupal_set_message(t('The configuration has been updated.'));
+}
+
+/**
+ * Form for adding/editing user titles.
+ */
+function user_titles_title_form($edit = array()) {
+  $path = drupal_get_path('module', 'user_titles');
+  drupal_add_css("$path/admin.css");
+
+  // For file field to work.
+  $form['#attributes'] = array('enctype' => 'multipart/form-data');
+
+  $units = module_invoke(user_titles_hook_module(), 'user_titles', 'units');
+  $form['value'] = array(
+    '#type' => 'textfield',
+    '#title' => t($units),
+    '#size' => 5,
+    '#maxlength' => 10,
+    '#required' => TRUE,
+    '#default_value' => $edit['value'],
+  );
+
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#size' => 40,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => $edit['title'],
+  );
+
+  $form['image'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Image'),
+  );
+
+  $form['image']['image_display'] = array(
+    '#type' => 'item',
+    '#value' => theme('user_titles_image', $edit['image'], $edit['image_title']),
+  );
+
+  if ($edit['image']) {
+    $form['image']['remove_image'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Remove image'),
+      '#description' => t('If checked this image will be removed from this title on submit.'),
+    );
+  }
+
+  $form['image']['image_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image title/alt text'),
+    '#size' => 40,
+    '#maxlength' => 255,
+    '#default_value' => $edit['image_title'],
+      '#description' => t('This text will be used as the title and alt text for the image when it is displayed.'),
+  );
+
+  $form['image']['image_upload'] = array(
+    '#type' => 'file',
+    '#title' => t('Upload new image'),
+    '#size' => 40,
+    '#description' => t('Upload an image that can be displayed with this user title.  This image will replace any existing image attached to this title.'),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+
+  if ($edit['tid']) {
+    $form['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete'));
+    $form['tid'] = array(
+      '#type' => 'value',
+      '#value' => $edit['tid'],
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Implementation of hook_validate().
+ * Validate the add title form.
+ */
+function user_titles_title_form_validate($form_id, $form) {
+  $existing_titles = user_titles_get_titles();
+
+  if (!is_numeric($form['value'])) {
+    form_set_error('title', t('Number of posts must be a number!'));
+  }
+
+  foreach ($existing_titles as $title) {
+    if ($title['tid'] != $form['tid']) {
+      if ($title['title'] == $form['title']) {
+        form_set_error('title', t('This title already exists.  Titles must be unique.'));
+      }
+      if ($title['value'] == $form['value']) {
+        form_set_error('value', t('There is already a title for this number of posts.  Posts must be unique.'));
+      }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_submit().
+ * Submit the add title form.
+ */
+function user_titles_title_form_submit($form_id, $form_values) {
+  // Do file processing if a file has been added.
+  $image = '';
+  if ($file = file_check_upload('image_upload')) {
+    // Check that file is an image.
+    $info = image_get_info($file->filepath);
+    if (!$info || !$info['extension']) {
+      drupal_set_message(t('The uploaded file was not an image.'), 'error');
+    }
+
+    // Save file
+    $dir = file_create_path(variable_get('user_titles_image_dir', DEFAULT_IMAGE_DIR));
+    file_check_directory($dir, 1, 'image_upload');
+    $dir .= '/' . $file->filename;
+    $save = file_save_upload('image_upload', $dir, TRUE);
+    if (!$save) {
+      drupal_set_message(t('ERROR uploading the file to ' . $dir . '.  The user title has been created without an image.'), 'error');
+    }
+    else {
+      $image = $save->filepath;
+      drupal_set_message(t('The file: <strong>"' . $file->filename . '"</strong> is successfully uploaded'));
+    }
+  }
+
+  if ($form_values['tid']) {
+    // Only update image information if an image was uploaded so images don't get lost.
+    if ($image != '') {
+      db_query("UPDATE {user_titles} SET title = '%s', value = %d, image = '%s', image_title = '%s' WHERE tid = %d", $form_values['title'], $form_values['value'], $image, $form_values['image_title'], $form_values['tid']);
+    }
+    else if ($form_values['remove_image']) {
+      db_query("UPDATE {user_titles} SET title = '%s', value = %d, image = '%s', image_title = '%s' WHERE tid = %d", $form_values['title'], $form_values['value'], '', '', $form_values['tid']);
+    }
+    else {
+      db_query("UPDATE {user_titles} SET title = '%s', value = %d, image_title = '%s' WHERE tid = %d", $form_values['title'], $form_values['value'], $form_values['image_title'], $form_values['tid']);
+    }
+    drupal_set_message(t('Updated user title %title.', array('%title' => $form_values['title'])));
+    $redirect = 'admin/user/user-titles';
+  }
+  else {
+    $tid = db_next_id('{user_titles}_tid');
+    db_query("INSERT INTO {user_titles} (tid, title, value, image, image_title) VALUES (%d, '%s', %d, '%s', '%s')", $tid, $form_values['title'], $form_values['value'], $image, $form_values['image_title']);
+    drupal_set_message(t('Created new user title %title.', array('%title' => $form_values['title'])));
+    $redirect = 'admin/user/user-titles/add/title';
+  }
+
+  return $redirect;
+}
+
+/**
+ * Page to edit a user title.
+ */
+function user_titles_edit_title($tid = NULL) {
+  if ($_POST['op'] == t('Delete') || $_POST['confirm']) {
+    return drupal_get_form('user_titles_delete_title_form', $tid);
+  }
+  if ($title = (array)user_titles_get_titles($tid)) {
+    return drupal_get_form('user_titles_title_form', $title);
+  }
+  return drupal_not_found();
+}
+
+/**
+ * Confirm deletion of user title form.
+ */
+function user_titles_delete_title_form($tid) {
+  $title = user_titles_get_titles($tid);
+
+  $form = array();
+  $form['tid'] = array(
+    '#type' => 'hidden',
+    '#value' => $title['tid'],
+  );
+
+  $form['title'] = array(
+    '#type' => 'hidden',
+    '#value' => $title['title'],
+  );
+
+  $confirm_form = confirm_form($form,
+    t('Are you sure you want to delete the user title: %title?', array('%title' => $title['title'])),
+    'admin/user/user-titles',
+    t('This action cannot be undone.'),
+    t('Delete'),
+    t('Cancel'));
+
+  return $confirm_form;
+}
+
+/**
+ * Implementation of hook_submit().
+ * Submit the delete user titles form.
+ */
+function user_titles_delete_title_form_submit($form_id, $form_values) {
+  if ($form_values['tid'] && is_numeric($form_values['tid'])) {
+    $success = db_query("DELETE FROM {user_titles} WHERE tid = %d", $form_values['tid']);
+  }
+
+  if ($success) {
+    drupal_set_message("User title '" . $form_values['title'] . "' has been deleted successfully.", 'status');
+  }
+  else {
+    drupal_set_message("Deletion of user title '" . $form_values['title'] . "' has failed.", 'error');
+  }
+
+  return 'admin/user/user-titles';
+}
+
+/**
+ * Implementation of hook_nodeapi
+ */
+function user_titles_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($op == 'insert' || $op == 'delete') {
+    $allowed_types = user_titles_get_allowed_types();
+    if (in_array($node->type, $allowed_types)) {
+      $inc = ($op == 'insert') ? 1 : -1;
+      db_query("REPLACE INTO {user_titles_posts} (uid, posts) VALUES (%d, %d)", $node->uid, user_titles_get_posts($node->uid) + $inc);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_comment.
+ */
+function user_titles_comment($a1, $op) {
+  if ($op == 'insert' || $op == 'delete') {
+    $a1 = (object)$a1; // sometimes an array is passed in
+    $uid = $a1->uid;
+    $inc = ($op == 'insert') ? 1 : -1;
+    db_query("REPLACE INTO {user_titles_posts} (uid, posts) VALUES (%d, %d)", $uid, user_titles_get_posts($uid) + $inc);
+  }
+}
+
+/**
+ * Load the number of posts for a user. If we don't have a stored count
+ * in the database, count and store that value.
+ * 
+ * @todo When porting to 7.x, rename to user_title_get_points
+ *
+ * @param $uid
+ *   The user to fetch the number of posts for.
+ */
+function user_titles_get_posts($uid) {
+  static $cache = array();
+  if (!isset($cache[$uid])) {
+    $module = user_titles_hook_module();
+    $cache[$uid] = module_invoke($module, 'user_titles', 'get', $uid);
+  }
+  return $cache[$uid];
+}
+
+/**
+ * Calculate a title based upon the number of posts.
+ *
+ * @param $posts
+ *   The number of posts to find the title for.
+ */
+function user_titles_get_title($posts) {
+  $titles = user_titles_get_titles();
+  // This array will be sorted from highest to lowest prior to storing.
+  foreach ($titles as $title) {
+    if ($posts >= $title['value']) {
+      return $title;
+    }
+  }
+}
+
+/**
+ * Fetch a title for the given user.
+ *
+ * @param $account
+ *   The user to fetch. May be a $user object or a $uid.
+ */
+function user_titles_get_user_title($account) {
+  $title = user_titles_get_user_title_info($account);
+  if (isset($title['title'])) {
+    return $title['title'];
+  }
+}
+
+/**
+ * Fetch the user title image path for the given user.
+ *
+ * @param $account
+ *   The user to fetch. May be a $user object or a $uid.
+ */
+function user_titles_get_user_image_path($account) {
+  $title = user_titles_get_user_title_info($account);
+  if (isset($title['image'])) {
+    return $title['image'];
+  }
+}
+
+/**
+ * Fetch the themed user title image for the given user.
+ *
+ * @param $account
+ *   The user to fetch. May be a $user object or a $uid.
+ */
+function user_titles_get_user_image($account) {
+  $title = user_titles_get_user_title_info($account);
+  if (isset($title['image'])) {
+    return theme('user_titles_image', $title['image'], $title['image_title']);
+  }
+}
+
+/**
+ * Fetch full title info for a given user.
+ * 
+ * @param $uid
+ *   The user to fetch. May be a $user object or a $uid.
+ */
+function user_titles_get_user_title_info($account) {
+  if (is_numeric($account)) {
+    $account = user_load(array('uid' => $account));
+  }
+  if (!$account) {
+    return;
+  }
+
+  if (!empty($account->user_title)) {
+    return array('title' => $account->user_title);
+  }
+  return user_titles_get_title(user_titles_get_posts($account->uid));
+}
+
+/**
+ * Update the post count for a given user.
+ *
+ * @param $uid
+ *   The user id to update.
+ * @param $count
+ *   The count to write. If not given, posts will be counted and that data 
+ *   written.
+ */
+function user_titles_update_post_count($uid, $count = NULL) {
+  if (is_null($count)) {
+    // fetch count from the database
+    $allowed_types = user_titles_get_allowed_types();
+    if ($allowed_types) {
+      $types = implode("','", $allowed_types);
+      $count = db_result(db_query("SELECT COUNT(*) FROM {node} WHERE uid = %d AND type IN ('$types')", $uid));
+      if (module_exists('comment')) {
+        $count += db_result(db_query("SELECT COUNT(*) FROM {comments} WHERE uid = %d", $uid));
+      }
+    }
+    else {
+      $count = 0;
+    }
+  }
+  // mysql only query
+  db_query("REPLACE INTO {user_titles_posts} (uid, posts) VALUES (%d, %d)", $uid, $count);
+  return $count;
+}
+
+/**
+ * Get allowed types from db.
+ */
+function user_titles_get_allowed_types() {
+  return variable_get('user_titles_types', array());
+}
+
+/**
+ * Set allowed types from db
+ */
+function user_titles_set_allowed_types($types) {
+  variable_set('user_titles_types', $types);
+}
+
+/**
+ * Get titles from db
+ * If tid is passed in only that title will be fetched, otherwise all titles will be fetched
+ */
+function user_titles_get_titles($tid = NULL) {
+  if ($tid && is_numeric($tid)) {
+    $result = db_fetch_array(db_query("SELECT * FROM {user_titles} WHERE tid = %d", $tid));
+  }
+  else {
+    $query = db_query("SELECT * FROM {user_titles} ORDER BY value DESC");
+    if (db_num_rows($query)) {
+      while ($r = db_fetch_array($query)) {
+        $result[] = $r;
+      }
+    }
+    else {
+      $result = array();
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * Implementation of hook_user
+ *
+ * Add the 'edit user title' form to the edit user page.
+ */
+function user_titles_user($op, $edit, &$user, $category = NULL) {
+  if (user_access('administer user titles') && $op == 'form' && $category == 'account' && (isset($user->uid))) {
+    // when user tries to edit his own data
+    $form['user_titles'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('User Title'),
+      '#collapsible' => TRUE,
+      '#weight' => 4);
+    $title_info = user_titles_get_user_title_info($user);
+
+    if (!isset($title_info['title'])) {
+      $title = t('No title set');
+    }
+    else {
+      $title = $title_info['title'];
+    }
+
+    $form['user_titles']['current_title'] = array(
+      '#value' => '<div><strong>'. t('Current user title:') .' </strong> '. filter_xss_admin($title) .'</div>',
+    );
+
+    if (isset($title_info['title']) && empty($title_info['tid'])) {
+      $default_title_info = user_titles_get_title(user_titles_get_posts($user->uid));
+      if (!isset($default_title_info['title'])) {
+        $default_title = t('No title set');
+      }
+      else {
+        $default_title = $default_title_info['title'];
+      }
+      $form['user_titles']['default_title'] = array(
+        '#value' => '<div><strong>'. t('Default user title:') .' </strong> '. filter_xss_admin($default_title) .'</div>',
+      );
+    }
+
+    $form['user_titles']['user_title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Override title'),
+      '#description' => t('Enter a title here to give this user a manually overridden title. Leave blank to use the default title.'),
+      '#default_value' => isset($user->user_title) ? $user->user_title : '',
+    );
+
+    return $form;
+  }
+  elseif ($op == 'delete') {
+    db_query('DELETE FROM {user_titles_posts} WHERE uid = %d', $user->uid);
+  }
+  elseif ($op == 'view') {
+    $title = user_titles_get_user_title($user);
+    if ($title) {
+      return array(t('User title') => array('title' => array('value' => filter_xss_admin($title))));
+    }
+  }
+}
+
+/**
+ * Theme function for user titles images.
+ */
+function theme_user_titles_image($filepath, $alt) {
+  $image = theme('image', $filepath, $alt, $alt, '', FALSE);
+
+  $output = '<div class="user-titles-image">';
+  $output .= $image;
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
+ * Built-in hook implementation that counts nodes
+ */
+function user_titles_user_titles($op, $uid = NULL) {
+  switch ($op) {
+    case 'register':
+      return 'user_titles';
+    case 'name':
+      return t('Post count');
+    case 'description':
+      return t('Built-in, see below');
+    case 'units':
+      return t('Posts');
+    case 'url':
+      // No url implemented
+      return;
+    case 'get':
+      $res = db_result(db_query("SELECT posts FROM {user_titles_posts} WHERE uid = %d", $uid));
+      if ($res === FALSE) $res = user_titles_update_post_count($uid);
+      return $res;
+  }
+}
+
+/**
+ * Sample hook implementation for userpoints; should be placed in userpoints
+ */
+if (module_exists('userpoints') && !function_exists('userpoints_user_titles')) {
+  function userpoints_user_titles($op, $uid = NULL) {
+    switch ($op) {
+      case 'register':
+        return 'userpoints';
+      case 'name':
+        return t('User points');
+      case 'description':
+        return t('Different points values are assigned to user actions');
+      case 'units':
+        return t('Points');
+      case 'url':
+        return 'admin/help/userpoints';
+      case 'get':
+        return userpoints_get_current_points($uid);
+    }
+  }
+}

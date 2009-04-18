@@ -1,0 +1,65 @@
+<?php
+// $Id: user_titles.install,v 1.4.4.3 2008/12/19 05:13:48 agileware Exp $
+/**
+ * @file user_titles.install
+ * Installation file for user_titles module
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function user_titles_install() {
+  db_query("
+      CREATE TABLE {user_titles} (
+        tid int(10) NOT NULL PRIMARY KEY,
+        title varchar(255) NOT NULL,
+        value int(10) NOT NULL,
+        image varchar(255) NOT NULL DEFAULT '',
+        image_title varchar(255) NOT NULL DEFAULT ''
+      ) /*!40100 DEFAULT CHARACTER SET utf8 */
+  ");
+  db_query("
+      CREATE TABLE {user_titles_posts} (
+        uid int(10) NOT NULL PRIMARY KEY,
+        posts integer
+      ) /*!40100 DEFAULT CHARACTER SET utf8 */
+  ");
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function user_titles_uninstall() {
+  db_query("DROP TABLE {user_titles}");
+  db_query("DROP TABLE {user_titles_posts}");
+}
+
+/**
+ * Implementation of hook_update().
+ */
+function user_titles_update_1() {
+  $ret = array();
+  $ret[] = update_sql("RENAME TABLE {user_titles} TO {user_titles_posts}");
+  $ret[] = update_sql("
+      CREATE TABLE {user_titles} (
+        tid int(10) NOT NULL PRIMARY KEY,
+        title varchar(255) NOT NULL,
+        value int(10) NOT NULL
+      ) /*!40100 DEFAULT CHARACTER SET utf8 */
+  ");
+
+  return $ret;
+}
+
+/**
+ * Implementation of hook_update().
+ */
+function user_titles_update_2() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {user_titles} ADD (
+                         image varchar(255) NOT NULL DEFAULT '',
+                         image_title varchar(255) NOT NULL DEFAULT ''
+                       )");
+
+  return $ret;
+}

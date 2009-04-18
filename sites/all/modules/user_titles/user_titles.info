@@ -1,0 +1,4 @@
+; $Id: user_titles.info,v 1.3.4.3 2008/12/19 05:13:48 agileware Exp $
+
+name = "User titles"
+description = "Allow users to have titles based upon how many posts they have."
