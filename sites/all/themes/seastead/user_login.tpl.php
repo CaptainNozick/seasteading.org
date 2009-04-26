@@ -16,9 +16,4 @@
 		</div>
 	</form>
 	<p><a href="user/password">Lost password?</a></p>
-	
-	<?php
-		// print_r(drupal_render($form)); // this displays the login form.
-	?>
-	
 </div>
