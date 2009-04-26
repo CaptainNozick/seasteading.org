@@ -3,7 +3,8 @@
 		<?php  global $user; ?>
 		<?php if ($user->uid) : ?>
 			<div class="logged-in">
-				<?php print(t('Logged in as:'))?> <?php print l($user->name,'user/'.$user->uid); ?> | <?php print l((t('log out')),"logout"); ?>
+				<?php print(t('Logged in as:'))?> <?php print l($user->name,'user/'.$user->uid); ?>
+				 | <?php print l((t('log out')),"logout"); ?>
 			</div>
 		<?php else : ?>
 			<form action="<?=base_path()?>user/login/?<?=drupal_get_destination()?>" method="post" id="user-login-form" accept-charset="UTF-8">
